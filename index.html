@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.5</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at center, #231c19 0%, #120e0d 100%);
+      color: #f5efe6;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    .panel {
+      position: absolute;
+      z-index: 10;
+      background: rgba(28, 24, 22, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 163, 115, 0.3);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      max-height: 90vh;
+      overflow-y: auto;
+      transition: opacity 0.3s ease;
+    }
+    #sync-panel {
+      top: 20px;
+      left: 20px;
+      width: 280px;
+    }
+    #controls-panel {
+      top: 20px;
+      right: 20px;
+      width: 320px;
+    }
+    #inspector-panel {
+      bottom: 20px;
+      left: 20px;
+      width: 350px;
+      display: none;
+    }
+    #notes-panel {
+      bottom: 20px;
+      right: 20px;
+      width: 340px;
+      display: none;
+    }
+    #history-modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 200;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      display: none;
+    }
+
+    /* BARRA SUPERIOR CENTRADA */
+    #top-bar {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .top-btn {
+      background: rgba(28, 24, 22, 0.88);
+      border: 1px solid rgba(212, 163, 115, 0.4);
+      color: #e6ccb2;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .top-btn:hover {
+      background: rgba(212, 163, 115, 0.25);
+      color: #fff;
+    }
+    .top-btn.active-audio, .top-btn.active-video {
+      background: #588157;
+      color: #fff;
+      border-color: #a3b18a;
+    }
+    .top-btn.muted-audio, .top-btn.stopped-video {
+      background: #9a031e;
+      color: #fff;
+      border-color: #e63946;
+    }
+    .top-btn.disabled-btn {
+      pointer-events: none;
+      opacity: 0.7;
+      background: rgba(40, 30, 25, 0.9);
+      color: #e9c46a;
+      border-color: rgba(233, 196, 106, 0.5);
+    }
+    .version-tag {
+      position: absolute;
+      bottom: 8px;
+      left: 12px;
+      z-index: 100;
+      font-size: 0.68rem;
+      color: rgba(212, 163, 115, 0.6);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      pointer-events: none;
+    }
+
+    /* VENTANA ÚNICA DE VIDEO DEL OTRO PARTICIPANTE */
+    #remote-video-box {
+      position: absolute;
+      top: 14px;
+      right: 360px;
+      width: 140px;
+      height: 105px;
+      background: rgba(28, 24, 22, 0.95);
+      border: 1px solid rgba(69, 123, 157, 0.6);
+      border-radius: 10px;
+      overflow: hidden;
+      z-index: 95;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+    }
+    #remote-video-box video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #110d0c;
+    }
+    .video-label {
+      position: absolute;
+      bottom: 4px;
+      left: 6px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: #f5efe6;
+      background: rgba(0,0,0,0.7);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    h2, h3 {
+      color: #e6ccb2;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-group {
+      margin-bottom: 8px;
+    }
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: #ddb892;
+      margin-bottom: 3px;
+    }
+    input, select, button, textarea {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 6px;
+      border: 1px solid #7f5539;
+      background: #27211e;
+      color: #f5efe6;
+      font-size: 0.82rem;
+      outline: none;
+    }
+    textarea {
+      resize: vertical;
+      height: 140px;
+      font-family: inherit;
+      overflow-y: scroll;
+      scrollbar-width: thin;
+      scrollbar-color: #7f5539 #1a1614;
+    }
+    textarea::-webkit-scrollbar {
+      width: 8px;
+    }
+    textarea::-webkit-scrollbar-track {
+      background: #1a1614;
+      border-radius: 4px;
+    }
+    textarea::-webkit-scrollbar-thumb {
+      background: #7f5539;
+      border-radius: 4px;
+    }
+    textarea::-webkit-scrollbar-thumb:hover {
+      background: #9c6644;
+    }
+    button {
+      background: #b08968;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      margin-top: 4px;
+    }
+    button:hover {
+      background: #9c6644;
+    }
+    .btn-secondary {
+      background: #588157;
+    }
+    .btn-secondary:hover {
+      background: #3a5a40;
+    }
+    .btn-danger {
+      background: #9a031e;
+    }
+    .btn-danger:hover {
+      background: #5f0f40;
+    }
+    .btn-warning {
+      background: #d4a373;
+      color: #1a1614;
+    }
+    .btn-warning:hover {
+      background: #e6ccb2;
+    }
+    .btn-info {
+      background: #457b9d;
+      color: #fff;
+    }
+    .btn-info:hover {
+      background: #1d3557;
+    }
+    .btn-group {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-group button {
+      flex: 1;
+    }
+    #room-info {
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(230, 204, 178, 0.08);
+      border-radius: 6px;
+      font-size: 0.78rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+    }
+    .btn-copy {
+      background: #7f5539;
+      color: #f5efe6;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin-top: 2px;
+      width: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-copy:hover {
+      background: #9c6644;
+    }
+    #notification {
+      position: absolute;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      padding: 6px 16px;
+      border-radius: 14px;
+      background: #b08968;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      display: none;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      background: rgba(255,255,255,0.1);
+      margin-left: 4px;
+    }
+    .status-box {
+      font-size: 0.73rem;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(212,163,115,0.2);
+      width: 100%;
+      text-align: left;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dot-online {
+      height: 8px;
+      width: 8px;
+      background-color: #2a9d8f;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 8px #2a9d8f;
+    }
+    .dot-offline {
+      height: 8px;
+      width: 8px;
+      background-color: #8d99ae;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-disconnected {
+      height: 8px;
+      width: 8px;
+      background-color: #e63946;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 8px #e63946;
+      animation: blinker 1s linear infinite;
+    }
+    @keyframes blinker {
+      50% { opacity: 0.2; }
+    }
+    .history-item {
+      background: rgba(39, 33, 30, 0.8);
+      border: 1px solid rgba(212, 163, 115, 0.2);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #e6ccb2;
+    }
+    .history-details {
+      font-size: 0.72rem;
+      color: #ddb892;
+      display: flex;
+      justify-content: space-between;
+    }
+    .history-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .history-actions button {
+      padding: 4px 8px;
+      font-size: 0.7rem;
+      margin-top: 0;
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+  <div id="canvas-container"></div>
+  <div class="version-tag">Lainez 3D Pro Suite v2.5</div>
+  
+  <!-- BARRA CENTRAL DE BOTONES -->
+  <div id="top-bar">
+    <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
+    <button id="audio-toggle-btn" class="top-btn">🎙️ Conectar Audio</button>
+    <button id="video-toggle-btn" class="top-btn">📹 Ver Participante</button>
+  </div>
+
+  <!-- VENTANA ÚNICA DEL OTRO PARTICIPANTE -->
+  <div id="remote-video-box">
+    <video id="remote-video" autoplay playsinline></video>
+    <span id="remote-video-label" class="video-label">Participante</span>
+  </div>
+
+  <div id="notification">Notificación</div>
+
+  <audio id="remote-audio" autoplay></audio>
+
+  <!-- Panel Sincronización -->
+  <div id="sync-panel" class="panel">
+    <h2>Sincronización en Vivo</h2>
+    <div class="input-group">
+      <label for="user-name">Tu Nombre / Rol:</label>
+      <input type="text" id="user-name" placeholder="Ej. Consultante">
+    </div>
+
+    <div id="host-create-section">
+      <button id="btn-create-room" class="btn-secondary">Crear Nueva Sala (Anfitrión)</button>
+    </div>
+
+    <div id="join-section">
+      <div style="margin: 8px 0; text-align: center; font-size: 0.72rem; color: #ddb892;">— O ÚNETE A UNA —</div>
+      <div class="input-group">
+        <label for="room-code-input">Código de Sala:</label>
+        <input type="text" id="room-code-input" placeholder="Ej. X8A2K9">
+      </div>
+      <button id="btn-join-room">Unirse a la Sala</button>
+    </div>
+
+    <div id="room-info">
+      <span id="room-status-text">Estado: Modo local activo</span>
+    </div>
+
+    <button id="btn-open-history" style="margin-top: 8px; background: #7f5539; display: none;">📜 Historial de Salas</button>
+
+    <div id="host-controls" style="display: none; margin-top: 10px; border-top: 1px dashed rgba(212,163,115,0.3); padding-top: 8px;">
+      <label style="font-size: 0.7rem; color: #e9c46a;">CONTROL MAESTRO ANFITRIÓN:</label>
+      
+      <div class="status-box" style="margin-top: 4px;">
+        <span id="client-name-status">Consultante: Ausente</span>
+        <span id="client-dot" class="dot-offline"></span>
+      </div>
+
+      <button id="btn-toggle-remote-focus" class="btn-warning" style="margin-bottom: 4px;">🔒 Bloquear Pantalla Consultante</button>
+      <button id="btn-toggle-mirror-cam" class="btn-info" style="margin-bottom: 4px;">👁️ Ver Tablero Consultante</button>
+      <button id="btn-toggle-transcription" style="background: #6b705c; color: #fff;">🎙️ Iniciar Transcripción</button>
+    </div>
+  </div>
+
+  <!-- Panel Creación -->
+  <div id="controls-panel" class="panel">
+    <h2>Añadir Elemento al Campo</h2>
+    <div class="input-group">
+      <label>Nombre / Nombre del Familiar:</label>
+      <input type="text" id="avatar-label" placeholder="Ej. Madre, Tío, Síntoma">
+    </div>
+    <div class="input-group">
+      <label>Tipo de Representante:</label>
+      <select id="avatar-gender">
+        <optgroup label="Minifiguras Estilo Lego">
+          <option value="lego-m">Minifigura Lego - Hombre / Niño</option>
+          <option value="lego-f">Minifigura Lego - Mujer / Niña</option>
+          <option value="lego-elder">Minifigura Lego - Anciano / Ancestral</option>
+          <option value="lego-special">Minifigura Lego - Especial / Fantasía</option>
+        </optgroup>
+        <optgroup label="Hombres Adultos (Anatómicos)">
+          <option value="adult-m">Hombre Adulto (Modelo A - Estándar)</option>
+          <option value="adult-m2">Hombre Adulto (Modelo B - Robust/Alto)</option>
+        </optgroup>
+        <optgroup label="Mujeres Adultas (Anatómicas)">
+          <option value="adult-f">Mujer Adulta (Modelo A - Estándar)</option>
+          <option value="adult-f2">Mujer Adulta (Modelo B - Estilizada)</option>
+        </optgroup>
+        <optgroup label="Niños y Niñas (Anatómicos)">
+          <option value="child-m">Niño (Modelo A - Menor)</option>
+          <option value="child-m2">Niño (Modelo B - Mayor)</option>
+          <option value="child-f">Niña (Modelo A - Menor)</option>
+          <option value="child-f2">Niña (Modelo B - Mayor)</option>
+        </optgroup>
+        <optgroup label="Recursos y Elementos Abstractos">
+          <option value="symptom">El Síntoma / La Enfermedad</option>
+          <option value="desire">Anhelo / Meta</option>
+          <option value="secret">Secreto / Lo No Dicho</option>
+          <option value="resource">Recurso / Fuerza Ancestral</option>
+        </optgroup>
+      </select>
+    </div>
+    <button id="add-avatar" class="btn-secondary">+ Introducir al Campo</button>
+    <hr style="border-color: rgba(212,163,115,0.2); margin: 10px 0;">
+    <div class="btn-group">
+      <button id="btn-notes-toggle">📝 Notas</button>
+      <button id="btn-screenshot">📷 Foto Campo</button>
+      <button id="clear-board" class="btn-danger">Limpiar</button>
+    </div>
+  </div>
+
+  <!-- Panel Inspector -->
+  <div id="inspector-panel" class="panel">
+    <h2>Propiedades <span id="insp-title" class="badge"></span></h2>
+    
+    <div class="input-group">
+      <label>Etiqueta / Nombre:</label>
+      <input type="text" id="insp-label">
+    </div>
+
+    <div class="input-group">
+      <label>Postura Sistémica:</label>
+      <select id="insp-posture">
+        <option value="standing">De Pie (Presencia)</option>
+        <option value="bowing">Inclinado / Reverencia (Honra)</option>
+        <option value="lying">Tumbado (Fallecido / Excluido)</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Estado / Aura Emocional (Color Vestimenta):</label>
+      <select id="insp-emotion">
+        <option value="neutral">Neutro (Tono Cálido)</option>
+        <option value="love">Amor / Vínculo (Verde Esmeralda)</option>
+        <option value="grief">Tristeza / Duelo (Azul Profundo)</option>
+        <option value="anger">Enojo / Fuerza (Rojo Terracota)</option>
+        <option value="fear">Miedo / Tensión (Violeta)</option>
+        <option value="exclusion">Exclusión (Sombra Oscura)</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Orientación / Mirada (Grados):</label>
+      <input type="range" id="insp-rotation" min="0" max="360" value="0">
+    </div>
+
+    <div class="input-group">
+      <label>Escala / Proporción:</label>
+      <input type="range" id="insp-scale" min="50" max="150" value="100">
+    </div>
+
+    <hr style="border-color: rgba(212,163,115,0.2); margin: 8px 0;">
+    <div class="btn-group" style="margin-bottom: 6px;">
+      <button id="btn-look-at" style="background: #2a9d8f;">🎯 Mirar A...</button>
+      <button id="btn-link-to" style="background: #e76f51;">🔗 Crear Vínculo</button>
+    </div>
+
+    <div class="btn-group">
+      <button id="insp-deselect">Deseleccionar</button>
+      <button id="insp-delete" class="btn-danger">Eliminar</button>
+    </div>
+  </div>
+
+  <!-- Panel Notas Privado de Anfitrión -->
+  <div id="notes-panel" class="panel">
+    <h2>Notas Confidenciales & Transcripción</h2>
+    <textarea id="session-notes" placeholder="Apunta observaciones sistémicas o inicia la transcripción automática de audio..."></textarea>
+    
+    <div class="btn-group" style="margin-top: 6px;">
+      <button id="btn-summarize-notes" class="btn-secondary">✨ Resumen</button>
+      <button id="btn-save-notes-firebase" class="btn-warning">☁️ Guardar Firebase</button>
+    </div>
+
+    <div class="btn-group" style="margin-top: 4px;">
+      <button id="btn-copy-notes" class="btn-info">📋 Copiar</button>
+      <button id="btn-download-notes" style="background: #7f5539;">💾 TXT</button>
+      <button id="btn-clear-transcript" class="btn-danger">🗑️ Borrar</button>
+    </div>
+  </div>
+
+  <!-- Modal Historial de Salas -->
+  <div id="history-modal" class="panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2>📜 Historial de Salas Creadas</h2>
+      <button id="btn-close-history" class="btn-danger" style="width: auto; padding: 2px 8px;">✕ Cerrar</button>
+    </div>
+    <div id="history-list-container">
+      <p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">Cargando lista de salas...</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDocs, deleteDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyDKMU3nyfvPPk44IFRJUS0S3EuM4xtA29M",
+  authDomain: "lainez-3d-suite.firebaseapp.com",
+  projectId: "lainez-3d-suite",
+  storageBucket: "lainez-3d-suite.firebasestorage.app",
+  messagingSenderId: "730194480138",
+  appId: "1:730194480138:web:8c65d4abf6cddfa39da3f3"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let currentRoomId = null;
+    let isHost = false;
+    let isRemoteUpdate = false;
+    let selectedAvatarId = null;
+    let lookAtMode = false;
+    let linkMode = false;
+    let isRemoteFocusActive = false;
+    let isMirrorCamActive = false;
+    let recognition = null;
+    let isTranscribing = false;
+    let baseNotesText = '';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlRoom = urlParams.get('room');
+    const urlRole = urlParams.get('role');
+
+    if (urlRoom) {
+      document.getElementById('room-code-input').value = urlRoom.toUpperCase();
+      if (urlRole === 'client') {
+        document.getElementById('host-create-section').style.display = 'none';
+        document.getElementById('user-name').placeholder = "Ej. Consultante";
+      }
+    }
+
+    // WEBRTC BIDIRECCIONAL RECEPTOR
+    let localStream = null;
+    let peerConnection = null;
+    let isAudioConnected = false;
+    let isMuted = false;
+    let isCameraActive = false;
+
+    const rtcServers = {
+      iceServers: [
+        { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }
+      ],
+      iceCandidatePoolSize: 10,
+    };
+
+    signInAnonymously(auth)
+      .then(() => showNotif("Conectado a Backend (v2.5)"))
+      .catch((err) => console.error("Error Auth:", err));
+
+    function showNotif(msg) {
+      const notif = document.getElementById('notification');
+      notif.innerText = msg;
+      notif.style.display = 'block';
+      setTimeout(() => { notif.style.display = 'none'; }, 2800);
+    }
+
+    function updateRoomInfoUI(roomId) {
+      const roomInfo = document.getElementById('room-info');
+      const btnHistory = document.getElementById('btn-open-history');
+      
+      if (isHost) {
+        roomInfo.innerHTML = `
+          <div>Sala Activa: <b id="current-room-code">${roomId}</b></div>
+          <button id="btn-copy-code" class="btn-copy">🔗 Copiar Enlace Directo</button>
+        `;
+
+        document.getElementById('btn-copy-code').addEventListener('click', () => {
+          const shareUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}&role=client`;
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            showNotif("Enlace de acceso copiado al portapapeles");
+          }).catch(err => {
+            console.error("Error copiando enlace:", err);
+          });
+        });
+
+        document.getElementById('join-section').style.display = 'none';
+        document.getElementById('host-controls').style.display = 'block';
+        btnHistory.style.display = 'block';
+      } else {
+        roomInfo.innerHTML = `<div>Conectado a Sala: <b>${roomId}</b></div>`;
+        document.getElementById('host-controls').style.display = 'none';
+        document.getElementById('btn-notes-toggle').style.display = 'none';
+        btnHistory.style.display = 'none';
+      }
+    }
+
+    function getSelectedAvatar() {
+      if (!selectedAvatarId) return null;
+      return avatars.find(a => a.userData.id === selectedAvatarId) || null;
+    }
+
+    // TRANSMISIÓN DE CÁMARA (ENCENDIDO / APAGADO)
+    document.getElementById('video-toggle-btn').addEventListener('click', async () => {
+      if (!currentRoomId) return alert("Primero debes crear o unirte a una sala.");
+
+      const videoBtn = document.getElementById('video-toggle-btn');
+      const remoteBox = document.getElementById('remote-video-box');
+
+      if (!isCameraActive) {
+        try {
+          if (!localStream) {
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+          } else {
+            const videoTracks = localStream.getVideoTracks();
+            if (videoTracks.length === 0) {
+              const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
+              localStream.addTrack(newStream.getVideoTracks()[0]);
+            }
+          }
+          
+          if (!peerConnection) {
+            setupWebRTCConnection();
+          } else {
+            localStream.getVideoTracks().forEach(track => {
+              peerConnection.addTrack(track, localStream);
+            });
+          }
+
+          isCameraActive = true;
+          videoBtn.innerText = "📹 Desconectar Cámara";
+          videoBtn.classList.add('stopped-video');
+          remoteBox.style.display = 'block';
+          showNotif("Cámara encendida");
+        } catch (err) {
+          console.error("Error al acceder a la cámara:", err);
+          showNotif("Permiso de cámara denegado");
+        }
+      } else {
+        if (localStream) {
+          localStream.getVideoTracks().forEach(track => {
+            track.stop();
+            localStream.removeTrack(track);
+          });
+        }
+        
+        isCameraActive = false;
+        videoBtn.innerText = "📹 Ver Participante";
+        videoBtn.classList.remove('stopped-video');
+        remoteBox.style.display = 'none';
+        showNotif("Cámara apagada");
+      }
+    });
+
+    // TRANSCRIPCIÓN EN VIVO
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'es-MX';
+
+      recognition.onresult = (event) => {
+        const notesArea = document.getElementById('session-notes');
+        let finalTranscript = '';
+        let interimTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + ' ';
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+
+        if (finalTranscript) {
+          baseNotesText += (baseNotesText ? '\n' : '') + finalTranscript.trim();
+        }
+
+        notesArea.value = baseNotesText + (interimTranscript ? '\n[...' + interimTranscript + ']' : '');
+        notesArea.scrollTop = notesArea.scrollHeight;
+      };
+
+      recognition.onerror = (e) => {
+        console.error("Error Transcripción:", e);
+        if (isTranscribing) {
+          try { recognition.start(); } catch(err) {}
+        }
+      };
+
+      recognition.onend = () => {
+        if (isTranscribing) {
+          try { recognition.start(); } catch(err) {}
+        }
+      };
+    }
+
+    document.getElementById('btn-toggle-transcription').addEventListener('click', () => {
+      if (!recognition) return alert("Tu navegador no soporta transcripción de voz.");
+
+      const btn = document.getElementById('btn-toggle-transcription');
+      const notesArea = document.getElementById('session-notes');
+
+      if (!isTranscribing) {
+        baseNotesText = notesArea.value;
+        recognition.start();
+        isTranscribing = true;
+        btn.innerText = "⏹️ Detener Transcripción";
+        btn.style.background = "#e63946";
+        document.getElementById('notes-panel').style.display = 'block';
+        showNotif("Transcripción iniciada");
+      } else {
+        isTranscribing = false;
+        recognition.stop();
+        btn.innerText = "🎙️ Iniciar Transcripción";
+        btn.style.background = "#6b705c";
+        showNotif("Transcripción pausada");
+      }
+    });
+
+    async function saveNotesToFirebase() {
+      if (!currentRoomId) return alert("Debes crear o unirte a una sala primero.");
+      const notesArea = document.getElementById('session-notes');
+      
+      try {
+        const roomRef = doc(db, "rooms", currentRoomId);
+        await setDoc(roomRef, {
+          transcript: notesArea.value,
+          updatedAt: new Date()
+        }, { merge: true });
+        showNotif("Transcripción guardada en Firebase");
+      } catch (err) {
+        console.error("Error guardando en Firebase:", err);
+        showNotif("Error al guardar");
+      }
+    }
+
+    document.getElementById('btn-save-notes-firebase').addEventListener('click', saveNotesToFirebase);
+
+    document.getElementById('btn-open-history').addEventListener('click', loadRoomsHistory);
+    document.getElementById('btn-close-history').addEventListener('click', () => {
+      document.getElementById('history-modal').style.display = 'none';
+    });
+
+    async function loadRoomsHistory() {
+      const container = document.getElementById('history-list-container');
+      const modal = document.getElementById('history-modal');
+      modal.style.display = 'block';
+      container.innerHTML = '<p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">Cargando salas...</p>';
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "rooms"));
+        if (querySnapshot.empty) {
+          container.innerHTML = '<p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">No hay salas registradas.</p>';
+          return;
+        }
+
+        let html = '';
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const roomId = docSnap.id;
+          
+          let dateStr = 'Fecha no disponible';
+          if (data.createdAt) {
+            const dateObj = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+            dateStr = dateObj.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+          }
+
+          const clientName = data.clientName || 'Sin registrar';
+          const hostName = data.createdBy || 'Anfitrión';
+          const hasTranscript = data.transcript && data.transcript.trim().length > 0;
+
+          html += `
+            <div class="history-item">
+              <div class="history-header">
+                <span>Sala: ${roomId}</span>
+                <span style="color: #2a9d8f;">${dateStr}</span>
+              </div>
+              <div class="history-details">
+                <span>Anfitrión: <b>${hostName}</b></span>
+                <span>Consultante: <b>${clientName}</b></span>
+              </div>
+              <div class="history-actions">
+                <button class="btn-info btn-load-notes" data-id="${roomId}">📂 Ver Notas</button>
+                <button class="btn-secondary btn-download-history" data-id="${roomId}" ${!hasTranscript ? 'disabled style="opacity:0.5;"' : ''}>💾 TXT</button>
+                <button class="btn-danger btn-delete-room" data-id="${roomId}">🗑️ Eliminar</button>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+
+        document.querySelectorAll('.btn-load-notes').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            const roomSnap = await getDocs(collection(db, "rooms"));
+            roomSnap.forEach(d => {
+              if (d.id === roomId && d.data().transcript) {
+                document.getElementById('session-notes').value = d.data().transcript;
+                baseNotesText = d.data().transcript;
+                document.getElementById('notes-panel').style.display = 'block';
+                showNotif(`Notas de sala ${roomId} cargadas`);
+              }
+            });
+          });
+        });
+
+        document.querySelectorAll('.btn-download-history').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            const roomSnap = await getDocs(collection(db, "rooms"));
+            roomSnap.forEach(d => {
+              if (d.id === roomId && d.data().transcript) {
+                const blob = new Blob([d.data().transcript], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `Transcripcion_Sala_${roomId}.txt`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+              }
+            });
+          });
+        });
+
+        document.querySelectorAll('.btn-delete-room').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            if (confirm(`¿Confirmas eliminar la sala ${roomId} del historial?`)) {
+              await deleteDoc(doc(db, "rooms", roomId));
+              showNotif(`Sala ${roomId} eliminada`);
+              loadRoomsHistory();
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error("Error cargando historial:", err);
+        container.innerHTML = '<p style="font-size: 0.8rem; color: #e63946; text-align: center;">Error al cargar las salas.</p>';
+      }
+    }
+
+    document.getElementById('btn-copy-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para copiar.");
+      
+      navigator.clipboard.writeText(notesArea.value).then(() => {
+        showNotif("Notas copiadas al portapapeles");
+      }).catch(err => console.error("Error al copiar:", err));
+    });
+
+    document.getElementById('btn-download-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para guardar.");
+
+      const blob = new Blob([notesArea.value], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Transcripcion_Sesion_${currentRoomId || 'Local'}.txt`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      showNotif("Archivo TXT descargado");
+    });
+
+    document.getElementById('btn-clear-transcript').addEventListener('click', () => {
+      if (confirm("¿Deseas borrar todo el texto de las notas y la transcripción?")) {
+        const notesArea = document.getElementById('session-notes');
+        notesArea.value = '';
+        baseNotesText = '';
+        showNotif("Notas eliminadas");
+      }
+    });
+
+    document.getElementById('btn-summarize-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para resumir.");
+
+      baseNotesText = notesArea.value + "\n\n--- 📑 RESUMEN DE SESIÓN SÍNTESIS ---\n" +
+        "• Dinámica sistémica principal identificada en el campo.\n" +
+        "• Posicionamiento y reorientación de figuras completados.\n" +
+        "• Puntos de acuerdo clave recopilados durante la consulta.";
+      notesArea.value = baseNotesText;
+      notesArea.scrollTop = notesArea.scrollHeight;
+      showNotif("Resumen generado");
+    });
+
+    document.getElementById('btn-toggle-remote-focus').addEventListener('click', async () => {
+      if (!isHost || !currentRoomId) return;
+
+      isRemoteFocusActive = !isRemoteFocusActive;
+      const roomRef = doc(db, "rooms", currentRoomId);
+      
+      const payload = { remoteFocus: isRemoteFocusActive };
+      if (isRemoteFocusActive) {
+        payload.hostCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+        payload.hostCameraTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
+      }
+
+      await setDoc(roomRef, payload, { merge: true });
+
+      const btn = document.getElementById('btn-toggle-remote-focus');
+      if (isRemoteFocusActive) {
+        btn.innerText = "🔓 Desbloquear Pantalla Consultante";
+        btn.classList.remove('btn-warning');
+        btn.classList.add('btn-secondary');
+        showNotif("Pantalla y vista del consultante alineadas");
+      } else {
+        btn.innerText = "🔒 Bloquear Pantalla Consultante";
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-warning');
+        showNotif("Controles devueltos al consultante");
+      }
+    });
+
+    document.getElementById('btn-toggle-mirror-cam').addEventListener('click', () => {
+      if (!isHost) return;
+      isMirrorCamActive = !isMirrorCamActive;
+
+      const btn = document.getElementById('btn-toggle-mirror-cam');
+      if (isMirrorCamActive) {
+        btn.innerText = "👁️ Salir Vista Consultante";
+        btn.style.background = "#e76f51";
+        showNotif("Viendo la cámara del consultante");
+      } else {
+        btn.innerText = "👁️ Ver Tablero Consultante";
+        btn.style.background = "#457b9d";
+        showNotif("Salió de vista consultante");
+      }
+    });
+
+    function publishClientCameraState() {
+      if (isHost || !currentRoomId) return;
+      const roomRef = doc(db, "rooms", currentRoomId);
+      setDoc(roomRef, {
+        clientConnected: true,
+        lastActive: Date.now(),
+        clientCameraPos: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+        clientCameraTarget: { x: controls.target.x, y: controls.target.y, z: controls.target.z }
+      }, { merge: true }).catch(err => console.error(err));
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if (!isHost && currentRoomId) {
+        const roomRef = doc(db, "rooms", currentRoomId);
+        setDoc(roomRef, { clientConnected: false }, { merge: true });
+      }
+    });
+
+    async function toggleAudioConnection() {
+      const audioBtn = document.getElementById('audio-toggle-btn');
+      
+      if (!currentRoomId) {
+        return alert("Primero debes crear o unirte a una sala para activar el audio.");
+      }
+
+      if (!isAudioConnected) {
+        try {
+          if (!localStream) {
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+          }
+          isAudioConnected = true;
+          audioBtn.innerText = "🎙️ Micrófono Activo";
+          audioBtn.classList.add('active-audio');
+          showNotif("Micrófono conectado");
+
+          if (!peerConnection) setupWebRTCConnection();
+        } catch (err) {
+          console.error("Error micrófono:", err);
+          showNotif("Permiso de micrófono denegado");
+        }
+      } else {
+        isMuted = !isMuted;
+        localStream.getAudioTracks()[0].enabled = !isMuted;
+        if (isMuted) {
+          audioBtn.innerText = "🔇 Mic Silenciado";
+          audioBtn.classList.remove('active-audio');
+          audioBtn.classList.add('muted-audio');
+          showNotif("Micrófono silenciado");
+        } else {
+          audioBtn.innerText = "🎙️ Micrófono Activo";
+          audioBtn.classList.remove('muted-audio');
+          audioBtn.classList.add('active-audio');
+          showNotif("Micrófono activo");
+        }
+      }
+    }
+
+    async function setupWebRTCConnection() {
+      peerConnection = new RTCPeerConnection(rtcServers);
+
+      if (localStream) {
+        localStream.getTracks().forEach(track => {
+          peerConnection.addTrack(track, localStream);
+        });
+      }
+
+      peerConnection.ontrack = event => {
+        const remoteAudio = document.getElementById('remote-audio');
+        const remoteVideo = document.getElementById('remote-video');
+        const remoteBox = document.getElementById('remote-video-box');
+
+        if (event.track.kind === 'audio') {
+          remoteAudio.srcObject = event.streams[0];
+        }
+        if (event.track.kind === 'video') {
+          remoteVideo.srcObject = event.streams[0];
+          remoteBox.style.display = 'block';
+          remoteVideo.play().then(() => {
+            showNotif("Video del participante en pantalla");
+          }).catch(err => console.log("Autoplay diferido"));
+        }
+      };
+
+      const roomRef = doc(db, "rooms", currentRoomId);
+      const callerCandidates = collection(roomRef, "callerCandidates");
+      const calleeCandidates = collection(roomRef, "calleeCandidates");
+
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          const targetCol = isHost ? callerCandidates : calleeCandidates;
+          addDoc(targetCol, event.candidate.toJSON());
+        }
+      };
+
+      if (isHost) {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp } }, { merge: true });
+
+        onSnapshot(roomRef, async snapshot => {
+          const data = snapshot.data();
+          if (peerConnection && !peerConnection.currentRemoteDescription && data && data.answer) {
+            const answer = new RTCSessionDescription(data.answer);
+            await peerConnection.setRemoteDescription(answer);
+          }
+        });
+
+        onSnapshot(calleeCandidates, snapshot => {
+          snapshot.docChanges().forEach(async change => {
+            if (change.type === 'added') {
+              const candidate = new RTCIceCandidate(change.doc.data());
+              await peerConnection.addIceCandidate(candidate);
+            }
+          });
+        });
+      } else {
+        onSnapshot(roomRef, async snapshot => {
+          const data = snapshot.data();
+          if (peerConnection && !peerConnection.currentRemoteDescription && data && data.offer) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            await setDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } }, { merge: true });
+          }
+        });
+
+        onSnapshot(callerCandidates, snapshot => {
+          snapshot.docChanges().forEach(async change => {
+            if (change.type === 'added') {
+              const candidate = new RTCIceCandidate(change.doc.data());
+              await peerConnection.addIceCandidate(candidate);
+            }
+          });
+        });
+      }
+    }
+
+    document.getElementById('audio-toggle-btn').addEventListener('click', toggleAudioConnection);
+
+    // ESCENA THREE.JS
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 16, 22);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    controls.addEventListener('change', () => {
+      if (!isHost && currentRoomId) {
+        publishClientCameraState();
+      }
+    });
+
+    // ILUMINACIÓN DE ESTUDIO
+    const ambientLight = new THREE.AmbientLight(0xfff5ea, 0.7);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffe8d6, 0.95);
+    dirLight.position.set(10, 22, 10);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.bias = -0.0001;
+    scene.add(dirLight);
+
+    const fillLight = new THREE.DirectionalLight(0xd4a373, 0.35);
+    fillLight.position.set(-10, 15, -10);
+    scene.add(fillLight);
+
+    // TABLERO PRO SUITE
+    const boardGroup = new THREE.Group();
+
+    const boardGeo = new THREE.CylinderGeometry(9, 9.2, 0.5, 64);
+    const boardMat = new THREE.MeshStandardMaterial({ 
+      color: 0x5c3a21, 
+      roughness: 0.45,
+      metalness: 0.1
+    });
+    const mainBoard = new THREE.Mesh(boardGeo, boardMat);
+    mainBoard.position.y = -0.25;
+    mainBoard.receiveShadow = true;
+    boardGroup.add(mainBoard);
+
+    const ringGeo = new THREE.RingGeometry(8.7, 8.9, 64);
+    ringGeo.rotateX(-Math.PI / 2);
+    const ringMat = new THREE.MeshBasicMaterial({ 
+      color: 0xd4a373, 
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.4
+    });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.position.y = 0.01;
+    boardGroup.add(ringMesh);
+
+    const midRingGeo = new THREE.RingGeometry(4.5, 4.6, 64);
+    midRingGeo.rotateX(-Math.PI / 2);
+    const midRingMesh = new THREE.Mesh(midRingGeo, ringMat);
+    midRingMesh.position.y = 0.01;
+    boardGroup.add(midRingMesh);
+
+    const centerGeo = new THREE.RingGeometry(0, 0.4, 32);
+    centerGeo.rotateX(-Math.PI / 2);
+    const centerMesh = new THREE.Mesh(centerGeo, ringMat);
+    centerMesh.position.y = 0.01;
+    boardGroup.add(centerMesh);
+
+    scene.add(boardGroup);
+
+    const dragPlaneGeo = new THREE.PlaneGeometry(100, 100);
+    dragPlaneGeo.rotateX(-Math.PI / 2);
+    const dragPlane = new THREE.Mesh(dragPlaneGeo, new THREE.MeshBasicMaterial({ visible: false }));
+    scene.add(dragPlane);
+
+    const selectHaloGeo = new THREE.RingGeometry(0.65, 0.85, 32);
+    selectHaloGeo.rotateX(-Math.PI / 2);
+    const selectHaloMat = new THREE.MeshBasicMaterial({ color: 0xffd166, side: THREE.DoubleSide });
+    const selectHalo = new THREE.Mesh(selectHaloGeo, selectHaloMat);
+    selectHalo.visible = false;
+    scene.add(selectHalo);
+
+    const avatars = [];
+    const links = [];
+    const EMOTION_COLORS = {
+      neutral: 0x2196f3, // Azul lego por defecto
+      love: 0x2a9d8f,
+      grief: 0x457b9d,
+      anger: 0xe76f51,
+      fear: 0x7209b7,
+      exclusion: 0x212529
+    };
+
+    function buildHumanMesh(type = 'lego-m') {
+      const group = new THREE.Group();
+      const bodyGroup = new THREE.Group();
+      group.add(bodyGroup);
+
+      let isLego = type.startsWith('lego-');
+      let isChild = type.includes('child');
+      let isFemale = type.includes('-f') || type === 'lego-f';
+      let isVariant2 = type.endsWith('2');
+      let isAbstract = ['symptom', 'desire', 'secret', 'resource'].includes(type);
+
+      let scaleY = isChild ? (isVariant2 ? 0.75 : 0.60) : (isVariant2 ? 1.08 : 1.0);
+      let scaleXZ = isChild ? (isVariant2 ? 0.80 : 0.70) : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
+      
+      let initialClothesColor = EMOTION_COLORS.neutral;
+      let baseBodyColor = isFemale ? (isVariant2 ? 0xe0a98b : 0xddb892) : (isVariant2 ? 0xc89665 : 0xd4a373);
+
+      if (type === 'symptom') baseBodyColor = 0x9a031e;
+      if (type === 'desire') baseBodyColor = 0x2a9d8f;
+      if (type === 'secret') baseBodyColor = 0x212529;
+      if (type === 'resource') baseBodyColor = 0xe9c46a;
+
+      const bodyMat = new THREE.MeshStandardMaterial({ color: baseBodyColor, roughness: 0.35 });
+      const clothesMat = new THREE.MeshStandardMaterial({ color: initialClothesColor, roughness: 0.2 });
+
+      if (isAbstract) {
+        let geo;
+        if (type === 'symptom') geo = new THREE.IcosahedronGeometry(0.7, 0);
+        else if (type === 'desire') geo = new THREE.OctahedronGeometry(0.7);
+        else if (type === 'secret') geo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+        else geo = new THREE.DodecahedronGeometry(0.7);
+
+        const mesh = new THREE.Mesh(geo, bodyMat);
+        mesh.position.y = 0.8;
+        mesh.castShadow = true;
+        bodyGroup.add(mesh);
+      } else if (isLego) {
+        // --- MODELADO MINIFIGURA LEGO CON PIEL AMARILLA PERMANENTE ---
+        const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
+
+        // 1. Cabeza Cilíndrica + Stud (Piel Amarilla)
+        const headGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.38, 24);
+        const headMesh = new THREE.Mesh(headGeo, yellowSkinMat);
+        headMesh.position.y = 1.28;
+        headMesh.castShadow = true;
+        bodyGroup.add(headMesh);
+
+        const studGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 16);
+        const studMesh = new THREE.Mesh(studGeo, yellowSkinMat);
+        studMesh.position.y = 1.51;
+        studMesh.castShadow = true;
+        bodyGroup.add(studMesh);
+
+        // Ojos y Expresión
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
+        
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.09, 1.32, 0.22);
+        bodyGroup.add(eyeL);
+
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.09, 1.32, 0.22);
+        bodyGroup.add(eyeR);
+
+        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const mouthGeo = new THREE.BoxGeometry(0.1, 0.02, 0.02);
+        const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+        mouth.position.set(0, 1.21, 0.23);
+        bodyGroup.add(mouth);
+
+        // 2. Torso (Vestimenta - Cambia de color)
+        const torsoGeo = new THREE.CylinderGeometry(0.3, 0.42, 0.55, 4);
+        torsoGeo.rotateY(Math.PI / 4);
+        const torsoMesh = new THREE.Mesh(torsoGeo, clothesMat);
+        torsoMesh.position.y = 0.82;
+        torsoMesh.castShadow = true;
+        bodyGroup.add(torsoMesh);
+
+        // 3. Cadera y Piernas (Vestimenta - Cambia de color)
+        const hipGeo = new THREE.BoxGeometry(0.44, 0.12, 0.26);
+        const hipMesh = new THREE.Mesh(hipGeo, clothesMat);
+        hipMesh.position.y = 0.48;
+        hipMesh.castShadow = true;
+        bodyGroup.add(hipMesh);
+
+        const legGeo = new THREE.BoxGeometry(0.19, 0.42, 0.24);
+        const legL = new THREE.Mesh(legGeo, clothesMat);
+        legL.position.set(-0.11, 0.21, 0);
+        legL.castShadow = true;
+        bodyGroup.add(legL);
+
+        const legR = new THREE.Mesh(legGeo, clothesMat);
+        legR.position.set(0.11, 0.21, 0);
+        legR.castShadow = true;
+        bodyGroup.add(legR);
+
+        // 4. Brazos (Vestimenta) y Manos C (Piel Amarilla)
+        const armGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.4, 12);
+        const armL = new THREE.Mesh(armGeo, clothesMat);
+        armL.position.set(-0.27, 0.82, 0);
+        armL.rotation.z = 0.35;
+        armL.castShadow = true;
+        bodyGroup.add(armL);
+
+        const armR = new THREE.Mesh(armGeo, clothesMat);
+        armR.position.set(0.27, 0.82, 0);
+        armR.rotation.z = -0.35;
+        armR.castShadow = true;
+        bodyGroup.add(armR);
+
+        const handGeo = new THREE.TorusGeometry(0.05, 0.02, 8, 16, Math.PI * 1.5);
+        const handL = new THREE.Mesh(handGeo, yellowSkinMat);
+        handL.position.set(-0.33, 0.62, 0.05);
+        handL.rotation.x = Math.PI / 2;
+        bodyGroup.add(handL);
+
+        const handR = new THREE.Mesh(handGeo, yellowSkinMat);
+        handR.position.set(0.33, 0.62, 0.05);
+        handR.rotation.x = Math.PI / 2;
+        bodyGroup.add(handR);
+
+      } else {
+        // --- MODELADO ANATÓMICO TRADICIONAL ---
+        const headGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24);
+        const head = new THREE.Mesh(headGeo, bodyMat);
+        head.position.y = (1.65 * scaleY);
+        head.castShadow = true;
+        bodyGroup.add(head);
+
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.065 * scaleXZ, 16, 16);
+        
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
+        bodyGroup.add(eyeL);
+
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
+        bodyGroup.add(eyeR);
+
+        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x4a2810 });
+        const mouthGeo = new THREE.BoxGeometry(0.14 * scaleXZ, 0.035 * scaleY, 0.03 * scaleXZ);
+        const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+        mouth.position.set(0, head.position.y - 0.09 * scaleY, 0.25 * scaleXZ);
+        bodyGroup.add(mouth);
+
+        const noseGeo = new THREE.ConeGeometry(0.055 * scaleXZ, 0.15 * scaleY, 12);
+        noseGeo.rotateX(Math.PI / 2);
+        const nose = new THREE.Mesh(noseGeo, bodyMat);
+        nose.position.set(0, head.position.y - 0.01 * scaleY, 0.27 * scaleXZ);
+        bodyGroup.add(nose);
+
+        const neckGeo = new THREE.CylinderGeometry(0.09 * scaleXZ, 0.1 * scaleXZ, 0.12 * scaleY, 12);
+        const neck = new THREE.Mesh(neckGeo, bodyMat);
+        neck.position.y = (1.48 * scaleY);
+        bodyGroup.add(neck);
+
+        const torsoTopWidth = isFemale ? (isVariant2 ? 0.28 : 0.30) : (isVariant2 ? 0.44 : 0.38);
+        const torsoBotWidth = isFemale ? (isVariant2 ? 0.24 : 0.22) : (isVariant2 ? 0.30 : 0.26);
+        const torsoGeo = new THREE.CylinderGeometry(torsoTopWidth * scaleXZ, torsoBotWidth * scaleXZ, 0.55 * scaleY, 16);
+        const torso = new THREE.Mesh(torsoGeo, bodyMat);
+        torso.position.y = (1.18 * scaleY);
+        torso.castShadow = true;
+        bodyGroup.add(torso);
+
+        const hipGeo = new THREE.CylinderGeometry(torsoBotWidth * scaleXZ, (isFemale ? 0.28 : 0.24) * scaleXZ, 0.3 * scaleY, 16);
+        const hip = new THREE.Mesh(hipGeo, bodyMat);
+        hip.position.y = (0.78 * scaleY);
+        hip.castShadow = true;
+        bodyGroup.add(hip);
+
+        const legGeo = new THREE.CylinderGeometry(0.08 * scaleXZ, 0.06 * scaleXZ, 0.65 * scaleY, 12);
+        const legL = new THREE.Mesh(legGeo, bodyMat);
+        legL.position.set(-0.11 * scaleXZ, 0.325 * scaleY, 0);
+        legL.castShadow = true;
+        bodyGroup.add(legL);
+
+        const legR = new THREE.Mesh(legGeo, bodyMat);
+        legR.position.set(0.11 * scaleXZ, 0.325 * scaleY, 0);
+        legR.castShadow = true;
+        bodyGroup.add(legR);
+
+        const armGeo = new THREE.CylinderGeometry(0.065 * scaleXZ, 0.05 * scaleXZ, 0.55 * scaleY, 12);
+        const armL = new THREE.Mesh(armGeo, bodyMat);
+        armL.position.set((-torsoTopWidth - 0.05) * scaleXZ, 1.1 * scaleY, 0);
+        armL.rotation.z = 0.15;
+        armL.castShadow = true;
+        bodyGroup.add(armL);
+
+        const armR = new THREE.Mesh(armGeo, bodyMat);
+        armR.position.set((torsoTopWidth + 0.05) * scaleXZ, 1.1 * scaleY, 0);
+        armR.rotation.z = -0.15;
+        armR.castShadow = true;
+        bodyGroup.add(armR);
+      }
+
+      const auraGeo = new THREE.RingGeometry(0.55 * scaleXZ, 0.75 * scaleXZ, 32);
+      auraGeo.rotateX(-Math.PI / 2);
+      const auraMat = new THREE.MeshBasicMaterial({ color: initialClothesColor, side: THREE.DoubleSide });
+      const aura = new THREE.Mesh(auraGeo, auraMat);
+      aura.position.y = 0.02;
+      group.add(aura);
+
+      const canvas = document.createElement('canvas');
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.position.y = isLego ? 1.8 : (2.4 * scaleY);
+      group.add(sprite);
+
+      group.userData = {
+        bodyGroup,
+        bodyMaterial: bodyMat,
+        clothesMaterial: clothesMat,
+        auraMesh: aura,
+        labelCanvas: canvas,
+        labelTexture: texture,
+        labelSprite: sprite,
+        type,
+        scaleY
+      };
+
+      return group;
+    }
+
+    function updateLabel(avatarGroup, text) {
+      if (!avatarGroup || !avatarGroup.userData.labelCanvas) return;
+      const canvas = avatarGroup.userData.labelCanvas;
+      const ctx = canvas.getContext('2d');
+      const displayText = text || "Persona";
+
+      ctx.font = "Bold 52px 'Segoe UI', sans-serif";
+      const textWidth = ctx.measureText(displayText).width;
+
+      const paddingX = 60;
+      const canvasWidth = Math.max(textWidth + paddingX * 2, 220);
+      const canvasHeight = 120;
+
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      ctx.fillStyle = "rgba(18, 14, 12, 0.90)";
+      ctx.strokeStyle = "rgba(212, 163, 115, 0.85)";
+      ctx.lineWidth = 6;
+      
+      ctx.beginPath();
+      ctx.roundRect(12, 12, canvasWidth - 24, canvasHeight - 24, 24);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = "Bold 52px 'Segoe UI', sans-serif";
+      ctx.fillStyle = "#ffffff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(displayText, canvasWidth / 2, canvasHeight / 2);
+
+      avatarGroup.userData.labelTexture.needsUpdate = true;
+
+      const spriteScaleX = (canvasWidth / 120) * 0.7;
+      const spriteScaleY = (canvasHeight / 120) * 0.7;
+      avatarGroup.userData.labelSprite.scale.set(spriteScaleX, spriteScaleY, 1);
+    }
+
+    function addAvatarToScene(data) {
+      const avatarGroup = buildHumanMesh(data.type || 'lego-m');
+      avatarGroup.position.set(data.x || 0, 0, data.z || 0);
+      avatarGroup.rotation.y = data.rotation || 0;
+      
+      const userScale = (data.userScale || 100) / 100;
+      avatarGroup.scale.set(userScale, userScale, userScale);
+
+      avatarGroup.userData.id = data.id;
+      avatarGroup.userData.label = data.label || 'Persona';
+      avatarGroup.userData.emotion = data.emotion || 'neutral';
+      avatarGroup.userData.posture = data.posture || 'standing';
+      avatarGroup.userData.userScale = data.userScale || 100;
+
+      updateLabel(avatarGroup, data.label);
+      applyAvatarState(avatarGroup);
+
+      scene.add(avatarGroup);
+      avatars.push(avatarGroup);
+      return avatarGroup;
+    }
+
+    function applyAvatarState(avatarGroup) {
+      if (!avatarGroup) return;
+      const emotionKey = avatarGroup.userData.emotion || 'neutral';
+      const colorHex = EMOTION_COLORS[emotionKey] || EMOTION_COLORS.neutral;
+
+      if (avatarGroup.userData.auraMesh) avatarGroup.userData.auraMesh.material.color.setHex(colorHex);
+      
+      const isLego = avatarGroup.userData.type && avatarGroup.userData.type.startsWith('lego-');
+      if (isLego) {
+        if (avatarGroup.userData.clothesMaterial) avatarGroup.userData.clothesMaterial.color.setHex(colorHex);
+      } else {
+        if (avatarGroup.userData.bodyMaterial) avatarGroup.userData.bodyMaterial.color.setHex(colorHex);
+      }
+
+      const posture = avatarGroup.userData.posture;
+      const bodyGroup = avatarGroup.userData.bodyGroup;
+
+      if (posture === 'bowing') {
+        bodyGroup.rotation.x = Math.PI / 3.5;
+        bodyGroup.position.set(0, -0.2, 0.3);
+      } else if (posture === 'lying') {
+        bodyGroup.rotation.x = Math.PI / 2;
+        bodyGroup.position.set(0, 0.1, 0.8);
+      } else {
+        bodyGroup.rotation.x = 0;
+        bodyGroup.position.set(0, 0, 0);
+      }
+    }
+
+    function drawLinks() {
+      links.forEach(l => scene.remove(l.lineMesh));
+      links.length = 0;
+
+      for (let i = 0; i < avatars.length; i++) {
+        for (let j = i + 1; j < avatars.length; j++) {
+          const a1 = avatars[i];
+          const a2 = avatars[j];
+          if (a1.userData.linkedTo === a2.userData.id || a2.userData.linkedTo === a1.userData.id) {
+            const points = [
+              new THREE.Vector3(a1.position.x, 0.1, a1.position.z),
+              new THREE.Vector3(a2.position.x, 0.1, a2.position.z)
+            ];
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({ color: 0xe76f51, linewidth: 3 });
+            const line = new THREE.Line(geometry, material);
+            scene.add(line);
+            links.push({ lineMesh: line, id1: a1.userData.id, id2: a2.userData.id });
+          }
+        }
+      }
+    }
+
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let isDragging = false;
+    let dragTarget = null;
+
+    window.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#remote-video-box')) return;
+
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(avatars, true);
+
+      if (intersects.length > 0) {
+        let obj = intersects[0].object;
+        while (obj.parent && obj.parent !== scene) obj = obj.parent;
+
+        const activeSelected = getSelectedAvatar();
+
+        if (lookAtMode && activeSelected && activeSelected !== obj) {
+          const dx = obj.position.x - activeSelected.position.x;
+          const dz = obj.position.z - activeSelected.position.z;
+          activeSelected.rotation.y = Math.atan2(dx, dz);
+          lookAtMode = false;
+          showNotif("Mirada orientada");
+          saveStateToFirebase();
+          return;
+        }
+
+        if (linkMode && activeSelected && activeSelected !== obj) {
+          activeSelected.userData.linkedTo = obj.userData.id;
+          linkMode = false;
+          drawLinks();
+          showNotif("Vínculo creado");
+          saveStateToFirebase();
+          return;
+        }
+
+        dragTarget = obj;
+        isDragging = true;
+        controls.enabled = false;
+        selectAvatar(obj);
+      } else {
+        deselectAvatar();
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isDragging || !dragTarget) return;
+
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObject(dragPlane);
+
+      if (intersects.length > 0) {
+        const point = intersects[0].point;
+        dragTarget.position.x = point.x;
+        dragTarget.position.z = point.z;
+        if (selectHalo.visible) {
+          selectHalo.position.set(point.x, 0.03, point.z);
+        }
+        drawLinks();
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (isDragging && dragTarget) {
+        saveStateToFirebase();
+      }
+      isDragging = false;
+      dragTarget = null;
+      controls.enabled = true;
+    });
+
+    function selectAvatar(avatarGroup) {
+      if (!avatarGroup) return;
+      selectedAvatarId = avatarGroup.userData.id;
+      selectHalo.position.set(avatarGroup.position.x, 0.03, avatarGroup.position.z);
+      selectHalo.visible = true;
+
+      document.getElementById('inspector-panel').style.display = 'block';
+      document.getElementById('insp-title').innerText = avatarGroup.userData.label;
+      document.getElementById('insp-label').value = avatarGroup.userData.label;
+      document.getElementById('insp-posture').value = avatarGroup.userData.posture;
+      document.getElementById('insp-emotion').value = avatarGroup.userData.emotion;
+      document.getElementById('insp-rotation').value = Math.round((avatarGroup.rotation.y * 180) / Math.PI);
+      document.getElementById('insp-scale').value = avatarGroup.userData.userScale || 100;
+    }
+
+    function deselectAvatar() {
+      selectedAvatarId = null;
+      selectHalo.visible = false;
+      lookAtMode = false;
+      linkMode = false;
+      document.getElementById('inspector-panel').style.display = 'none';
+    }
+
+    document.getElementById('insp-label').addEventListener('input', (e) => {
+      const active = getSelectedAvatar();
+      if (!active) return;
+      active.userData.label = e.target.value;
+      updateLabel(active, e.target.value);
+      saveStateToFirebase();
+    });
+
+    document.getElementById('insp-posture').addEventListener('change', (e) => {
+      const active = getSelectedAvatar();
+      if (!active) return;
+      active.userData.posture = e.target.value;
+      applyAvatarState(active);
+      saveStateToFirebase();
+    });
+
+    document.getElementById('insp-emotion').addEventListener('change', (e) => {
+      const active = getSelectedAvatar();
+      if (!active) return;
+      active.userData.emotion = e.target.value;
+      applyAvatarState(active);
+      saveStateToFirebase();
+    });
+
+    document.getElementById('insp-rotation').addEventListener('input', (e) => {
+      const active = getSelectedAvatar();
+      if (!active) return;
+      active.rotation.y = (e.target.value * Math.PI) / 180;
+      saveStateToFirebase();
+    });
+
+    document.getElementById('insp-scale').addEventListener('input', (e) => {
+      const active = getSelectedAvatar();
+      if (!active) return;
+      const scale = e.target.value / 100;
+      active.userData.userScale = e.target.value;
+      active.scale.set(scale, scale, scale);
+      saveStateToFirebase();
+    });
+
+    document.getElementById('btn-look-at').addEventListener('click', () => {
+      lookAtMode = true;
+      showNotif("Haz clic en el avatar objetivo");
+    });
+
+    document.getElementById('btn-link-to').addEventListener('click', () => {
+      linkMode = true;
+      showNotif("Haz clic en el avatar para vincular");
+    });
+
+    document.getElementById('insp-deselect').addEventListener('click', deselectAvatar);
+
+    document.getElementById('insp-delete').addEventListener('click', () => {
+      const active = getSelectedAvatar();
+      if (!active) return;
+      scene.remove(active);
+      const index = avatars.indexOf(active);
+      if (index > -1) avatars.splice(index, 1);
+      deselectAvatar();
+      drawLinks();
+      saveStateToFirebase();
+    });
+
+    let uiVisible = true;
+    document.getElementById('view-toggle-btn').addEventListener('click', () => {
+      if (!isHost && isRemoteFocusActive) return;
+
+      uiVisible = !uiVisible;
+      document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
+      document.getElementById('view-toggle-btn').innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
+    });
+
+    document.getElementById('btn-notes-toggle').addEventListener('click', () => {
+      const p = document.getElementById('notes-panel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    });
+
+    function saveStateToFirebase() {
+      if (!currentRoomId || isRemoteUpdate) return;
+
+      const dataAvatars = avatars.map(a => ({
+        id: a.userData.id,
+        label: a.userData.label || 'Persona',
+        type: a.userData.type || 'lego-m',
+        emotion: a.userData.emotion || 'neutral',
+        posture: a.userData.posture || 'standing',
+        userScale: Number(a.userData.userScale) || 100,
+        linkedTo: a.userData.linkedTo || null,
+        x: Number(a.position.x) || 0,
+        z: Number(a.position.z) || 0,
+        rotation: Number(a.rotation.y) || 0
+      }));
+
+      const roomRef = doc(db, "rooms", currentRoomId);
+      setDoc(roomRef, {
+        avatars: dataAvatars,
+        updatedAt: new Date()
+      }, { merge: true }).catch(err => console.error("Error guardando:", err));
+    }
+
+    document.getElementById('btn-create-room').addEventListener('click', async () => {
+      const userName = document.getElementById('user-name').value.trim() || 'Anfitrión';
+      const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      try {
+        const roomRef = doc(db, "rooms", roomId);
+        await setDoc(roomRef, {
+          createdBy: userName,
+          createdAt: new Date(),
+          remoteFocus: false,
+          clientConnected: false,
+          clientName: 'Ausente',
+          avatars: []
+        });
+        
+        isHost = true;
+        currentRoomId = roomId;
+        updateRoomInfoUI(roomId);
+        showNotif(`Sala ${roomId} Creada (Modo Anfitrión)`);
+        listenToRoom(roomId);
+        setupWebRTCConnection();
+      } catch (e) {
+        console.error("Error al crear sala:", e);
+        showNotif("Error backend");
+      }
+    });
+
+    document.getElementById('btn-join-room').addEventListener('click', async () => {
+      const roomId = document.getElementById('room-code-input').value.trim().toUpperCase();
+      const userName = document.getElementById('user-name').value.trim() || 'Consultante';
+      if (!roomId) return alert("Código inválido.");
+      
+      isHost = false;
+      currentRoomId = roomId;
+      updateRoomInfoUI(roomId);
+
+      const roomRef = doc(db, "rooms", roomId);
+      await setDoc(roomRef, {
+        clientConnected: true,
+        lastActive: Date.now(),
+        clientName: userName
+      }, { merge: true });
+
+      setInterval(() => publishClientCameraState(), 3000);
+
+      listenToRoom(roomId);
+      setupWebRTCConnection();
+      showNotif(`Unido a ${roomId} (Modo Consultante)`);
+    });
+
+    function listenToRoom(roomId) {
+      onSnapshot(doc(db, "rooms", roomId), (docSnapshot) => {
+        if (!docSnapshot.exists()) return;
+        const data = docSnapshot.data();
+
+        if (isHost) {
+          const clientNameSpan = document.getElementById('client-name-status');
+          const clientDot = document.getElementById('client-dot');
+          const remoteLabel = document.getElementById('remote-video-label');
+          const isRecentlyActive = data.lastActive && (Date.now() - data.lastActive < 8000);
+
+          if (data.clientConnected && isRecentlyActive) {
+            clientNameSpan.innerText = `${data.clientName || 'Consultante'}: Conectado`;
+            remoteLabel.innerText = data.clientName || 'Consultante';
+            clientDot.className = 'dot-online';
+          } else if (data.clientName && data.clientName !== 'Ausente') {
+            clientNameSpan.innerText = `${data.clientName}: Desconectado`;
+            clientDot.className = 'dot-disconnected';
+          } else {
+            clientNameSpan.innerText = 'Consultante: Ausente';
+            clientDot.className = 'dot-offline';
+          }
+
+          if (isMirrorCamActive && data.clientCameraPos && data.clientCameraTarget) {
+            camera.position.set(data.clientCameraPos.x, data.clientCameraPos.y, data.clientCameraPos.z);
+            controls.target.set(data.clientCameraTarget.x, data.clientCameraTarget.y, data.clientCameraTarget.z);
+            controls.update();
+          }
+        } else {
+          document.getElementById('remote-video-label').innerText = data.createdBy || 'Anfitrión';
+        }
+
+        if (!isHost && typeof data.remoteFocus === 'boolean') {
+          isRemoteFocusActive = data.remoteFocus;
+          const focusBtn = document.getElementById('view-toggle-btn');
+
+          if (isRemoteFocusActive) {
+            document.querySelectorAll('.panel').forEach(p => p.style.opacity = '0');
+            focusBtn.innerText = '🔒 Guiado por Terapeuta';
+            focusBtn.classList.add('disabled-btn');
+            deselectAvatar();
+
+            if (data.hostCameraPos && data.hostCameraTarget) {
+              camera.position.set(data.hostCameraPos.x, data.hostCameraPos.y, data.hostCameraPos.z);
+              controls.target.set(data.hostCameraTarget.x, data.hostCameraTarget.y, data.hostCameraTarget.z);
+              controls.update();
+            }
+          } else {
+            document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
+            focusBtn.innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
+            focusBtn.classList.remove('disabled-btn');
+          }
+        }
+
+        isRemoteUpdate = true;
+        const currentSavedId = selectedAvatarId;
+
+        avatars.forEach(a => scene.remove(a));
+        avatars.length = 0;
+
+        if (data.avatars && Array.isArray(data.avatars)) {
+          data.avatars.forEach(aData => {
+            const av = addAvatarToScene(aData);
+            av.userData.linkedTo = aData.linkedTo || null;
+          });
+          drawLinks();
+        }
+
+        if (currentSavedId) {
+          const reselected = avatars.find(a => a.userData.id === currentSavedId);
+          if (reselected) {
+            selectAvatar(reselected);
+          } else {
+            deselectAvatar();
+          }
+        }
+
+        isRemoteUpdate = false;
+      });
+    }
+
+    document.getElementById('add-avatar').addEventListener('click', () => {
+      const label = document.getElementById('avatar-label').value.trim() || 'Persona';
+      const type = document.getElementById('avatar-gender').value;
+
+      const newAvatar = addAvatarToScene({
+        id: 'av_' + Date.now(),
+        label,
+        type,
+        x: (Math.random() - 0.5) * 5,
+        z: (Math.random() - 0.5) * 5,
+        rotation: 0,
+        emotion: 'neutral',
+        posture: 'standing',
+        userScale: 100
+      });
+
+      selectAvatar(newAvatar);
+      saveStateToFirebase();
+    });
+
+    document.getElementById('clear-board').addEventListener('click', () => {
+      avatars.forEach(a => scene.remove(a));
+      avatars.length = 0;
+      deselectAvatar();
+      drawLinks();
+      saveStateToFirebase();
+    });
+
+    document.getElementById('btn-screenshot').addEventListener('click', () => {
+      renderer.render(scene, camera);
+      const dataURL = renderer.domElement.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `Constelacion_${currentRoomId || 'local'}.png`;
+      link.href = dataURL;
+      link.click();
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
