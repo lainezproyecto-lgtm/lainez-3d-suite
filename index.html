@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.7</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.8</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -41,25 +41,22 @@
       backdrop-filter: blur(8px); transition: all 0.2s ease; white-space: nowrap;
     }
     .top-btn:hover { background: rgba(212, 163, 115, 0.25); color: #fff; }
-    .top-btn.active-audio, .top-btn.active-video { background: #588157; color: #fff; border-color: #a3b18a; }
-    .top-btn.muted-audio, .top-btn.stopped-video { background: #9a031e; color: #fff; border-color: #e63946; }
     .top-btn.disabled-btn { pointer-events: none; opacity: 0.7; background: rgba(40, 30, 25, 0.9); color: #e9c46a; }
     .version-tag {
       position: absolute; bottom: 8px; left: 12px; z-index: 100;
       font-size: 0.68rem; color: rgba(212, 163, 115, 0.6); font-weight: 600;
       letter-spacing: 0.5px; pointer-events: none;
     }
-    #remote-video-box {
-      position: absolute; top: 14px; right: 360px; width: 140px; height: 105px;
+    
+    /* RECUADRO EMBEBIDO DE JITSI MEET */
+    #jitsi-container {
+      position: absolute; top: 14px; right: 360px; width: 220px; height: 165px;
       background: rgba(28, 24, 22, 0.95); border: 1px solid rgba(69, 123, 157, 0.6);
       border-radius: 10px; overflow: hidden; z-index: 95; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
       display: none;
     }
-    #remote-video-box video { width: 100%; height: 100%; object-fit: cover; background: #110d0c; }
-    .video-label {
-      position: absolute; bottom: 4px; left: 6px; font-size: 0.62rem; font-weight: 600;
-      color: #f5efe6; background: rgba(0,0,0,0.7); padding: 1px 6px; border-radius: 4px;
-    }
+    #jitsi-container iframe { width: 100%; height: 100%; border: none; }
+
     h2, h3 { color: #e6ccb2; margin-bottom: 10px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
     .input-group { margin-bottom: 8px; }
     label { display: block; font-size: 0.75rem; color: #ddb892; margin-bottom: 3px; }
@@ -91,25 +88,23 @@
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- LIBRERÍA OFICIAL DE JITSI MEET -->
+  <script src="https://meet.jit.si/external_api.js"></script>
 </head>
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v2.7</div>
+  <div class="version-tag">Lainez 3D Pro Suite v2.8 (Jitsi Integrated)</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
-    <button id="audio-toggle-btn" class="top-btn">🎙️ Conectar Audio</button>
-    <button id="video-toggle-btn" class="top-btn">📹 Ver Participante</button>
+    <button id="toggle-jitsi-btn" class="top-btn">📹 Ocultar/Mostrar Videollamada</button>
   </div>
 
-  <div id="remote-video-box">
-    <video id="remote-video" autoplay playsinline muted></video>
-    <span id="remote-video-label" class="video-label">Participante</span>
-  </div>
+  <!-- CONTENEDOR DE VIDEOLLAMADA JITSI -->
+  <div id="jitsi-container"></div>
 
   <div id="notification">Notificación</div>
-  <audio id="remote-audio" autoplay playsinline></audio>
 
   <div id="sync-panel" class="panel">
     <h2>Sincronización en Vivo</h2>
@@ -144,7 +139,6 @@
     </div>
   </div>
 
-  <!-- Panel Creación (v2.7 - Separación de Desplegables) -->
   <div id="controls-panel" class="panel">
     <h2>Añadir Elemento al Campo</h2>
     <div class="input-group">
@@ -299,7 +293,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDocs, deleteDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDocs, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -326,6 +320,7 @@
     let recognition = null;
     let isTranscribing = false;
     let baseNotesText = '';
+    let jitsiApi = null;
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlRoom = urlParams.get('room');
@@ -339,24 +334,8 @@
       }
     }
 
-    // WEBRTC MEDIA CONTROL
-    let localStream = new MediaStream();
-    let peerConnection = null;
-    let isAudioConnected = false;
-    let isMuted = false;
-    let isCameraActive = false;
-
-    const rtcServers = {
-      iceServers: [
-        { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] },
-        { urls: ['stun:stun3.l.google.com:19302', 'stun:stun4.l.google.com:19302'] },
-        { urls: 'stun:global.stun.twilio.com:3478' }
-      ],
-      iceCandidatePoolSize: 10,
-    };
-
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v2.7)"))
+      .then(() => showNotif("Conectado a Backend (v2.8)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -365,6 +344,41 @@
       notif.style.display = 'block';
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
+
+    // INICIALIZADOR DE JITSI MEET EMBEBIDO
+    function initJitsiMeeting(roomId, userName) {
+      const container = document.getElementById('jitsi-container');
+      container.style.display = 'block';
+      container.innerHTML = '';
+
+      const domain = 'meet.jit.si';
+      const options = {
+        roomName: `Lainez3D_Suite_${roomId}`,
+        width: '100%',
+        height: '100%',
+        parentNode: container,
+        userInfo: {
+          displayName: userName || (isHost ? 'Anfitrión' : 'Consultante')
+        },
+        configOverwrite: {
+          startWithAudioMuted: false,
+          startWithVideoMuted: false,
+          disableDeepLinking: true
+        },
+        interfaceConfigOverwrite: {
+          TOOLBAR_BUTTONS: ['microphone', 'camera', 'tileview'],
+          SHOW_JITSI_WATERMARK: false
+        }
+      };
+
+      jitsiApi = new JitsiMeetExternalAPI(domain, options);
+      showNotif("Videollamada iniciada en recuadro");
+    }
+
+    document.getElementById('toggle-jitsi-btn').addEventListener('click', () => {
+      const box = document.getElementById('jitsi-container');
+      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    });
 
     function updateRoomInfoUI(roomId) {
       const roomInfo = document.getElementById('room-info');
@@ -379,7 +393,7 @@
         document.getElementById('btn-copy-code').addEventListener('click', () => {
           const shareUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}&role=client`;
           navigator.clipboard.writeText(shareUrl).then(() => {
-            showNotif("Enlace de acceso copiado al portapapeles");
+            showNotif("Enlace de acceso copiado");
           }).catch(err => console.error(err));
         });
 
@@ -397,159 +411,6 @@
     function getSelectedAvatar() {
       if (!selectedAvatarId) return null;
       return avatars.find(a => a.userData.id === selectedAvatarId) || null;
-    }
-
-    async function ensureLocalMedia() {
-      if (!isAudioConnected) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-          stream.getTracks().forEach(track => localStream.addTrack(track));
-          isAudioConnected = true;
-          isCameraActive = true;
-          
-          document.getElementById('audio-toggle-btn').innerText = "🎙️ Micrófono Activo";
-          document.getElementById('audio-toggle-btn').classList.add('active-audio');
-          
-          document.getElementById('video-toggle-btn').innerText = "📹 Desconectar Cámara";
-          document.getElementById('video-toggle-btn').classList.add('stopped-video');
-          document.getElementById('remote-video-box').style.display = 'block';
-        } catch (err) {
-          console.warn("Captura audio fallback:", err);
-          try {
-            const audStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            audStream.getAudioTracks().forEach(t => localStream.addTrack(t));
-            isAudioConnected = true;
-            document.getElementById('audio-toggle-btn').innerText = "🎙️ Micrófono Activo";
-            document.getElementById('audio-toggle-btn').classList.add('active-audio');
-          } catch (e) {
-            console.error("Permiso denegado:", e);
-          }
-        }
-      }
-    }
-
-    document.getElementById('audio-toggle-btn').addEventListener('click', async () => {
-      const audioBtn = document.getElementById('audio-toggle-btn');
-      const track = localStream.getAudioTracks()[0];
-      
-      if (track) {
-        isMuted = !isMuted;
-        track.enabled = !isMuted;
-        if (isMuted) {
-          audioBtn.innerText = "🔇 Mic Silenciado";
-          audioBtn.classList.remove('active-audio');
-          audioBtn.classList.add('muted-audio');
-          showNotif("Micrófono silenciado");
-        } else {
-          audioBtn.innerText = "🎙️ Micrófono Activo";
-          audioBtn.classList.remove('muted-audio');
-          audioBtn.classList.add('active-audio');
-          showNotif("Micrófono activo");
-        }
-      } else {
-        await ensureLocalMedia();
-      }
-    });
-
-    document.getElementById('video-toggle-btn').addEventListener('click', async () => {
-      const videoBtn = document.getElementById('video-toggle-btn');
-      const remoteBox = document.getElementById('remote-video-box');
-      const track = localStream.getVideoTracks()[0];
-
-      if (track) {
-        track.enabled = !track.enabled;
-        isCameraActive = track.enabled;
-        if (isCameraActive) {
-          videoBtn.innerText = "📹 Desconectar Cámara";
-          videoBtn.classList.add('stopped-video');
-          remoteBox.style.display = 'block';
-          showNotif("Cámara encendida");
-        } else {
-          videoBtn.innerText = "📹 Ver Participante";
-          videoBtn.classList.remove('stopped-video');
-          remoteBox.style.display = 'none';
-          showNotif("Cámara apagada");
-        }
-      } else {
-        await ensureLocalMedia();
-      }
-    });
-
-    async function setupWebRTCConnection() {
-      await ensureLocalMedia();
-      peerConnection = new RTCPeerConnection(rtcServers);
-
-      localStream.getTracks().forEach(track => {
-        peerConnection.addTrack(track, localStream);
-      });
-
-      peerConnection.ontrack = event => {
-        const remoteAudio = document.getElementById('remote-audio');
-        const remoteVideo = document.getElementById('remote-video');
-        const remoteBox = document.getElementById('remote-video-box');
-
-        if (event.streams && event.streams[0]) {
-          remoteAudio.srcObject = event.streams[0];
-          remoteVideo.srcObject = event.streams[0];
-          remoteBox.style.display = 'block';
-          remoteAudio.play().catch(e => console.log(e));
-          remoteVideo.play().catch(e => console.log(e));
-          showNotif("Transmisión recibida");
-        }
-      };
-
-      const roomRef = doc(db, "rooms", currentRoomId);
-      const callerCandidates = collection(roomRef, "callerCandidates");
-      const calleeCandidates = collection(roomRef, "calleeCandidates");
-
-      peerConnection.onicecandidate = event => {
-        if (event.candidate) {
-          const targetCol = isHost ? callerCandidates : calleeCandidates;
-          addDoc(targetCol, event.candidate.toJSON());
-        }
-      };
-
-      if (isHost) {
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp } }, { merge: true });
-
-        onSnapshot(roomRef, async snapshot => {
-          const data = snapshot.data();
-          if (peerConnection && !peerConnection.currentRemoteDescription && data && data.answer) {
-            const answer = new RTCSessionDescription(data.answer);
-            await peerConnection.setRemoteDescription(answer);
-          }
-        });
-
-        onSnapshot(calleeCandidates, snapshot => {
-          snapshot.docChanges().forEach(async change => {
-            if (change.type === 'added') {
-              const candidate = new RTCIceCandidate(change.doc.data());
-              await peerConnection.addIceCandidate(candidate);
-            }
-          });
-        });
-      } else {
-        onSnapshot(roomRef, async snapshot => {
-          const data = snapshot.data();
-          if (peerConnection && !peerConnection.currentRemoteDescription && data && data.offer) {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            await setDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } }, { merge: true });
-          }
-        });
-
-        onSnapshot(callerCandidates, snapshot => {
-          snapshot.docChanges().forEach(async change => {
-            if (change.type === 'added') {
-              const candidate = new RTCIceCandidate(change.doc.data());
-              await peerConnection.addIceCandidate(candidate);
-            }
-          });
-        });
-      }
     }
 
     // TRANSCRIPCIÓN EN VIVO
@@ -1244,7 +1105,7 @@
     let dragTarget = null;
 
     window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#remote-video-box')) return;
+      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#jitsi-container')) return;
 
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -1431,7 +1292,7 @@
         updateRoomInfoUI(roomId);
         showNotif(`Sala ${roomId} Creada (Anfitrión)`);
         listenToRoom(roomId);
-        await setupWebRTCConnection();
+        initJitsiMeeting(roomId, userName);
       } catch (e) {
         console.error("Error al crear sala:", e);
         showNotif("Error backend");
@@ -1452,7 +1313,7 @@
 
       setInterval(() => publishClientCameraState(), 3000);
       listenToRoom(roomId);
-      await setupWebRTCConnection();
+      initJitsiMeeting(roomId, userName);
       showNotif(`Unido a ${roomId} (Consultante)`);
     });
 
@@ -1464,12 +1325,10 @@
         if (isHost) {
           const clientNameSpan = document.getElementById('client-name-status');
           const clientDot = document.getElementById('client-dot');
-          const remoteLabel = document.getElementById('remote-video-label');
           const isRecentlyActive = data.lastActive && (Date.now() - data.lastActive < 8000);
 
           if (data.clientConnected && isRecentlyActive) {
             clientNameSpan.innerText = `${data.clientName || 'Consultante'}: Conectado`;
-            remoteLabel.innerText = data.clientName || 'Consultante';
             clientDot.className = 'dot-online';
           } else if (data.clientName && data.clientName !== 'Ausente') {
             clientNameSpan.innerText = `${data.clientName}: Desconectado`;
@@ -1484,8 +1343,6 @@
             controls.target.set(data.clientCameraTarget.x, data.clientCameraTarget.y, data.clientCameraTarget.z);
             controls.update();
           }
-        } else {
-          document.getElementById('remote-video-label').innerText = data.createdBy || 'Anfitrión';
         }
 
         if (!isHost && typeof data.remoteFocus === 'boolean') {
@@ -1534,7 +1391,6 @@
       });
     }
 
-    // LÓGICA DE AÑADIR ELEMENTOS (v2.7 - Prioriza la lista seleccionada)
     document.getElementById('add-avatar').addEventListener('click', () => {
       const labelInput = document.getElementById('avatar-label').value.trim();
       const humanSelect = document.getElementById('avatar-gender').value;
@@ -1567,7 +1423,6 @@
         userScale: 100
       });
 
-      // Resetear opciones para la siguiente selección
       document.getElementById('avatar-gender').value = 'none';
       document.getElementById('avatar-resource').value = 'none';
       document.getElementById('avatar-label').value = '';
