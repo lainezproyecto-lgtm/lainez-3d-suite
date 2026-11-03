@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.8.2</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.9.1</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -47,17 +47,6 @@
       font-size: 0.68rem; color: rgba(212, 163, 115, 0.6); font-weight: 600;
       letter-spacing: 0.5px; pointer-events: none;
     }
-    
-    #jitsi-container {
-      position: absolute; top: 14px; right: 360px; width: 300px; height: 220px;
-      background: rgba(28, 24, 22, 0.95); border: 1px solid rgba(69, 123, 157, 0.6);
-      border-radius: 10px; overflow: hidden; z-index: 95; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      display: none; flex-direction: column;
-    }
-    #jitsi-frame-box { width: 100%; height: 100%; flex: 1; }
-    #jitsi-frame-box iframe { width: 100%; height: 100%; border: none; }
-    .jitsi-bar { display: flex; background: #1a1412; padding: 4px; gap: 4px; border-top: 1px solid rgba(212, 163, 115, 0.2); }
-    .jitsi-bar button { font-size: 0.68rem; padding: 3px 6px; margin: 0; }
 
     h2, h3 { color: #e6ccb2; margin-bottom: 10px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
     .input-group { margin-bottom: 8px; }
@@ -94,18 +83,11 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v2.8.2</div>
+  <div class="version-tag">Lainez 3D Pro Suite v2.9.1</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
-    <button id="toggle-jitsi-btn" class="top-btn">📹 Ocultar/Mostrar Videollamada</button>
-  </div>
-
-  <div id="jitsi-container">
-    <div id="jitsi-frame-box"></div>
-    <div class="jitsi-bar">
-      <button id="btn-popout-video" class="btn-info">↗️ Abrir en Ventana Separada</button>
-    </div>
+    <button id="open-video-btn" class="top-btn" style="display: none; background: #457b9d; color: #fff;">📹 Abrir Videollamada (Jitsi)</button>
   </div>
 
   <div id="notification">Notificación</div>
@@ -339,7 +321,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v2.8.2)"))
+      .then(() => showNotif("Conectado a Backend (v2.9.1)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -349,37 +331,35 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    // CARGA DE JITSI SIN RESTRICCIÓN DE AUTENTICACIÓN EMBEBIDA (v2.8.2)
-    function initJitsiMeeting(roomId, userName) {
-      const container = document.getElementById('jitsi-container');
-      const frameBox = document.getElementById('jitsi-frame-box');
-      container.style.display = 'flex';
-      
+    // MANEJO DE VENTANA EMERGENTE CON POSICIÓN AUTOMÁTICA ABAJO A LA DERECHA (v2.9.1)
+    function setupJitsiMeeting(roomId, userName) {
       const cleanRoom = `Lainez3D_${roomId}`;
       jitsiRoomUrl = `https://meet.jit.si/${cleanRoom}#config.prejoinPageEnabled=false&userInfo.displayName="${encodeURIComponent(userName)}"`;
 
-      frameBox.innerHTML = `
-        <iframe 
-          src="${jitsiRoomUrl}" 
-          allow="camera; microphone; display-capture; autoplay; clipboard-write" 
-          style="width:100%; height:100%; border:none;">
-        </iframe>
-      `;
+      const openBtn = document.getElementById('open-video-btn');
+      openBtn.style.display = 'inline-block';
 
-      showNotif("Cargando videollamada...");
+      openJitsiPopout();
     }
 
-    document.getElementById('btn-popout-video').addEventListener('click', () => {
-      if (jitsiRoomUrl) {
-        window.open(jitsiRoomUrl, '_blank', 'width=800,height=600');
-        showNotif("Llamada abierta en ventana separada");
-      }
-    });
+    function openJitsiPopout() {
+      if (!jitsiRoomUrl) return;
 
-    document.getElementById('toggle-jitsi-btn').addEventListener('click', () => {
-      const box = document.getElementById('jitsi-container');
-      box.style.display = (box.style.display === 'none' || !box.style.display) ? 'flex' : 'none';
-    });
+      const popWidth = 420;
+      const popHeight = 460;
+      const marginX = 20;
+      const marginY = 60;
+
+      // Cálculo de posición automática abajo a la derecha
+      const leftPos = Math.max(0, window.screen.width - popWidth - marginX);
+      const topPos = Math.max(0, window.screen.height - popHeight - marginY);
+
+      const features = `width=${popWidth},height=${popHeight},left=${leftPos},top=${topPos},resizable=yes,scrollbars=yes`;
+      window.open(jitsiRoomUrl, 'JitsiMeetRoom', features);
+      showNotif("Videollamada abierta abajo a la derecha");
+    }
+
+    document.getElementById('open-video-btn').addEventListener('click', openJitsiPopout);
 
     function updateRoomInfoUI(roomId) {
       const roomInfo = document.getElementById('room-info');
@@ -1106,7 +1086,7 @@
     let dragTarget = null;
 
     window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#jitsi-container')) return;
+      if (e.target.closest('.panel') || e.target.closest('#top-bar')) return;
 
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -1293,7 +1273,7 @@
         updateRoomInfoUI(roomId);
         showNotif(`Sala ${roomId} Creada (Anfitrión)`);
         listenToRoom(roomId);
-        initJitsiMeeting(roomId, userName);
+        setupJitsiMeeting(roomId, userName);
       } catch (e) {
         console.error("Error al crear sala:", e);
         showNotif("Error backend");
@@ -1314,7 +1294,7 @@
 
       setInterval(() => publishClientCameraState(), 3000);
       listenToRoom(roomId);
-      initJitsiMeeting(roomId, userName);
+      setupJitsiMeeting(roomId, userName);
       showNotif(`Unido a ${roomId} (Consultante)`);
     });
 
