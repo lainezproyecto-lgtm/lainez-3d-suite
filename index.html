@@ -1,9 +1,28 @@
+ 
+
+Skip to content
+Using Gmail with screen readers
+
+Get additional protection against phishing
+Turn on Enhanced Safe Browsing to get additional protection against dangerous emails
+Conversations
+Get started with Gmail
+Customize your inbox
+Change profile image
+Import contacts and mail
+Get Gmail for mobile
+0% of 15 GB used
+Terms · Privacy · Program Policies
+Last account activity: 9 minutes ago
+Details
+gemini-code-1793712212422.html
+100%
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.6</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.6.1</title>
   <style>
     * {
       box-sizing: border-box;
@@ -74,7 +93,7 @@
       display: none;
     }
 
-    /* BARRA SUPERIOR CENTRADA */
+    /* BARRA SUPERIOR */
     #top-bar {
       position: absolute;
       top: 14px;
@@ -393,7 +412,7 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v2.6</div>
+  <div class="version-tag">Lainez 3D Pro Suite v2.6.1</div>
   
   <!-- BARRA SUPERIOR -->
   <div id="top-bar">
@@ -623,24 +642,14 @@
       }
     }
 
-    // WEBRTC BIDIRECCIONAL RECEPTOR
-    let localStream = null;
+    // WEBRTC ESTADO MULTIMEDIA
+    let localStream = new MediaStream();
     let peerConnection = null;
     let isAudioConnected = false;
     let isMuted = false;
     let isCameraActive = false;
+    let remoteStream = new MediaStream();
 
-    /*
-     * =========================================================================================
-     * EXPLICACIÓN Y SOLUCIÓN DE AUDIO EN VIVO (v2.6):
-     * 1. SERVIDORES STUN/TURN AMPLIADOS: Para evitar que cortafuegos o proveedores de internet
-     *    bloqueen los paquetes de voz peer-to-peer, añadimos múltiples servidores STUN públicos.
-     * 2. REPRODUCCIÓN FORZADA (play()): Los navegadores modernos bloquean la reproducción automática 
-     *    de audio por privacidad. Al capturar la pista 'audio' en peerConnection.ontrack, asignamos 
-     *    el flujo al elemento <audio id="remote-audio"> y ejecutamos explícitamente remoteAudio.play(),
-     *    desbloqueando la salida de altavoz para ambos participantes.
-     * =========================================================================================
-     */
     const rtcServers = {
       iceServers: [
         { urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] },
@@ -651,7 +660,7 @@
     };
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v2.6)"))
+      .then(() => showNotif("Conectado a Backend (v2.6.1)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -705,22 +714,18 @@
 
       if (!isCameraActive) {
         try {
-          if (!localStream) {
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-          } else {
-            const videoTracks = localStream.getVideoTracks();
-            if (videoTracks.length === 0) {
-              const newStream = await navigator.mediaDevices.getUserMedia({ video: true });
-              localStream.addTrack(newStream.getVideoTracks()[0]);
-            }
-          }
+          const vidStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const videoTrack = vidStream.getVideoTracks()[0];
           
-          if (!peerConnection) {
-            setupWebRTCConnection();
-          } else {
-            localStream.getVideoTracks().forEach(track => {
-              peerConnection.addTrack(track, localStream);
-            });
+          localStream.addTrack(videoTrack);
+
+          if (peerConnection) {
+            const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+            if (sender) {
+              sender.replaceTrack(videoTrack);
+            } else {
+              peerConnection.addTrack(videoTrack, localStream);
+            }
           }
 
           isCameraActive = true;
@@ -733,11 +738,10 @@
           showNotif("Permiso de cámara denegado");
         }
       } else {
-        if (localStream) {
-          localStream.getVideoTracks().forEach(track => {
-            track.stop();
-            localStream.removeTrack(track);
-          });
+        const videoTrack = localStream.getVideoTracks()[0];
+        if (videoTrack) {
+          videoTrack.stop();
+          localStream.removeTrack(videoTrack);
         }
         
         isCameraActive = false;
@@ -747,6 +751,63 @@
         showNotif("Cámara apagada");
       }
     });
+
+    // CONTROL DE MICROFONO Y SILENCIO (v2.6.1)
+    async function toggleAudioConnection() {
+      const audioBtn = document.getElementById('audio-toggle-btn');
+      
+      if (!currentRoomId) {
+        return alert("Primero debes crear o unirte a una sala para activar el audio.");
+      }
+
+      if (!isAudioConnected) {
+        try {
+          const audStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const audioTrack = audStream.getAudioTracks()[0];
+          
+          localStream.addTrack(audioTrack);
+
+          if (peerConnection) {
+            const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'audio');
+            if (sender) {
+              sender.replaceTrack(audioTrack);
+            } else {
+              peerConnection.addTrack(audioTrack, localStream);
+            }
+          }
+
+          isAudioConnected = true;
+          isMuted = false;
+          audioBtn.innerText = "🎙️ Micrófono Activo";
+          audioBtn.classList.add('active-audio');
+          showNotif("Micrófono conectado");
+
+        } catch (err) {
+          console.error("Error micrófono:", err);
+          showNotif("Permiso de micrófono denegado");
+        }
+      } else {
+        const audioTrack = localStream.getAudioTracks()[0];
+        if (audioTrack) {
+          isMuted = !isMuted;
+          audioTrack.enabled = !isMuted;
+          
+          if (isMuted) {
+            audioBtn.innerText = "🔇 Mic Silenciado";
+            audioBtn.classList.remove('active-audio');
+            audioBtn.classList.add('muted-audio');
+            showNotif("Micrófono silenciado");
+          } else {
+            audioBtn.innerText = "🎙️ Micrófono Activo";
+            audioBtn.classList.remove('muted-audio');
+            audioBtn.classList.add('active-audio');
+            showNotif("Micrófono activo");
+          }
+        }
+      }
+    }
+
+    document.getElementById('audio-toggle-btn').addEventListener('click', toggleAudioConnection);
 
     // TRANSCRIPCIÓN EN VIVO
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1043,74 +1104,36 @@
       }
     });
 
-    async function toggleAudioConnection() {
-      const audioBtn = document.getElementById('audio-toggle-btn');
-      
-      if (!currentRoomId) {
-        return alert("Primero debes crear o unirte a una sala para activar el audio.");
-      }
-
-      if (!isAudioConnected) {
-        try {
-          if (!localStream) {
-            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-          }
-          isAudioConnected = true;
-          audioBtn.innerText = "🎙️ Micrófono Activo";
-          audioBtn.classList.add('active-audio');
-          showNotif("Micrófono conectado");
-
-          if (!peerConnection) setupWebRTCConnection();
-        } catch (err) {
-          console.error("Error micrófono:", err);
-          showNotif("Permiso de micrófono denegado");
-        }
-      } else {
-        isMuted = !isMuted;
-        localStream.getAudioTracks()[0].enabled = !isMuted;
-        if (isMuted) {
-          audioBtn.innerText = "🔇 Mic Silenciado";
-          audioBtn.classList.remove('active-audio');
-          audioBtn.classList.add('muted-audio');
-          showNotif("Micrófono silenciado");
-        } else {
-          audioBtn.innerText = "🎙️ Micrófono Activo";
-          audioBtn.classList.remove('muted-audio');
-          audioBtn.classList.add('active-audio');
-          showNotif("Micrófono activo");
-        }
-      }
-    }
-
     async function setupWebRTCConnection() {
       peerConnection = new RTCPeerConnection(rtcServers);
 
-      if (localStream) {
-        localStream.getTracks().forEach(track => {
-          peerConnection.addTrack(track, localStream);
-        });
-      }
+      // Vincular cualquier pista capturada previamente
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
 
-      // ASIGNACIÓN Y REPRODUCCIÓN CONTROLADA DE AUDIO/VIDEO REMOTO (v2.6)
+      // MANEJO DE RECEPCIÓN DE MEDIOS REMOTOS (v2.6.1)
       peerConnection.ontrack = event => {
+        event.streams[0].getTracks().forEach(track => {
+          remoteStream.addTrack(track);
+        });
+
         const remoteAudio = document.getElementById('remote-audio');
         const remoteVideo = document.getElementById('remote-video');
         const remoteBox = document.getElementById('remote-video-box');
 
-        if (event.track.kind === 'audio') {
-          remoteAudio.srcObject = event.streams[0];
-          remoteAudio.play().then(() => {
-            showNotif("Canal de audio en vivo conectado");
-          }).catch(err => {
-            console.log("Autoplay de audio diferido por el navegador:", err);
-          });
-        }
+        remoteAudio.srcObject = remoteStream;
+        remoteVideo.srcObject = remoteStream;
+
         if (event.track.kind === 'video') {
-          remoteVideo.srcObject = event.streams[0];
           remoteBox.style.display = 'block';
-          remoteVideo.play().then(() => {
-            showNotif("Video del participante en pantalla");
-          }).catch(err => console.log("Autoplay diferido"));
+          remoteVideo.play().catch(err => console.log("Video Autoplay diferido"));
+        }
+        
+        if (event.track.kind === 'audio') {
+          remoteAudio.play().then(() => {
+            showNotif("Audio WebRTC activo");
+          }).catch(err => console.log("Audio Autoplay diferido"));
         }
       };
 
@@ -1167,8 +1190,6 @@
         });
       }
     }
-
-    document.getElementById('audio-toggle-btn').addEventListener('click', toggleAudioConnection);
 
     // ESCENA THREE.JS
     const container = document.getElementById('canvas-container');
@@ -1824,7 +1845,7 @@
         updateRoomInfoUI(roomId);
         showNotif(`Sala ${roomId} Creada (Modo Anfitrión)`);
         listenToRoom(roomId);
-        setupWebRTCConnection();
+        await setupWebRTCConnection();
       } catch (e) {
         console.error("Error al crear sala:", e);
         showNotif("Error backend");
@@ -1850,7 +1871,7 @@
       setInterval(() => publishClientCameraState(), 3000);
 
       listenToRoom(roomId);
-      setupWebRTCConnection();
+      await setupWebRTCConnection();
       showNotif(`Unido a ${roomId} (Modo Consultante)`);
     });
 
