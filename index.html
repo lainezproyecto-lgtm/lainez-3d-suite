@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.6.2</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.7</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -23,7 +23,7 @@
       max-height: 90vh; overflow-y: auto; transition: opacity 0.3s ease;
     }
     #sync-panel { top: 20px; left: 20px; width: 280px; }
-    #controls-panel { top: 20px; right: 20px; width: 320px; }
+    #controls-panel { top: 20px; right: 20px; width: 330px; }
     #inspector-panel { bottom: 20px; left: 20px; width: 350px; display: none; }
     #notes-panel { bottom: 20px; right: 20px; width: 340px; display: none; }
     #history-modal {
@@ -95,7 +95,7 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v2.6.2</div>
+  <div class="version-tag">Lainez 3D Pro Suite v2.7</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
@@ -104,7 +104,7 @@
   </div>
 
   <div id="remote-video-box">
-    <video id="remote-video" autoplay playsinline></video>
+    <video id="remote-video" autoplay playsinline muted></video>
     <span id="remote-video-label" class="video-label">Participante</span>
   </div>
 
@@ -144,20 +144,23 @@
     </div>
   </div>
 
+  <!-- Panel Creación (v2.7 - Separación de Desplegables) -->
   <div id="controls-panel" class="panel">
     <h2>Añadir Elemento al Campo</h2>
     <div class="input-group">
-      <label>Nombre / Nombre del Familiar:</label>
-      <input type="text" id="avatar-label" placeholder="Ej. Madre, Tío, Síntoma">
+      <label>Nombre / Etiqueta:</label>
+      <input type="text" id="avatar-label" placeholder="Ej. Madre, Abuelo, Anhelo">
     </div>
+
     <div class="input-group">
-      <label>Tipo de Representante:</label>
+      <label>1. Figura / Representante Humano:</label>
       <select id="avatar-gender">
-        <optgroup label="Minifiguras Estilo Lego">
-          <option value="lego-m">Minifigura Lego - Hombre / Niño</option>
-          <option value="lego-f">Minifigura Lego - Mujer / Niña</option>
-          <option value="lego-elder">Minifigura Lego - Anciano / Ancestral</option>
-          <option value="lego-special">Minifigura Lego - Especial / Fantasía</option>
+        <option value="none">-- Seleccionar Figura Humana --</option>
+        <optgroup label="Minifiguras Clásicas">
+          <option value="lego-m">Minifigura Clásica - Hombre / Niño</option>
+          <option value="lego-f">Minifigura Clásica - Mujer / Niña</option>
+          <option value="lego-elder">Minifigura Clásica - Anciano / Ancestral</option>
+          <option value="lego-special">Minifigura Clásica - Especial / Fantasía</option>
         </optgroup>
         <optgroup label="Hombres Adultos (Anatómicos)">
           <option value="adult-m">Hombre Adulto (Modelo A - Estándar)</option>
@@ -173,14 +176,50 @@
           <option value="child-f">Niña (Modelo A - Menor)</option>
           <option value="child-f2">Niña (Modelo B - Mayor)</option>
         </optgroup>
-        <optgroup label="Recursos y Elementos Abstractos">
-          <option value="symptom">El Síntoma / La Enfermedad</option>
-          <option value="desire">Anhelo / Meta</option>
-          <option value="secret">Secreto / Lo No Dicho</option>
-          <option value="resource">Recurso / Fuerza Ancestral</option>
-        </optgroup>
       </select>
     </div>
+
+    <div class="input-group">
+      <label>2. Recursos y Elementos Sistémicos:</label>
+      <select id="avatar-resource">
+        <option value="none">-- Seleccionar Elemento Sistémico --</option>
+        <option value="symptom">El Síntoma / La Enfermedad</option>
+        <option value="negador">El Negador</option>
+        <option value="adicciones">Adicciones</option>
+        <option value="pensador">El Pensador</option>
+        <option value="charlatan">El Charlatán</option>
+        <option value="secret">Secretos Familiares / Lo No Dicho</option>
+        <option value="maltrato">Maltrato / Abuso</option>
+        <option value="muerte">La Muerte</option>
+        <option value="abortos">Abortos</option>
+        <option value="enfermedad-fem">Enfermedad Femenina</option>
+        <option value="enfermedad-masc">Enfermedad Masculina</option>
+        <option value="sexo">¿Tiene que ver el Sexo?</option>
+        <option value="vida-fem">Vida Femenina</option>
+        <option value="vida-masc">Vida Masculina</option>
+        <option value="material">Lo Material / Dinero</option>
+        <option value="tiempo">Pasado, Presente y Futuro</option>
+        <option value="energia">Energía</option>
+        <option value="espiritualidad">Espiritualidad</option>
+        <option value="terapia">Hacer Terapia</option>
+        <option value="locura">La Locura</option>
+        <option value="infertilidad-fem">Infertilidad Femenina</option>
+        <option value="infertilidad-masc">Infertilidad Masculina</option>
+        <option value="peter-pan">Peter Pan (Síndrome)</option>
+        <option value="desarraigo">Desarraigo</option>
+        <option value="mascota">La Mascota</option>
+        <option value="supervivencia">La Supervivencia</option>
+        <option value="creencias-fem">Creencias Femeninas</option>
+        <option value="creencias-masc">Creencias Masculinas</option>
+        <option value="linaje-fem">Linaje Femenino</option>
+        <option value="linaje-masc">Linaje Masculino</option>
+        <option value="ancestros">Ancestros</option>
+        <option value="pareja">La Pareja</option>
+        <option value="desire">Anhelo / Meta</option>
+        <option value="resource">Recurso / Fuerza Ancestral</option>
+      </select>
+    </div>
+
     <button id="add-avatar" class="btn-secondary">+ Introducir al Campo</button>
     <hr style="border-color: rgba(212,163,115,0.2); margin: 10px 0;">
     <div class="btn-group">
@@ -300,9 +339,8 @@
       }
     }
 
-    // WEBRTC NATIVO Y GESTIÓN DE AUDIO (v2.6.2 CORREGIDO)
-    let localAudioTrack = null;
-    let localVideoTrack = null;
+    // WEBRTC MEDIA CONTROL
+    let localStream = new MediaStream();
     let peerConnection = null;
     let isAudioConnected = false;
     let isMuted = false;
@@ -318,7 +356,7 @@
     };
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v2.6.2)"))
+      .then(() => showNotif("Conectado a Backend (v2.7)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -361,119 +399,102 @@
       return avatars.find(a => a.userData.id === selectedAvatarId) || null;
     }
 
-    // CONTROL DE MICRÓFONO Y SILENCIO DEFINITIVO (v2.6.2)
-    async function toggleAudioConnection() {
-      const audioBtn = document.getElementById('audio-toggle-btn');
-      
-      if (!currentRoomId) {
-        return alert("Primero debes crear o unirte a una sala.");
-      }
-
-      // 1. Si no está conectado, solicitar permiso y capturar el track local
+    async function ensureLocalMedia() {
       if (!isAudioConnected) {
         try {
-          const audStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          localAudioTrack = audStream.getAudioTracks()[0];
-          
-          if (peerConnection) {
-            peerConnection.addTrack(localAudioTrack, audStream);
-          }
-
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+          stream.getTracks().forEach(track => localStream.addTrack(track));
           isAudioConnected = true;
-          isMuted = false;
-          audioBtn.innerText = "🎙️ Micrófono Activo";
-          audioBtn.classList.add('active-audio');
-          showNotif("Micrófono conectado");
-
-        } catch (err) {
-          console.error("Error al capturar micrófono:", err);
-          showNotif("Permiso de micrófono denegado");
-        }
-      } else {
-        // 2. Si ya está conectado, alternar SILENCIO directamente sobre la pista activa
-        if (localAudioTrack) {
-          isMuted = !isMuted;
-          localAudioTrack.enabled = !isMuted; // Apaga la transmisión de audio
+          isCameraActive = true;
           
-          if (isMuted) {
-            audioBtn.innerText = "🔇 Mic Silenciado";
-            audioBtn.classList.remove('active-audio');
-            audioBtn.classList.add('muted-audio');
-            showNotif("Micrófono silenciado");
-          } else {
-            audioBtn.innerText = "🎙️ Micrófono Activo";
-            audioBtn.classList.remove('muted-audio');
-            audioBtn.classList.add('active-audio');
-            showNotif("Micrófono activo");
+          document.getElementById('audio-toggle-btn').innerText = "🎙️ Micrófono Activo";
+          document.getElementById('audio-toggle-btn').classList.add('active-audio');
+          
+          document.getElementById('video-toggle-btn').innerText = "📹 Desconectar Cámara";
+          document.getElementById('video-toggle-btn').classList.add('stopped-video');
+          document.getElementById('remote-video-box').style.display = 'block';
+        } catch (err) {
+          console.warn("Captura audio fallback:", err);
+          try {
+            const audStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audStream.getAudioTracks().forEach(t => localStream.addTrack(t));
+            isAudioConnected = true;
+            document.getElementById('audio-toggle-btn').innerText = "🎙️ Micrófono Activo";
+            document.getElementById('audio-toggle-btn').classList.add('active-audio');
+          } catch (e) {
+            console.error("Permiso denegado:", e);
           }
         }
       }
     }
 
-    document.getElementById('audio-toggle-btn').addEventListener('click', toggleAudioConnection);
+    document.getElementById('audio-toggle-btn').addEventListener('click', async () => {
+      const audioBtn = document.getElementById('audio-toggle-btn');
+      const track = localStream.getAudioTracks()[0];
+      
+      if (track) {
+        isMuted = !isMuted;
+        track.enabled = !isMuted;
+        if (isMuted) {
+          audioBtn.innerText = "🔇 Mic Silenciado";
+          audioBtn.classList.remove('active-audio');
+          audioBtn.classList.add('muted-audio');
+          showNotif("Micrófono silenciado");
+        } else {
+          audioBtn.innerText = "🎙️ Micrófono Activo";
+          audioBtn.classList.remove('muted-audio');
+          audioBtn.classList.add('active-audio');
+          showNotif("Micrófono activo");
+        }
+      } else {
+        await ensureLocalMedia();
+      }
+    });
 
-    // CÁMARA LOCAL Y TRANSMISIÓN
     document.getElementById('video-toggle-btn').addEventListener('click', async () => {
-      if (!currentRoomId) return alert("Primero debes crear o unirte a una sala.");
-
       const videoBtn = document.getElementById('video-toggle-btn');
       const remoteBox = document.getElementById('remote-video-box');
+      const track = localStream.getVideoTracks()[0];
 
-      if (!isCameraActive) {
-        try {
-          const vidStream = await navigator.mediaDevices.getUserMedia({ video: true });
-          localVideoTrack = vidStream.getVideoTracks()[0];
-
-          if (peerConnection) {
-            peerConnection.addTrack(localVideoTrack, vidStream);
-          }
-
-          isCameraActive = true;
+      if (track) {
+        track.enabled = !track.enabled;
+        isCameraActive = track.enabled;
+        if (isCameraActive) {
           videoBtn.innerText = "📹 Desconectar Cámara";
           videoBtn.classList.add('stopped-video');
           remoteBox.style.display = 'block';
           showNotif("Cámara encendida");
-        } catch (err) {
-          console.error("Error cámara:", err);
-          showNotif("Permiso de cámara denegado");
+        } else {
+          videoBtn.innerText = "📹 Ver Participante";
+          videoBtn.classList.remove('stopped-video');
+          remoteBox.style.display = 'none';
+          showNotif("Cámara apagada");
         }
       } else {
-        if (localVideoTrack) {
-          localVideoTrack.stop();
-          localVideoTrack = null;
-        }
-        isCameraActive = false;
-        videoBtn.innerText = "📹 Ver Participante";
-        videoBtn.classList.remove('stopped-video');
-        remoteBox.style.display = 'none';
-        showNotif("Cámara apagada");
+        await ensureLocalMedia();
       }
     });
 
-    // INICIALIZACIÓN DE LA CONEXIÓN WEBRTC (Sincronizada con Firebase)
     async function setupWebRTCConnection() {
+      await ensureLocalMedia();
       peerConnection = new RTCPeerConnection(rtcServers);
 
-      // Si el micrófono o la cámara se encendieron antes de establecer la conexión, agregarlos
-      if (localAudioTrack) peerConnection.addTrack(localAudioTrack);
-      if (localVideoTrack) peerConnection.addTrack(localVideoTrack);
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
 
-      // RECEPCIÓN DE AUDIO Y VIDEO REMOTO
       peerConnection.ontrack = event => {
         const remoteAudio = document.getElementById('remote-audio');
         const remoteVideo = document.getElementById('remote-video');
         const remoteBox = document.getElementById('remote-video-box');
 
-        if (event.track.kind === 'audio') {
+        if (event.streams && event.streams[0]) {
           remoteAudio.srcObject = event.streams[0];
-          remoteAudio.play().then(() => showNotif("Audio entrante activo"))
-            .catch(err => console.log("Autoplay diferido de audio:", err));
-        }
-
-        if (event.track.kind === 'video') {
           remoteVideo.srcObject = event.streams[0];
           remoteBox.style.display = 'block';
-          remoteVideo.play().catch(err => console.log("Autoplay diferido de video:", err));
+          remoteAudio.play().catch(e => console.log(e));
+          remoteVideo.play().catch(e => console.log(e));
+          showNotif("Transmisión recibida");
         }
       };
 
@@ -546,34 +567,21 @@
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + ' ';
-          } else {
-            interimTranscript += transcript;
-          }
+          if (event.results[i].isFinal) finalTranscript += transcript + ' ';
+          else interimTranscript += transcript;
         }
 
-        if (finalTranscript) {
-          baseNotesText += (baseNotesText ? '\n' : '') + finalTranscript.trim();
-        }
-
+        if (finalTranscript) baseNotesText += (baseNotesText ? '\n' : '') + finalTranscript.trim();
         notesArea.value = baseNotesText + (interimTranscript ? '\n[...' + interimTranscript + ']' : '');
         notesArea.scrollTop = notesArea.scrollHeight;
       };
 
-      recognition.onerror = (e) => {
-        console.error("Error Transcripción:", e);
-        if (isTranscribing) { try { recognition.start(); } catch(err) {} }
-      };
-
-      recognition.onend = () => {
-        if (isTranscribing) { try { recognition.start(); } catch(err) {} }
-      };
+      recognition.onerror = (e) => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
+      recognition.onend = () => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
     }
 
     document.getElementById('btn-toggle-transcription').addEventListener('click', () => {
       if (!recognition) return alert("Tu navegador no soporta transcripción de voz.");
-
       const btn = document.getElementById('btn-toggle-transcription');
       const notesArea = document.getElementById('session-notes');
 
@@ -597,14 +605,12 @@
     async function saveNotesToFirebase() {
       if (!currentRoomId) return alert("Debes crear o unirte a una sala primero.");
       const notesArea = document.getElementById('session-notes');
-      
       try {
         const roomRef = doc(db, "rooms", currentRoomId);
         await setDoc(roomRef, { transcript: notesArea.value, updatedAt: new Date() }, { merge: true });
         showNotif("Transcripción guardada en Firebase");
       } catch (err) {
         console.error("Error guardando:", err);
-        showNotif("Error al guardar");
       }
     }
 
@@ -631,7 +637,6 @@
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const roomId = docSnap.id;
-          
           let dateStr = 'Fecha no disponible';
           if (data.createdAt) {
             const dateObj = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
@@ -707,7 +712,6 @@
         });
 
       } catch (err) {
-        console.error("Error cargando historial:", err);
         container.innerHTML = '<p style="font-size: 0.8rem; color: #e63946; text-align: center;">Error al cargar las salas.</p>';
       }
     }
@@ -741,7 +745,6 @@
     document.getElementById('btn-summarize-notes').addEventListener('click', () => {
       const notesArea = document.getElementById('session-notes');
       if (!notesArea.value.trim()) return alert("No hay texto para resumir.");
-
       baseNotesText = notesArea.value + "\n\n--- 📑 RESUMEN DE SESIÓN SÍNTESIS ---\n" +
         "• Dinámica sistémica principal identificada en el campo.\n" +
         "• Posicionamiento y reorientación de figuras completados.\n" +
@@ -753,18 +756,14 @@
 
     document.getElementById('btn-toggle-remote-focus').addEventListener('click', async () => {
       if (!isHost || !currentRoomId) return;
-
       isRemoteFocusActive = !isRemoteFocusActive;
       const roomRef = doc(db, "rooms", currentRoomId);
-      
       const payload = { remoteFocus: isRemoteFocusActive };
       if (isRemoteFocusActive) {
         payload.hostCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
         payload.hostCameraTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
       }
-
       await setDoc(roomRef, payload, { merge: true });
-
       const btn = document.getElementById('btn-toggle-remote-focus');
       if (isRemoteFocusActive) {
         btn.innerText = "🔓 Desbloquear Pantalla Consultante";
@@ -782,7 +781,6 @@
     document.getElementById('btn-toggle-mirror-cam').addEventListener('click', () => {
       if (!isHost) return;
       isMirrorCamActive = !isMirrorCamActive;
-
       const btn = document.getElementById('btn-toggle-mirror-cam');
       if (isMirrorCamActive) {
         btn.innerText = "👁️ Salir Vista Consultante";
@@ -910,7 +908,15 @@
       let isChild = type.includes('child');
       let isFemale = type.includes('-f') || type === 'lego-f';
       let isVariant2 = type.endsWith('2');
-      let isAbstract = ['symptom', 'desire', 'secret', 'resource'].includes(type);
+      
+      const resourceTypes = [
+        'symptom', 'desire', 'secret', 'resource', 'negador', 'adicciones', 'pensador', 'charlatan',
+        'maltrato', 'muerte', 'abortos', 'enfermedad-fem', 'enfermedad-masc', 'sexo', 'vida-fem', 'vida-masc',
+        'material', 'tiempo', 'energia', 'espiritualidad', 'terapia', 'locura', 'infertilidad-fem',
+        'infertilidad-masc', 'peter-pan', 'desarraigo', 'mascota', 'supervivencia', 'creencias-fem',
+        'creencias-masc', 'linaje-fem', 'linaje-masc', 'ancestros', 'pareja'
+      ];
+      let isAbstract = resourceTypes.includes(type);
 
       let scaleY = isChild ? (isVariant2 ? 0.75 : 0.60) : (isVariant2 ? 1.08 : 1.0);
       let scaleXZ = isChild ? (isVariant2 ? 0.80 : 0.70) : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
@@ -918,19 +924,24 @@
       let initialClothesColor = EMOTION_COLORS.neutral;
       let baseBodyColor = isFemale ? (isVariant2 ? 0xe0a98b : 0xddb892) : (isVariant2 ? 0xc89665 : 0xd4a373);
 
-      if (type === 'symptom') baseBodyColor = 0x9a031e;
-      if (type === 'desire') baseBodyColor = 0x2a9d8f;
-      if (type === 'secret') baseBodyColor = 0x212529;
-      if (type === 'resource') baseBodyColor = 0xe9c46a;
+      if (isAbstract) {
+        if (['symptom', 'enfermedad-fem', 'enfermedad-masc', 'maltrato'].includes(type)) baseBodyColor = 0x9a031e;
+        else if (['desire', 'vida-fem', 'vida-masc', 'supervivencia'].includes(type)) baseBodyColor = 0x2a9d8f;
+        else if (['secret', 'muerte', 'abortos', 'locura'].includes(type)) baseBodyColor = 0x212529;
+        else if (['resource', 'energia', 'espiritualidad', 'ancestros', 'linaje-fem', 'linaje-masc'].includes(type)) baseBodyColor = 0xe9c46a;
+        else if (['material', 'pareja'].includes(type)) baseBodyColor = 0xd4a373;
+        else baseBodyColor = 0x457b9d;
+      }
 
       const bodyMat = new THREE.MeshStandardMaterial({ color: baseBodyColor, roughness: 0.35 });
       const clothesMat = new THREE.MeshStandardMaterial({ color: initialClothesColor, roughness: 0.2 });
 
       if (isAbstract) {
         let geo;
-        if (type === 'symptom') geo = new THREE.IcosahedronGeometry(0.7, 0);
-        else if (type === 'desire') geo = new THREE.OctahedronGeometry(0.7);
-        else if (type === 'secret') geo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+        if (['symptom', 'maltrato', 'locura'].includes(type)) geo = new THREE.IcosahedronGeometry(0.7, 0);
+        else if (['desire', 'espiritualidad', 'energia'].includes(type)) geo = new THREE.OctahedronGeometry(0.7);
+        else if (['secret', 'negador', 'tiempo'].includes(type)) geo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+        else if (['muerte', 'abortos'].includes(type)) geo = new THREE.ConeGeometry(0.6, 1.2, 16);
         else geo = new THREE.DodecahedronGeometry(0.7);
 
         const mesh = new THREE.Mesh(geo, bodyMat);
@@ -1523,15 +1534,43 @@
       });
     }
 
+    // LÓGICA DE AÑADIR ELEMENTOS (v2.7 - Prioriza la lista seleccionada)
     document.getElementById('add-avatar').addEventListener('click', () => {
-      const label = document.getElementById('avatar-label').value.trim() || 'Persona';
-      const type = document.getElementById('avatar-gender').value;
+      const labelInput = document.getElementById('avatar-label').value.trim();
+      const humanSelect = document.getElementById('avatar-gender').value;
+      const resourceSelect = document.getElementById('avatar-resource').value;
+
+      let type = 'lego-m';
+      let defaultLabel = 'Persona';
+
+      if (resourceSelect !== 'none') {
+        type = resourceSelect;
+        const selectedOption = document.querySelector(`#avatar-resource option[value="${resourceSelect}"]`);
+        defaultLabel = selectedOption ? selectedOption.text : 'Recurso';
+      } else if (humanSelect !== 'none') {
+        type = humanSelect;
+        const selectedOption = document.querySelector(`#avatar-gender option[value="${humanSelect}"]`);
+        defaultLabel = selectedOption ? selectedOption.text.split('-')[0].trim() : 'Representante';
+      }
+
+      const finalLabel = labelInput || defaultLabel;
 
       const newAvatar = addAvatarToScene({
-        id: 'av_' + Date.now(), label, type,
-        x: (Math.random() - 0.5) * 5, z: (Math.random() - 0.5) * 5,
-        rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
+        id: 'av_' + Date.now(),
+        label: finalLabel,
+        type: type,
+        x: (Math.random() - 0.5) * 5,
+        z: (Math.random() - 0.5) * 5,
+        rotation: 0,
+        emotion: 'neutral',
+        posture: 'standing',
+        userScale: 100
       });
+
+      // Resetear opciones para la siguiente selección
+      document.getElementById('avatar-gender').value = 'none';
+      document.getElementById('avatar-resource').value = 'none';
+      document.getElementById('avatar-label').value = '';
 
       selectAvatar(newAvatar);
       saveStateToFirebase();
