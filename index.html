@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.8.1</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.8.2</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -48,14 +48,16 @@
       letter-spacing: 0.5px; pointer-events: none;
     }
     
-    /* RECUADRO EMBEBIDO DE JITSI MEET CON PERMISOS DE HARDWARE */
     #jitsi-container {
-      position: absolute; top: 14px; right: 360px; width: 280px; height: 210px;
+      position: absolute; top: 14px; right: 360px; width: 300px; height: 220px;
       background: rgba(28, 24, 22, 0.95); border: 1px solid rgba(69, 123, 157, 0.6);
       border-radius: 10px; overflow: hidden; z-index: 95; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      display: none;
+      display: none; flex-direction: column;
     }
-    #jitsi-container iframe { width: 100%; height: 100%; border: none; }
+    #jitsi-frame-box { width: 100%; height: 100%; flex: 1; }
+    #jitsi-frame-box iframe { width: 100%; height: 100%; border: none; }
+    .jitsi-bar { display: flex; background: #1a1412; padding: 4px; gap: 4px; border-top: 1px solid rgba(212, 163, 115, 0.2); }
+    .jitsi-bar button { font-size: 0.68rem; padding: 3px 6px; margin: 0; }
 
     h2, h3 { color: #e6ccb2; margin-bottom: 10px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
     .input-group { margin-bottom: 8px; }
@@ -88,19 +90,24 @@
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://meet.jit.si/external_api.js"></script>
 </head>
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v2.8.1</div>
+  <div class="version-tag">Lainez 3D Pro Suite v2.8.2</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
     <button id="toggle-jitsi-btn" class="top-btn">📹 Ocultar/Mostrar Videollamada</button>
   </div>
 
-  <div id="jitsi-container"></div>
+  <div id="jitsi-container">
+    <div id="jitsi-frame-box"></div>
+    <div class="jitsi-bar">
+      <button id="btn-popout-video" class="btn-info">↗️ Abrir en Ventana Separada</button>
+    </div>
+  </div>
+
   <div id="notification">Notificación</div>
 
   <div id="sync-panel" class="panel">
@@ -317,7 +324,7 @@
     let recognition = null;
     let isTranscribing = false;
     let baseNotesText = '';
-    let jitsiApi = null;
+    let jitsiRoomUrl = '';
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlRoom = urlParams.get('room');
@@ -332,7 +339,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v2.8.1)"))
+      .then(() => showNotif("Conectado a Backend (v2.8.2)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -342,50 +349,36 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    // INICIALIZACIÓN DE JITSI MEET CON PERMISOS HABILITADOS (v2.8.1)
+    // CARGA DE JITSI SIN RESTRICCIÓN DE AUTENTICACIÓN EMBEBIDA (v2.8.2)
     function initJitsiMeeting(roomId, userName) {
       const container = document.getElementById('jitsi-container');
-      container.style.display = 'block';
-      container.innerHTML = '';
-
-      if (jitsiApi) {
-        try { jitsiApi.dispose(); } catch(e) {}
-      }
-
-      const domain = 'meet.jit.si';
-      const options = {
-        roomName: `Lainez3D_Suite_${roomId}`,
-        width: '100%',
-        height: '100%',
-        parentNode: container,
-        userInfo: {
-          displayName: userName || (isHost ? 'Anfitrión' : 'Consultante')
-        },
-        configOverwrite: {
-          startWithAudioMuted: false,
-          startWithVideoMuted: false,
-          prejoinPageEnabled: false
-        },
-        interfaceConfigOverwrite: {
-          TOOLBAR_BUTTONS: ['microphone', 'camera', 'tileview', 'desktop'],
-          SHOW_JITSI_WATERMARK: false
-        }
-      };
-
-      jitsiApi = new JitsiMeetExternalAPI(domain, options);
+      const frameBox = document.getElementById('jitsi-frame-box');
+      container.style.display = 'flex';
       
-      // FORZAR ATRIBUTOS DE PERMISOS EN EL IFRAME
-      const iframe = container.querySelector('iframe');
-      if (iframe) {
-        iframe.setAttribute('allow', 'camera; microphone; display-capture; autoplay; clipboard-write');
-      }
+      const cleanRoom = `Lainez3D_${roomId}`;
+      jitsiRoomUrl = `https://meet.jit.si/${cleanRoom}#config.prejoinPageEnabled=false&userInfo.displayName="${encodeURIComponent(userName)}"`;
 
-      showNotif("Videollamada iniciada correctamente");
+      frameBox.innerHTML = `
+        <iframe 
+          src="${jitsiRoomUrl}" 
+          allow="camera; microphone; display-capture; autoplay; clipboard-write" 
+          style="width:100%; height:100%; border:none;">
+        </iframe>
+      `;
+
+      showNotif("Cargando videollamada...");
     }
+
+    document.getElementById('btn-popout-video').addEventListener('click', () => {
+      if (jitsiRoomUrl) {
+        window.open(jitsiRoomUrl, '_blank', 'width=800,height=600');
+        showNotif("Llamada abierta en ventana separada");
+      }
+    });
 
     document.getElementById('toggle-jitsi-btn').addEventListener('click', () => {
       const box = document.getElementById('jitsi-container');
-      box.style.display = box.style.display === 'none' ? 'block' : 'none';
+      box.style.display = (box.style.display === 'none' || !box.style.display) ? 'flex' : 'none';
     });
 
     function updateRoomInfoUI(roomId) {
