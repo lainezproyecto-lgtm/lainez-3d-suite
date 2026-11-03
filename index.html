@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.0</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.1</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -27,7 +27,7 @@
     #inspector-panel { bottom: 110px; left: 20px; width: 330px; display: none; }
     #notes-panel { bottom: 110px; right: 20px; width: 340px; display: none; }
     
-    /* CARROUSEL / BANDEJA DE RECURSOS WOODCRAFT INFERIOR (v3.0) */
+    /* CARROUSEL / BANDEJA DE RECURSOS WOODCRAFT INFERIOR */
     #resource-tray {
       position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
       z-index: 90; display: flex; gap: 8px; padding: 8px 14px;
@@ -109,7 +109,7 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.0 (Woodcraft Edition)</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.1</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
@@ -161,7 +161,7 @@
       <input type="text" id="avatar-label" placeholder="Ej. Madre, Abuelo, Anhelo">
     </div>
 
-    <!-- 1. FIGURAS HUMANAS (SE MANTIENEN IGUALES A LA V2.9.1) -->
+    <!-- 1. FIGURAS HUMANAS EXACTAS A LA VERSION 2.9.1 -->
     <div class="input-group">
       <label>1. Figura / Representante Humano:</label>
       <select id="avatar-gender">
@@ -189,7 +189,7 @@
       </select>
     </div>
 
-    <!-- 2. RECURSOS Y ELEMENTOS SISTÉMICOS (AHORA EN BLOQUES DE MADERA ARTESANALES) -->
+    <!-- 2. RECURSOS EN BLOQUES DE MADERA ARTESANALES -->
     <div class="input-group">
       <label>2. Recursos y Elementos Sistémicos:</label>
       <select id="avatar-resource">
@@ -321,7 +321,6 @@
     let baseNotesText = '';
     let jitsiRoomUrl = '';
 
-    // DICCIONARIO DE RECURSOS ARTESANALES (ESTÉTICA BLOQUES DE MADERA DEL VIDEO)
     const WOODCRAFT_RESOURCES = [
       { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e },
       { type: 'symptom', label: 'El Síntoma', icon: '❓', symbol: '¿?', color: 0xb5838d },
@@ -354,7 +353,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.0)"))
+      .then(() => showNotif("Conectado a Backend (v3.1)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -364,7 +363,6 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    // CONSTRUIR EL CARROUSEL INFERIOR
     const resourceTray = document.getElementById('resource-tray');
     WOODCRAFT_RESOURCES.forEach(res => {
       const item = document.createElement('div');
@@ -518,7 +516,7 @@
       anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
     };
 
-    // GENERADOR DE MESH 3D CON RECURSOS ARTESANALES ESTILO MADERA DEL VIDEO
+    // GENERADOR DE MESH 3D (FIGURAS HUMANAS EXACTAS A LA v2.9.1 RESTAURADAS)
     function buildHumanMesh(type = 'lego-m') {
       const group = new THREE.Group();
       const bodyGroup = new THREE.Group();
@@ -540,7 +538,7 @@
       const clothesMat = new THREE.MeshStandardMaterial({ color: EMOTION_COLORS.neutral, roughness: 0.2 });
 
       if (isAbstract) {
-        // RENDERING DE BLOQUES DE MADERA ARTESANALES (IGUALES AL VIDEO)
+        // BLOQUES DE MADERA ARTESANALES
         const woodColor = woodResource ? woodResource.color : 0xddb892;
         const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
         const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
@@ -564,7 +562,6 @@
         eyeR.position.set(0.11, 1.0, 0.37);
         bodyGroup.add(eyeR);
 
-        // Dibujo del símbolo frontal
         const canvas = document.createElement('canvas');
         canvas.width = 128; canvas.height = 128;
         const ctx = canvas.getContext('2d');
@@ -580,8 +577,9 @@
         bodyGroup.add(symbolPlane);
 
       } else if (isLego) {
-        // CONSERVACIÓN EXACTA DE FIGURAS HUMANAS CLÁSICAS
+        // MINIFIGURAS CLÁSICAS RESTAURADAS EXACTAS DE LA v2.9.1
         const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
+
         const headGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.38, 24);
         const headMesh = new THREE.Mesh(headGeo, yellowSkinMat);
         headMesh.position.y = 1.28; headMesh.castShadow = true;
@@ -589,7 +587,24 @@
 
         const studGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 16);
         const studMesh = new THREE.Mesh(studGeo, yellowSkinMat);
-        studMesh.position.y = 1.51; bodyGroup.add(studMesh);
+        studMesh.position.y = 1.51; studMesh.castShadow = true;
+        bodyGroup.add(studMesh);
+
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.09, 1.32, 0.22);
+        bodyGroup.add(eyeL);
+
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.09, 1.32, 0.22);
+        bodyGroup.add(eyeR);
+
+        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const mouthGeo = new THREE.BoxGeometry(0.1, 0.02, 0.02);
+        const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+        mouth.position.set(0, 1.21, 0.23);
+        bodyGroup.add(mouth);
 
         const torsoGeo = new THREE.CylinderGeometry(0.3, 0.42, 0.55, 4);
         torsoGeo.rotateY(Math.PI / 4);
@@ -599,22 +614,69 @@
 
         const hipGeo = new THREE.BoxGeometry(0.44, 0.12, 0.26);
         const hipMesh = new THREE.Mesh(hipGeo, clothesMat);
-        hipMesh.position.y = 0.48; bodyGroup.add(hipMesh);
+        hipMesh.position.y = 0.48; hipMesh.castShadow = true;
+        bodyGroup.add(hipMesh);
 
         const legGeo = new THREE.BoxGeometry(0.19, 0.42, 0.24);
         const legL = new THREE.Mesh(legGeo, clothesMat);
         legL.position.set(-0.11, 0.21, 0); legL.castShadow = true;
         bodyGroup.add(legL);
+
         const legR = new THREE.Mesh(legGeo, clothesMat);
         legR.position.set(0.11, 0.21, 0); legR.castShadow = true;
         bodyGroup.add(legR);
 
+        const armGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.4, 12);
+        const armL = new THREE.Mesh(armGeo, clothesMat);
+        armL.position.set(-0.27, 0.82, 0); armL.rotation.z = 0.35; armL.castShadow = true;
+        bodyGroup.add(armL);
+
+        const armR = new THREE.Mesh(armGeo, clothesMat);
+        armR.position.set(0.27, 0.82, 0); armR.rotation.z = -0.35; armR.castShadow = true;
+        bodyGroup.add(armR);
+
+        const handGeo = new THREE.TorusGeometry(0.05, 0.02, 8, 16, Math.PI * 1.5);
+        const handL = new THREE.Mesh(handGeo, yellowSkinMat);
+        handL.position.set(-0.33, 0.62, 0.05); handL.rotation.x = Math.PI / 2;
+        bodyGroup.add(handL);
+
+        const handR = new THREE.Mesh(handGeo, yellowSkinMat);
+        handR.position.set(0.33, 0.62, 0.05); handR.rotation.x = Math.PI / 2;
+        bodyGroup.add(handR);
+
       } else {
-        // CONSERVACIÓN DE MODELOS ANATÓMICOS ADULTOS / NIÑOS
+        // MODELOS ANATÓMICOS ADULTOS Y NIÑOS RESTAURADOS EXACTOS DE LA v2.9.1
         const headGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24);
         const head = new THREE.Mesh(headGeo, bodyMat);
         head.position.y = (1.65 * scaleY); head.castShadow = true;
         bodyGroup.add(head);
+
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.065 * scaleXZ, 16, 16);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
+        bodyGroup.add(eyeL);
+
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
+        bodyGroup.add(eyeR);
+
+        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x4a2810 });
+        const mouthGeo = new THREE.BoxGeometry(0.14 * scaleXZ, 0.035 * scaleY, 0.03 * scaleXZ);
+        const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+        mouth.position.set(0, head.position.y - 0.09 * scaleY, 0.25 * scaleXZ);
+        bodyGroup.add(mouth);
+
+        const noseGeo = new THREE.ConeGeometry(0.055 * scaleXZ, 0.15 * scaleY, 12);
+        noseGeo.rotateX(Math.PI / 2);
+        const nose = new THREE.Mesh(noseGeo, bodyMat);
+        nose.position.set(0, head.position.y - 0.01 * scaleY, 0.27 * scaleXZ);
+        bodyGroup.add(nose);
+
+        const neckGeo = new THREE.CylinderGeometry(0.09 * scaleXZ, 0.1 * scaleXZ, 0.12 * scaleY, 12);
+        const neck = new THREE.Mesh(neckGeo, bodyMat);
+        neck.position.y = (1.48 * scaleY);
+        bodyGroup.add(neck);
 
         const torsoTopWidth = isFemale ? (isVariant2 ? 0.28 : 0.30) : (isVariant2 ? 0.44 : 0.38);
         const torsoBotWidth = isFemale ? (isVariant2 ? 0.24 : 0.22) : (isVariant2 ? 0.30 : 0.26);
@@ -625,15 +687,26 @@
 
         const hipGeo = new THREE.CylinderGeometry(torsoBotWidth * scaleXZ, (isFemale ? 0.28 : 0.24) * scaleXZ, 0.3 * scaleY, 16);
         const hip = new THREE.Mesh(hipGeo, bodyMat);
-        hip.position.y = (0.78 * scaleY); bodyGroup.add(hip);
+        hip.position.y = (0.78 * scaleY); hip.castShadow = true;
+        bodyGroup.add(hip);
 
         const legGeo = new THREE.CylinderGeometry(0.08 * scaleXZ, 0.06 * scaleXZ, 0.65 * scaleY, 12);
         const legL = new THREE.Mesh(legGeo, bodyMat);
         legL.position.set(-0.11 * scaleXZ, 0.325 * scaleY, 0); legL.castShadow = true;
         bodyGroup.add(legL);
+
         const legR = new THREE.Mesh(legGeo, bodyMat);
         legR.position.set(0.11 * scaleXZ, 0.325 * scaleY, 0); legR.castShadow = true;
         bodyGroup.add(legR);
+
+        const armGeo = new THREE.CylinderGeometry(0.065 * scaleXZ, 0.05 * scaleXZ, 0.55 * scaleY, 12);
+        const armL = new THREE.Mesh(armGeo, bodyMat);
+        armL.position.set((-torsoTopWidth - 0.05) * scaleXZ, 1.1 * scaleY, 0); armL.rotation.z = 0.15; armL.castShadow = true;
+        bodyGroup.add(armL);
+
+        const armR = new THREE.Mesh(armGeo, bodyMat);
+        armR.position.set((torsoTopWidth + 0.05) * scaleXZ, 1.1 * scaleY, 0); armR.rotation.z = -0.15; armR.castShadow = true;
+        bodyGroup.add(armR);
       }
 
       const auraGeo = new THREE.RingGeometry(0.55 * scaleXZ, 0.75 * scaleXZ, 32);
@@ -709,7 +782,13 @@
       if (!avatarGroup) return;
       const colorHex = EMOTION_COLORS[avatarGroup.userData.emotion] || EMOTION_COLORS.neutral;
       if (avatarGroup.userData.auraMesh) avatarGroup.userData.auraMesh.material.color.setHex(colorHex);
-      if (avatarGroup.userData.clothesMaterial) avatarGroup.userData.clothesMaterial.color.setHex(colorHex);
+      
+      const isLego = avatarGroup.userData.type && avatarGroup.userData.type.startsWith('lego-');
+      if (isLego) {
+        if (avatarGroup.userData.clothesMaterial) avatarGroup.userData.clothesMaterial.color.setHex(colorHex);
+      } else {
+        if (avatarGroup.userData.bodyMaterial) avatarGroup.userData.bodyMaterial.color.setHex(colorHex);
+      }
 
       const posture = avatarGroup.userData.posture;
       const bodyGroup = avatarGroup.userData.bodyGroup;
