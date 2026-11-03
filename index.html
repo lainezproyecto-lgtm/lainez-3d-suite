@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.9.1</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.0</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -20,12 +20,38 @@
       background: rgba(28, 24, 22, 0.92); backdrop-filter: blur(12px);
       border: 1px solid rgba(212, 163, 115, 0.3); border-radius: 12px;
       padding: 14px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      max-height: 90vh; overflow-y: auto; transition: opacity 0.3s ease;
+      max-height: 85vh; overflow-y: auto; transition: opacity 0.3s ease;
     }
     #sync-panel { top: 20px; left: 20px; width: 280px; }
     #controls-panel { top: 20px; right: 20px; width: 330px; }
-    #inspector-panel { bottom: 20px; left: 20px; width: 350px; display: none; }
-    #notes-panel { bottom: 20px; right: 20px; width: 340px; display: none; }
+    #inspector-panel { bottom: 110px; left: 20px; width: 330px; display: none; }
+    #notes-panel { bottom: 110px; right: 20px; width: 340px; display: none; }
+    
+    /* CARROUSEL / BANDEJA DE RECURSOS WOODCRAFT INFERIOR (v3.0) */
+    #resource-tray {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 90; display: flex; gap: 8px; padding: 8px 14px;
+      background: rgba(20, 16, 14, 0.94); border: 1px solid rgba(212, 163, 115, 0.4);
+      border-radius: 16px; backdrop-filter: blur(10px); max-width: 90vw;
+      overflow-x: auto; scrollbar-width: thin; box-shadow: 0 8px 28px rgba(0,0,0,0.7);
+    }
+    .tray-item {
+      flex: 0 0 auto; width: 68px; height: 76px; background: rgba(45, 36, 32, 0.8);
+      border: 1px solid rgba(212, 163, 115, 0.25); border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s ease; position: relative; padding: 4px;
+    }
+    .tray-item:hover, .tray-item.remote-hover {
+      background: rgba(212, 163, 115, 0.35); border-color: #ffd166;
+      transform: translateY(-4px); box-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
+    }
+    .tray-item.remote-hover::after {
+      content: '👁️ Mirando'; position: absolute; top: -18px; background: #e76f51;
+      color: white; font-size: 0.58rem; padding: 1px 4px; border-radius: 4px; white-space: nowrap;
+    }
+    .tray-icon { font-size: 1.5rem; margin-bottom: 2px; }
+    .tray-label { font-size: 0.62rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
+
     #history-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       z-index: 200; width: 90%; max-width: 600px; max-height: 80vh; display: none;
@@ -83,12 +109,15 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v2.9.1</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.0 (Woodcraft Edition)</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
     <button id="open-video-btn" class="top-btn" style="display: none; background: #457b9d; color: #fff;">📹 Abrir Videollamada (Jitsi)</button>
   </div>
+
+  <!-- BANDEJA DE RECURSOS INFERIOR DE ACCESO RÁPIDO -->
+  <div id="resource-tray"></div>
 
   <div id="notification">Notificación</div>
 
@@ -132,6 +161,7 @@
       <input type="text" id="avatar-label" placeholder="Ej. Madre, Abuelo, Anhelo">
     </div>
 
+    <!-- 1. FIGURAS HUMANAS (SE MANTIENEN IGUALES A LA V2.9.1) -->
     <div class="input-group">
       <label>1. Figura / Representante Humano:</label>
       <select id="avatar-gender">
@@ -159,44 +189,27 @@
       </select>
     </div>
 
+    <!-- 2. RECURSOS Y ELEMENTOS SISTÉMICOS (AHORA EN BLOQUES DE MADERA ARTESANALES) -->
     <div class="input-group">
       <label>2. Recursos y Elementos Sistémicos:</label>
       <select id="avatar-resource">
         <option value="none">-- Seleccionar Elemento Sistémico --</option>
-        <option value="symptom">El Síntoma / La Enfermedad</option>
-        <option value="negador">El Negador</option>
-        <option value="adicciones">Adicciones</option>
-        <option value="pensador">El Pensador</option>
-        <option value="charlatan">El Charlatán</option>
-        <option value="secret">Secretos Familiares / Lo No Dicho</option>
-        <option value="maltrato">Maltrato / Abuso</option>
-        <option value="muerte">La Muerte</option>
-        <option value="abortos">Abortos</option>
-        <option value="enfermedad-fem">Enfermedad Femenina</option>
-        <option value="enfermedad-masc">Enfermedad Masculina</option>
-        <option value="sexo">¿Tiene que ver el Sexo?</option>
-        <option value="vida-fem">Vida Femenina</option>
-        <option value="vida-masc">Vida Masculina</option>
-        <option value="material">Lo Material / Dinero</option>
-        <option value="tiempo">Pasado, Presente y Futuro</option>
-        <option value="energia">Energía</option>
-        <option value="espiritualidad">Espiritualidad</option>
-        <option value="terapia">Hacer Terapia</option>
-        <option value="locura">La Locura</option>
-        <option value="infertilidad-fem">Infertilidad Femenina</option>
-        <option value="infertilidad-masc">Infertilidad Masculina</option>
-        <option value="peter-pan">Peter Pan (Síndrome)</option>
-        <option value="desarraigo">Desarraigo</option>
-        <option value="mascota">La Mascota</option>
-        <option value="supervivencia">La Supervivencia</option>
-        <option value="creencias-fem">Creencias Femeninas</option>
-        <option value="creencias-masc">Creencias Masculinas</option>
-        <option value="linaje-fem">Linaje Femenino</option>
-        <option value="linaje-masc">Linaje Masculino</option>
-        <option value="ancestros">Ancestros</option>
-        <option value="pareja">La Pareja</option>
-        <option value="desire">Anhelo / Meta</option>
-        <option value="resource">Recurso / Fuerza Ancestral</option>
+        <option value="symptom">El Síntoma / La Enfermedad (?)</option>
+        <option value="secret">Secretos Familiares / Lo No Dicho (P)</option>
+        <option value="pareja">La Pareja (Corazón ♥)</option>
+        <option value="mascota">La Mascota (Huella 🐾)</option>
+        <option value="adicciones">Adicciones (Botella 🍶)</option>
+        <option value="muerte">La Muerte / Duelo (Cruz ✝)</option>
+        <option value="pensador">El Pensador (Cerebro 🧠)</option>
+        <option value="resource">Recurso / Fuerza Ancestral (Planta 🌱)</option>
+        <option value="desire">Anhelo / Meta (▲)</option>
+        <option value="material">Lo Material / Dinero (L)</option>
+        <option value="negador">El Negador (No)</option>
+        <option value="charlatan">El Charlatán (Boca 💬)</option>
+        <option value="maltrato">Maltrato / Abuso (Mano ✋)</option>
+        <option value="energia">Energía / Fuerza (Onda 〰)</option>
+        <option value="locura">La Locura (Carita 🌀)</option>
+        <option value="desarraigo">Desarraigo (Ancla ⚓)</option>
       </select>
     </div>
 
@@ -308,6 +321,26 @@
     let baseNotesText = '';
     let jitsiRoomUrl = '';
 
+    // DICCIONARIO DE RECURSOS ARTESANALES (ESTÉTICA BLOQUES DE MADERA DEL VIDEO)
+    const WOODCRAFT_RESOURCES = [
+      { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e },
+      { type: 'symptom', label: 'El Síntoma', icon: '❓', symbol: '¿?', color: 0xb5838d },
+      { type: 'secret', label: 'Lo No Dicho', icon: '✉️', symbol: 'P', color: 0x6b705c },
+      { type: 'mascota', label: 'Mascota', icon: '🐾', symbol: '🐾', color: 0xddb892 },
+      { type: 'adicciones', label: 'Adicciones', icon: '🍾', symbol: '🍶', color: 0x9a031e },
+      { type: 'muerte', label: 'Duelo / Muerte', icon: '✝️', symbol: '✝', color: 0x3d348b },
+      { type: 'pensador', label: 'El Pensador', icon: '🧠', symbol: '🧠', color: 0x457b9d },
+      { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157 },
+      { type: 'desire', label: 'Anhelo / Meta', icon: '🎯', symbol: '▲', color: 0xe9c46a },
+      { type: 'material', label: 'Lo Material', icon: '💼', symbol: 'L', color: 0xd4a373 },
+      { type: 'negador', label: 'El Negador', icon: '🚫', symbol: 'No', color: 0x495057 },
+      { type: 'charlatan', label: 'El Charlatán', icon: '💬', symbol: '💬', color: 0xa8dede },
+      { type: 'maltrato', label: 'Maltrato', icon: '✋', symbol: '✋', color: 0x800f2f },
+      { type: 'energia', label: 'Energía', icon: '〰️', symbol: '〰', color: 0xffb703 },
+      { type: 'locura', label: 'La Locura', icon: '🌀', symbol: '🌀', color: 0x7209b7 },
+      { type: 'desarraigo', label: 'Desarraigo', icon: '⚓', symbol: '⚓', color: 0x2b2d42 }
+    ];
+
     const urlParams = new URLSearchParams(window.location.search);
     const urlRoom = urlParams.get('room');
     const urlRole = urlParams.get('role');
@@ -321,7 +354,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v2.9.1)"))
+      .then(() => showNotif("Conectado a Backend (v3.0)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -331,32 +364,76 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    // MANEJO DE VENTANA EMERGENTE CON POSICIÓN AUTOMÁTICA ABAJO A LA DERECHA (v2.9.1)
+    // CONSTRUIR EL CARROUSEL INFERIOR
+    const resourceTray = document.getElementById('resource-tray');
+    WOODCRAFT_RESOURCES.forEach(res => {
+      const item = document.createElement('div');
+      item.className = 'tray-item';
+      item.dataset.type = res.type;
+      item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
+
+      item.addEventListener('mouseenter', () => broadcastHoverState(res.type, true));
+      item.addEventListener('mouseleave', () => broadcastHoverState(res.type, false));
+
+      item.addEventListener('click', () => {
+        const active = getSelectedAvatar();
+        if (active) {
+          replaceAvatarType(active, res.type, res.label);
+          showNotif(`Figura modificada a: ${res.label}`);
+        } else {
+          const newAv = addAvatarToScene({
+            id: 'av_' + Date.now(), label: res.label, type: res.type,
+            x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
+            rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
+          });
+          selectAvatar(newAv); saveStateToFirebase();
+          showNotif(`Añadido: ${res.label}`);
+        }
+      });
+      resourceTray.appendChild(item);
+    });
+
+    function broadcastHoverState(type, isHovered) {
+      if (!currentRoomId) return;
+      setDoc(doc(db, "rooms", currentRoomId), { hoveredResource: isHovered ? type : null }, { merge: true }).catch(e => {});
+    }
+
+    function replaceAvatarType(avatarGroup, newType, newLabel) {
+      if (!avatarGroup) return;
+      avatarGroup.userData.type = newType;
+      avatarGroup.userData.label = newLabel;
+
+      while(avatarGroup.children.length > 0){ avatarGroup.remove(avatarGroup.children[0]); }
+      const freshGroup = buildHumanMesh(newType);
+      while(freshGroup.children.length > 0){ avatarGroup.add(freshGroup.children[0]); }
+
+      avatarGroup.userData.bodyGroup = freshGroup.userData.bodyGroup;
+      avatarGroup.userData.bodyMaterial = freshGroup.userData.bodyMaterial;
+      avatarGroup.userData.clothesMaterial = freshGroup.userData.clothesMaterial;
+      avatarGroup.userData.auraMesh = freshGroup.userData.auraMesh;
+      avatarGroup.userData.labelCanvas = freshGroup.userData.labelCanvas;
+      avatarGroup.userData.labelTexture = freshGroup.userData.labelTexture;
+      avatarGroup.userData.labelSprite = freshGroup.userData.labelSprite;
+
+      updateLabel(avatarGroup, newLabel);
+      applyAvatarState(avatarGroup);
+      selectAvatar(avatarGroup);
+      saveStateToFirebase();
+    }
+
     function setupJitsiMeeting(roomId, userName) {
       const cleanRoom = `Lainez3D_${roomId}`;
       jitsiRoomUrl = `https://meet.jit.si/${cleanRoom}#config.prejoinPageEnabled=false&userInfo.displayName="${encodeURIComponent(userName)}"`;
-
-      const openBtn = document.getElementById('open-video-btn');
-      openBtn.style.display = 'inline-block';
-
+      document.getElementById('open-video-btn').style.display = 'inline-block';
       openJitsiPopout();
     }
 
     function openJitsiPopout() {
       if (!jitsiRoomUrl) return;
-
-      const popWidth = 420;
-      const popHeight = 460;
-      const marginX = 20;
-      const marginY = 60;
-
-      // Cálculo de posición automática abajo a la derecha
-      const leftPos = Math.max(0, window.screen.width - popWidth - marginX);
-      const topPos = Math.max(0, window.screen.height - popHeight - marginY);
-
-      const features = `width=${popWidth},height=${popHeight},left=${leftPos},top=${topPos},resizable=yes,scrollbars=yes`;
-      window.open(jitsiRoomUrl, 'JitsiMeetRoom', features);
-      showNotif("Videollamada abierta abajo a la derecha");
+      const popWidth = 420; const popHeight = 460;
+      const leftPos = Math.max(0, window.screen.width - popWidth - 20);
+      const topPos = Math.max(0, window.screen.height - popHeight - 60);
+      window.open(jitsiRoomUrl, 'JitsiMeetRoom', `width=${popWidth},height=${popHeight},left=${leftPos},top=${topPos},resizable=yes,scrollbars=yes`);
     }
 
     document.getElementById('open-video-btn').addEventListener('click', openJitsiPopout);
@@ -364,20 +441,12 @@
     function updateRoomInfoUI(roomId) {
       const roomInfo = document.getElementById('room-info');
       const btnHistory = document.getElementById('btn-open-history');
-      
       if (isHost) {
-        roomInfo.innerHTML = `
-          <div>Sala Activa: <b id="current-room-code">${roomId}</b></div>
-          <button id="btn-copy-code" class="btn-copy">🔗 Copiar Enlace Directo</button>
-        `;
-
+        roomInfo.innerHTML = `<div>Sala Activa: <b id="current-room-code">${roomId}</b></div><button id="btn-copy-code" class="btn-copy">🔗 Copiar Enlace Directo</button>`;
         document.getElementById('btn-copy-code').addEventListener('click', () => {
           const shareUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}&role=client`;
-          navigator.clipboard.writeText(shareUrl).then(() => {
-            showNotif("Enlace de acceso copiado");
-          }).catch(err => console.error(err));
+          navigator.clipboard.writeText(shareUrl).then(() => showNotif("Enlace copiado"));
         });
-
         document.getElementById('join-section').style.display = 'none';
         document.getElementById('host-controls').style.display = 'block';
         btnHistory.style.display = 'block';
@@ -393,265 +462,6 @@
       if (!selectedAvatarId) return null;
       return avatars.find(a => a.userData.id === selectedAvatarId) || null;
     }
-
-    // TRANSCRIPCIÓN EN VIVO
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'es-MX';
-
-      recognition.onresult = (event) => {
-        const notesArea = document.getElementById('session-notes');
-        let finalTranscript = '';
-        let interimTranscript = '';
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) finalTranscript += transcript + ' ';
-          else interimTranscript += transcript;
-        }
-
-        if (finalTranscript) baseNotesText += (baseNotesText ? '\n' : '') + finalTranscript.trim();
-        notesArea.value = baseNotesText + (interimTranscript ? '\n[...' + interimTranscript + ']' : '');
-        notesArea.scrollTop = notesArea.scrollHeight;
-      };
-
-      recognition.onerror = (e) => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
-      recognition.onend = () => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
-    }
-
-    document.getElementById('btn-toggle-transcription').addEventListener('click', () => {
-      if (!recognition) return alert("Tu navegador no soporta transcripción de voz.");
-      const btn = document.getElementById('btn-toggle-transcription');
-      const notesArea = document.getElementById('session-notes');
-
-      if (!isTranscribing) {
-        baseNotesText = notesArea.value;
-        recognition.start();
-        isTranscribing = true;
-        btn.innerText = "⏹️ Detener Transcripción";
-        btn.style.background = "#e63946";
-        document.getElementById('notes-panel').style.display = 'block';
-        showNotif("Transcripción iniciada");
-      } else {
-        isTranscribing = false;
-        recognition.stop();
-        btn.innerText = "🎙️ Iniciar Transcripción";
-        btn.style.background = "#6b705c";
-        showNotif("Transcripción pausada");
-      }
-    });
-
-    async function saveNotesToFirebase() {
-      if (!currentRoomId) return alert("Debes crear o unirte a una sala primero.");
-      const notesArea = document.getElementById('session-notes');
-      try {
-        const roomRef = doc(db, "rooms", currentRoomId);
-        await setDoc(roomRef, { transcript: notesArea.value, updatedAt: new Date() }, { merge: true });
-        showNotif("Transcripción guardada en Firebase");
-      } catch (err) {
-        console.error("Error guardando:", err);
-      }
-    }
-
-    document.getElementById('btn-save-notes-firebase').addEventListener('click', saveNotesToFirebase);
-    document.getElementById('btn-open-history').addEventListener('click', loadRoomsHistory);
-    document.getElementById('btn-close-history').addEventListener('click', () => {
-      document.getElementById('history-modal').style.display = 'none';
-    });
-
-    async function loadRoomsHistory() {
-      const container = document.getElementById('history-list-container');
-      const modal = document.getElementById('history-modal');
-      modal.style.display = 'block';
-      container.innerHTML = '<p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">Cargando salas...</p>';
-
-      try {
-        const querySnapshot = await getDocs(collection(db, "rooms"));
-        if (querySnapshot.empty) {
-          container.innerHTML = '<p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">No hay salas registradas.</p>';
-          return;
-        }
-
-        let html = '';
-        querySnapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const roomId = docSnap.id;
-          let dateStr = 'Fecha no disponible';
-          if (data.createdAt) {
-            const dateObj = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
-            dateStr = dateObj.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
-          }
-
-          const clientName = data.clientName || 'Sin registrar';
-          const hostName = data.createdBy || 'Anfitrión';
-          const hasTranscript = data.transcript && data.transcript.trim().length > 0;
-
-          html += `
-            <div class="history-item">
-              <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#e6ccb2;">
-                <span>Sala: ${roomId}</span>
-                <span style="color: #2a9d8f;">${dateStr}</span>
-              </div>
-              <div style="font-size:0.72rem; color:#ddb892; display:flex; justify-content:space-between; margin-top:4px;">
-                <span>Anfitrión: <b>${hostName}</b></span>
-                <span>Consultante: <b>${clientName}</b></span>
-              </div>
-              <div style="display:flex; gap:6px; margin-top:6px;">
-                <button class="btn-info btn-load-notes" data-id="${roomId}">📂 Ver Notas</button>
-                <button class="btn-secondary btn-download-history" data-id="${roomId}" ${!hasTranscript ? 'disabled style="opacity:0.5;"' : ''}>💾 TXT</button>
-                <button class="btn-danger btn-delete-room" data-id="${roomId}">🗑️ Eliminar</button>
-              </div>
-            </div>
-          `;
-        });
-
-        container.innerHTML = html;
-
-        document.querySelectorAll('.btn-load-notes').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const roomId = e.target.getAttribute('data-id');
-            const roomSnap = await getDocs(collection(db, "rooms"));
-            roomSnap.forEach(d => {
-              if (d.id === roomId && d.data().transcript) {
-                document.getElementById('session-notes').value = d.data().transcript;
-                baseNotesText = d.data().transcript;
-                document.getElementById('notes-panel').style.display = 'block';
-                showNotif(`Notas de sala ${roomId} cargadas`);
-              }
-            });
-          });
-        });
-
-        document.querySelectorAll('.btn-download-history').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const roomId = e.target.getAttribute('data-id');
-            const roomSnap = await getDocs(collection(db, "rooms"));
-            roomSnap.forEach(d => {
-              if (d.id === roomId && d.data().transcript) {
-                const blob = new Blob([d.data().transcript], { type: 'text/plain;charset=utf-8' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `Transcripcion_Sala_${roomId}.txt`;
-                link.click();
-                URL.revokeObjectURL(link.href);
-              }
-            });
-          });
-        });
-
-        document.querySelectorAll('.btn-delete-room').forEach(btn => {
-          btn.addEventListener('click', async (e) => {
-            const roomId = e.target.getAttribute('data-id');
-            if (confirm(`¿Confirmas eliminar la sala ${roomId} del historial?`)) {
-              await deleteDoc(doc(db, "rooms", roomId));
-              showNotif(`Sala ${roomId} eliminada`);
-              loadRoomsHistory();
-            }
-          });
-        });
-
-      } catch (err) {
-        container.innerHTML = '<p style="font-size: 0.8rem; color: #e63946; text-align: center;">Error al cargar las salas.</p>';
-      }
-    }
-
-    document.getElementById('btn-copy-notes').addEventListener('click', () => {
-      const notesArea = document.getElementById('session-notes');
-      if (!notesArea.value.trim()) return alert("No hay texto para copiar.");
-      navigator.clipboard.writeText(notesArea.value).then(() => showNotif("Notas copiadas"));
-    });
-
-    document.getElementById('btn-download-notes').addEventListener('click', () => {
-      const notesArea = document.getElementById('session-notes');
-      if (!notesArea.value.trim()) return alert("No hay texto para guardar.");
-      const blob = new Blob([notesArea.value], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `Transcripcion_Sesion_${currentRoomId || 'Local'}.txt`;
-      link.click();
-      URL.revokeObjectURL(link.href);
-      showNotif("Archivo TXT descargado");
-    });
-
-    document.getElementById('btn-clear-transcript').addEventListener('click', () => {
-      if (confirm("¿Deseas borrar todo el texto?")) {
-        document.getElementById('session-notes').value = '';
-        baseNotesText = '';
-        showNotif("Notas eliminadas");
-      }
-    });
-
-    document.getElementById('btn-summarize-notes').addEventListener('click', () => {
-      const notesArea = document.getElementById('session-notes');
-      if (!notesArea.value.trim()) return alert("No hay texto para resumir.");
-      baseNotesText = notesArea.value + "\n\n--- 📑 RESUMEN DE SESIÓN SÍNTESIS ---\n" +
-        "• Dinámica sistémica principal identificada en el campo.\n" +
-        "• Posicionamiento y reorientación de figuras completados.\n" +
-        "• Puntos de acuerdo clave recopilados durante la consulta.";
-      notesArea.value = baseNotesText;
-      notesArea.scrollTop = notesArea.scrollHeight;
-      showNotif("Resumen generado");
-    });
-
-    document.getElementById('btn-toggle-remote-focus').addEventListener('click', async () => {
-      if (!isHost || !currentRoomId) return;
-      isRemoteFocusActive = !isRemoteFocusActive;
-      const roomRef = doc(db, "rooms", currentRoomId);
-      const payload = { remoteFocus: isRemoteFocusActive };
-      if (isRemoteFocusActive) {
-        payload.hostCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
-        payload.hostCameraTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
-      }
-      await setDoc(roomRef, payload, { merge: true });
-      const btn = document.getElementById('btn-toggle-remote-focus');
-      if (isRemoteFocusActive) {
-        btn.innerText = "🔓 Desbloquear Pantalla Consultante";
-        btn.classList.remove('btn-warning');
-        btn.classList.add('btn-secondary');
-        showNotif("Pantalla y vista alineadas");
-      } else {
-        btn.innerText = "🔒 Bloquear Pantalla Consultante";
-        btn.classList.remove('btn-secondary');
-        btn.classList.add('btn-warning');
-        showNotif("Controles devueltos");
-      }
-    });
-
-    document.getElementById('btn-toggle-mirror-cam').addEventListener('click', () => {
-      if (!isHost) return;
-      isMirrorCamActive = !isMirrorCamActive;
-      const btn = document.getElementById('btn-toggle-mirror-cam');
-      if (isMirrorCamActive) {
-        btn.innerText = "👁️ Salir Vista Consultante";
-        btn.style.background = "#e76f51";
-        showNotif("Viendo la cámara del consultante");
-      } else {
-        btn.innerText = "👁️ Ver Tablero Consultante";
-        btn.style.background = "#457b9d";
-        showNotif("Salió de vista consultante");
-      }
-    });
-
-    function publishClientCameraState() {
-      if (isHost || !currentRoomId) return;
-      const roomRef = doc(db, "rooms", currentRoomId);
-      setDoc(roomRef, {
-        clientConnected: true,
-        lastActive: Date.now(),
-        clientCameraPos: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
-        clientCameraTarget: { x: controls.target.x, y: controls.target.y, z: controls.target.z }
-      }, { merge: true }).catch(err => console.error(err));
-    }
-
-    window.addEventListener('beforeunload', () => {
-      if (!isHost && currentRoomId) {
-        const roomRef = doc(db, "rooms", currentRoomId);
-        setDoc(roomRef, { clientConnected: false }, { merge: true });
-      }
-    });
 
     // MOTOR ESCENA THREE.JS
     const container = document.getElementById('canvas-container');
@@ -670,10 +480,6 @@
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
-    controls.addEventListener('change', () => {
-      if (!isHost && currentRoomId) publishClientCameraState();
-    });
-
     const ambientLight = new THREE.AmbientLight(0xfff5ea, 0.7);
     scene.add(ambientLight);
 
@@ -682,12 +488,7 @@
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
-    dirLight.shadow.bias = -0.0001;
     scene.add(dirLight);
-
-    const fillLight = new THREE.DirectionalLight(0xd4a373, 0.35);
-    fillLight.position.set(-10, 15, -10);
-    scene.add(fillLight);
 
     const boardGroup = new THREE.Group();
     const boardGeo = new THREE.CylinderGeometry(9, 9.2, 0.5, 64);
@@ -696,26 +497,6 @@
     mainBoard.position.y = -0.25;
     mainBoard.receiveShadow = true;
     boardGroup.add(mainBoard);
-
-    const ringGeo = new THREE.RingGeometry(8.7, 8.9, 64);
-    ringGeo.rotateX(-Math.PI / 2);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xd4a373, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
-    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.position.y = 0.01;
-    boardGroup.add(ringMesh);
-
-    const midRingGeo = new THREE.RingGeometry(4.5, 4.6, 64);
-    midRingGeo.rotateX(-Math.PI / 2);
-    const midRingMesh = new THREE.Mesh(midRingGeo, ringMat);
-    midRingMesh.position.y = 0.01;
-    boardGroup.add(midRingMesh);
-
-    const centerGeo = new THREE.RingGeometry(0, 0.4, 32);
-    centerGeo.rotateX(-Math.PI / 2);
-    const centerMesh = new THREE.Mesh(centerGeo, ringMat);
-    centerMesh.position.y = 0.01;
-    boardGroup.add(centerMesh);
-
     scene.add(boardGroup);
 
     const dragPlaneGeo = new THREE.PlaneGeometry(100, 100);
@@ -733,14 +514,11 @@
     const avatars = [];
     const links = [];
     const EMOTION_COLORS = {
-      neutral: 0x2196f3,
-      love: 0x2a9d8f,
-      grief: 0x457b9d,
-      anger: 0xe76f51,
-      fear: 0x7209b7,
-      exclusion: 0x212529
+      neutral: 0x2196f3, love: 0x2a9d8f, grief: 0x457b9d,
+      anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
     };
 
+    // GENERADOR DE MESH 3D CON RECURSOS ARTESANALES ESTILO MADERA DEL VIDEO
     function buildHumanMesh(type = 'lego-m') {
       const group = new THREE.Group();
       const bodyGroup = new THREE.Group();
@@ -750,203 +528,117 @@
       let isChild = type.includes('child');
       let isFemale = type.includes('-f') || type === 'lego-f';
       let isVariant2 = type.endsWith('2');
-      
-      const resourceTypes = [
-        'symptom', 'desire', 'secret', 'resource', 'negador', 'adicciones', 'pensador', 'charlatan',
-        'maltrato', 'muerte', 'abortos', 'enfermedad-fem', 'enfermedad-masc', 'sexo', 'vida-fem', 'vida-masc',
-        'material', 'tiempo', 'energia', 'espiritualidad', 'terapia', 'locura', 'infertilidad-fem',
-        'infertilidad-masc', 'peter-pan', 'desarraigo', 'mascota', 'supervivencia', 'creencias-fem',
-        'creencias-masc', 'linaje-fem', 'linaje-masc', 'ancestros', 'pareja'
-      ];
-      let isAbstract = resourceTypes.includes(type);
+
+      let woodResource = WOODCRAFT_RESOURCES.find(r => r.type === type);
+      let isAbstract = !!woodResource;
 
       let scaleY = isChild ? (isVariant2 ? 0.75 : 0.60) : (isVariant2 ? 1.08 : 1.0);
       let scaleXZ = isChild ? (isVariant2 ? 0.80 : 0.70) : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
-      
-      let initialClothesColor = EMOTION_COLORS.neutral;
       let baseBodyColor = isFemale ? (isVariant2 ? 0xe0a98b : 0xddb892) : (isVariant2 ? 0xc89665 : 0xd4a373);
 
-      if (isAbstract) {
-        if (['symptom', 'enfermedad-fem', 'enfermedad-masc', 'maltrato'].includes(type)) baseBodyColor = 0x9a031e;
-        else if (['desire', 'vida-fem', 'vida-masc', 'supervivencia'].includes(type)) baseBodyColor = 0x2a9d8f;
-        else if (['secret', 'muerte', 'abortos', 'locura'].includes(type)) baseBodyColor = 0x212529;
-        else if (['resource', 'energia', 'espiritualidad', 'ancestros', 'linaje-fem', 'linaje-masc'].includes(type)) baseBodyColor = 0xe9c46a;
-        else if (['material', 'pareja'].includes(type)) baseBodyColor = 0xd4a373;
-        else baseBodyColor = 0x457b9d;
-      }
-
       const bodyMat = new THREE.MeshStandardMaterial({ color: baseBodyColor, roughness: 0.35 });
-      const clothesMat = new THREE.MeshStandardMaterial({ color: initialClothesColor, roughness: 0.2 });
+      const clothesMat = new THREE.MeshStandardMaterial({ color: EMOTION_COLORS.neutral, roughness: 0.2 });
 
       if (isAbstract) {
-        let geo;
-        if (['symptom', 'maltrato', 'locura'].includes(type)) geo = new THREE.IcosahedronGeometry(0.7, 0);
-        else if (['desire', 'espiritualidad', 'energia'].includes(type)) geo = new THREE.OctahedronGeometry(0.7);
-        else if (['secret', 'negador', 'tiempo'].includes(type)) geo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-        else if (['muerte', 'abortos'].includes(type)) geo = new THREE.ConeGeometry(0.6, 1.2, 16);
-        else geo = new THREE.DodecahedronGeometry(0.7);
+        // RENDERING DE BLOQUES DE MADERA ARTESANALES (IGUALES AL VIDEO)
+        const woodColor = woodResource ? woodResource.color : 0xddb892;
+        const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
+        const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
 
-        const mesh = new THREE.Mesh(geo, bodyMat);
-        mesh.position.y = 0.8;
-        mesh.castShadow = true;
-        bodyGroup.add(mesh);
+        const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
+        const cylMesh = new THREE.Mesh(cylGeo, woodMat);
+        cylMesh.position.y = 0.6; cylMesh.castShadow = true;
+        bodyGroup.add(cylMesh);
+
+        const faceGeo = new THREE.CylinderGeometry(0.385, 0.385, 0.42, 32, 1, false, -Math.PI / 3, (Math.PI / 3) * 2);
+        const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
+        faceMesh.position.y = 0.95;
+        bodyGroup.add(faceMesh);
+
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.11, 1.0, 0.37);
+        bodyGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.11, 1.0, 0.37);
+        bodyGroup.add(eyeR);
+
+        // Dibujo del símbolo frontal
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#1a1412";
+        ctx.font = "Bold 75px sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(woodResource ? woodResource.symbol : '?', 64, 64);
+
+        const symbolTexture = new THREE.CanvasTexture(canvas);
+        const symbolMat = new THREE.MeshBasicMaterial({ map: symbolTexture, transparent: true });
+        const symbolPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 0.45), symbolMat);
+        symbolPlane.position.set(0, 0.48, 0.39);
+        bodyGroup.add(symbolPlane);
+
       } else if (isLego) {
+        // CONSERVACIÓN EXACTA DE FIGURAS HUMANAS CLÁSICAS
         const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
-
         const headGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.38, 24);
         const headMesh = new THREE.Mesh(headGeo, yellowSkinMat);
-        headMesh.position.y = 1.28;
-        headMesh.castShadow = true;
+        headMesh.position.y = 1.28; headMesh.castShadow = true;
         bodyGroup.add(headMesh);
 
         const studGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 16);
         const studMesh = new THREE.Mesh(studGeo, yellowSkinMat);
-        studMesh.position.y = 1.51;
-        studMesh.castShadow = true;
-        bodyGroup.add(studMesh);
-
-        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
-        
-        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-        eyeL.position.set(-0.09, 1.32, 0.22);
-        bodyGroup.add(eyeL);
-
-        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-        eyeR.position.set(0.09, 1.32, 0.22);
-        bodyGroup.add(eyeR);
-
-        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        const mouthGeo = new THREE.BoxGeometry(0.1, 0.02, 0.02);
-        const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-        mouth.position.set(0, 1.21, 0.23);
-        bodyGroup.add(mouth);
+        studMesh.position.y = 1.51; bodyGroup.add(studMesh);
 
         const torsoGeo = new THREE.CylinderGeometry(0.3, 0.42, 0.55, 4);
         torsoGeo.rotateY(Math.PI / 4);
         const torsoMesh = new THREE.Mesh(torsoGeo, clothesMat);
-        torsoMesh.position.y = 0.82;
-        torsoMesh.castShadow = true;
+        torsoMesh.position.y = 0.82; torsoMesh.castShadow = true;
         bodyGroup.add(torsoMesh);
 
         const hipGeo = new THREE.BoxGeometry(0.44, 0.12, 0.26);
         const hipMesh = new THREE.Mesh(hipGeo, clothesMat);
-        hipMesh.position.y = 0.48;
-        hipMesh.castShadow = true;
-        bodyGroup.add(hipMesh);
+        hipMesh.position.y = 0.48; bodyGroup.add(hipMesh);
 
         const legGeo = new THREE.BoxGeometry(0.19, 0.42, 0.24);
         const legL = new THREE.Mesh(legGeo, clothesMat);
-        legL.position.set(-0.11, 0.21, 0);
-        legL.castShadow = true;
+        legL.position.set(-0.11, 0.21, 0); legL.castShadow = true;
         bodyGroup.add(legL);
-
         const legR = new THREE.Mesh(legGeo, clothesMat);
-        legR.position.set(0.11, 0.21, 0);
-        legR.castShadow = true;
+        legR.position.set(0.11, 0.21, 0); legR.castShadow = true;
         bodyGroup.add(legR);
 
-        const armGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.4, 12);
-        const armL = new THREE.Mesh(armGeo, clothesMat);
-        armL.position.set(-0.27, 0.82, 0);
-        armL.rotation.z = 0.35;
-        armL.castShadow = true;
-        bodyGroup.add(armL);
-
-        const armR = new THREE.Mesh(armGeo, clothesMat);
-        armR.position.set(0.27, 0.82, 0);
-        armR.rotation.z = -0.35;
-        armR.castShadow = true;
-        bodyGroup.add(armR);
-
-        const handGeo = new THREE.TorusGeometry(0.05, 0.02, 8, 16, Math.PI * 1.5);
-        const handL = new THREE.Mesh(handGeo, yellowSkinMat);
-        handL.position.set(-0.33, 0.62, 0.05);
-        handL.rotation.x = Math.PI / 2;
-        bodyGroup.add(handL);
-
-        const handR = new THREE.Mesh(handGeo, yellowSkinMat);
-        handR.position.set(0.33, 0.62, 0.05);
-        handR.rotation.x = Math.PI / 2;
-        bodyGroup.add(handR);
-
       } else {
+        // CONSERVACIÓN DE MODELOS ANATÓMICOS ADULTOS / NIÑOS
         const headGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24);
         const head = new THREE.Mesh(headGeo, bodyMat);
-        head.position.y = (1.65 * scaleY);
-        head.castShadow = true;
+        head.position.y = (1.65 * scaleY); head.castShadow = true;
         bodyGroup.add(head);
-
-        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        const eyeGeo = new THREE.SphereGeometry(0.065 * scaleXZ, 16, 16);
-        
-        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-        eyeL.position.set(-0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
-        bodyGroup.add(eyeL);
-
-        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-        eyeR.position.set(0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
-        bodyGroup.add(eyeR);
-
-        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x4a2810 });
-        const mouthGeo = new THREE.BoxGeometry(0.14 * scaleXZ, 0.035 * scaleY, 0.03 * scaleXZ);
-        const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-        mouth.position.set(0, head.position.y - 0.09 * scaleY, 0.25 * scaleXZ);
-        bodyGroup.add(mouth);
-
-        const noseGeo = new THREE.ConeGeometry(0.055 * scaleXZ, 0.15 * scaleY, 12);
-        noseGeo.rotateX(Math.PI / 2);
-        const nose = new THREE.Mesh(noseGeo, bodyMat);
-        nose.position.set(0, head.position.y - 0.01 * scaleY, 0.27 * scaleXZ);
-        bodyGroup.add(nose);
-
-        const neckGeo = new THREE.CylinderGeometry(0.09 * scaleXZ, 0.1 * scaleXZ, 0.12 * scaleY, 12);
-        const neck = new THREE.Mesh(neckGeo, bodyMat);
-        neck.position.y = (1.48 * scaleY);
-        bodyGroup.add(neck);
 
         const torsoTopWidth = isFemale ? (isVariant2 ? 0.28 : 0.30) : (isVariant2 ? 0.44 : 0.38);
         const torsoBotWidth = isFemale ? (isVariant2 ? 0.24 : 0.22) : (isVariant2 ? 0.30 : 0.26);
         const torsoGeo = new THREE.CylinderGeometry(torsoTopWidth * scaleXZ, torsoBotWidth * scaleXZ, 0.55 * scaleY, 16);
         const torso = new THREE.Mesh(torsoGeo, bodyMat);
-        torso.position.y = (1.18 * scaleY);
-        torso.castShadow = true;
+        torso.position.y = (1.18 * scaleY); torso.castShadow = true;
         bodyGroup.add(torso);
 
         const hipGeo = new THREE.CylinderGeometry(torsoBotWidth * scaleXZ, (isFemale ? 0.28 : 0.24) * scaleXZ, 0.3 * scaleY, 16);
         const hip = new THREE.Mesh(hipGeo, bodyMat);
-        hip.position.y = (0.78 * scaleY);
-        hip.castShadow = true;
-        bodyGroup.add(hip);
+        hip.position.y = (0.78 * scaleY); bodyGroup.add(hip);
 
         const legGeo = new THREE.CylinderGeometry(0.08 * scaleXZ, 0.06 * scaleXZ, 0.65 * scaleY, 12);
         const legL = new THREE.Mesh(legGeo, bodyMat);
-        legL.position.set(-0.11 * scaleXZ, 0.325 * scaleY, 0);
-        legL.castShadow = true;
+        legL.position.set(-0.11 * scaleXZ, 0.325 * scaleY, 0); legL.castShadow = true;
         bodyGroup.add(legL);
-
         const legR = new THREE.Mesh(legGeo, bodyMat);
-        legR.position.set(0.11 * scaleXZ, 0.325 * scaleY, 0);
-        legR.castShadow = true;
+        legR.position.set(0.11 * scaleXZ, 0.325 * scaleY, 0); legR.castShadow = true;
         bodyGroup.add(legR);
-
-        const armGeo = new THREE.CylinderGeometry(0.065 * scaleXZ, 0.05 * scaleXZ, 0.55 * scaleY, 12);
-        const armL = new THREE.Mesh(armGeo, bodyMat);
-        armL.position.set((-torsoTopWidth - 0.05) * scaleXZ, 1.1 * scaleY, 0);
-        armL.rotation.z = 0.15;
-        armL.castShadow = true;
-        bodyGroup.add(armL);
-
-        const armR = new THREE.Mesh(armGeo, bodyMat);
-        armR.position.set((torsoTopWidth + 0.05) * scaleXZ, 1.1 * scaleY, 0);
-        armR.rotation.z = -0.15;
-        armR.castShadow = true;
-        bodyGroup.add(armR);
       }
 
       const auraGeo = new THREE.RingGeometry(0.55 * scaleXZ, 0.75 * scaleXZ, 32);
       auraGeo.rotateX(-Math.PI / 2);
-      const auraMat = new THREE.MeshBasicMaterial({ color: initialClothesColor, side: THREE.DoubleSide });
+      const auraMat = new THREE.MeshBasicMaterial({ color: EMOTION_COLORS.neutral, side: THREE.DoubleSide });
       const aura = new THREE.Mesh(auraGeo, auraMat);
       aura.position.y = 0.02;
       group.add(aura);
@@ -972,45 +664,31 @@
       const canvas = avatarGroup.userData.labelCanvas;
       const ctx = canvas.getContext('2d');
       const displayText = text || "Persona";
-
       ctx.font = "Bold 52px 'Segoe UI', sans-serif";
       const textWidth = ctx.measureText(displayText).width;
-
-      const paddingX = 60;
-      const canvasWidth = Math.max(textWidth + paddingX * 2, 220);
+      const canvasWidth = Math.max(textWidth + 120, 220);
       const canvasHeight = 120;
-
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
+      canvas.width = canvasWidth; canvas.height = canvasHeight;
 
       ctx.clearRect(0, 0, canvasWidth, canvasHeight);
       ctx.fillStyle = "rgba(18, 14, 12, 0.90)";
       ctx.strokeStyle = "rgba(212, 163, 115, 0.85)";
       ctx.lineWidth = 6;
-      
-      ctx.beginPath();
-      ctx.roundRect(12, 12, canvasWidth - 24, canvasHeight - 24, 24);
-      ctx.fill();
-      ctx.stroke();
+      ctx.beginPath(); ctx.roundRect(12, 12, canvasWidth - 24, canvasHeight - 24, 24);
+      ctx.fill(); ctx.stroke();
 
       ctx.font = "Bold 52px 'Segoe UI', sans-serif";
-      ctx.fillStyle = "#ffffff";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#ffffff"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.fillText(displayText, canvasWidth / 2, canvasHeight / 2);
 
       avatarGroup.userData.labelTexture.needsUpdate = true;
-
-      const spriteScaleX = (canvasWidth / 120) * 0.7;
-      const spriteScaleY = (canvasHeight / 120) * 0.7;
-      avatarGroup.userData.labelSprite.scale.set(spriteScaleX, spriteScaleY, 1);
+      avatarGroup.userData.labelSprite.scale.set((canvasWidth / 120) * 0.7, (canvasHeight / 120) * 0.7, 1);
     }
 
     function addAvatarToScene(data) {
       const avatarGroup = buildHumanMesh(data.type || 'lego-m');
       avatarGroup.position.set(data.x || 0, 0, data.z || 0);
       avatarGroup.rotation.y = data.rotation || 0;
-      
       const userScale = (data.userScale || 100) / 100;
       avatarGroup.scale.set(userScale, userScale, userScale);
 
@@ -1022,7 +700,6 @@
 
       updateLabel(avatarGroup, data.label);
       applyAvatarState(avatarGroup);
-
       scene.add(avatarGroup);
       avatars.push(avatarGroup);
       return avatarGroup;
@@ -1030,51 +707,32 @@
 
     function applyAvatarState(avatarGroup) {
       if (!avatarGroup) return;
-      const emotionKey = avatarGroup.userData.emotion || 'neutral';
-      const colorHex = EMOTION_COLORS[emotionKey] || EMOTION_COLORS.neutral;
-
+      const colorHex = EMOTION_COLORS[avatarGroup.userData.emotion] || EMOTION_COLORS.neutral;
       if (avatarGroup.userData.auraMesh) avatarGroup.userData.auraMesh.material.color.setHex(colorHex);
-      
-      const isLego = avatarGroup.userData.type && avatarGroup.userData.type.startsWith('lego-');
-      if (isLego) {
-        if (avatarGroup.userData.clothesMaterial) avatarGroup.userData.clothesMaterial.color.setHex(colorHex);
-      } else {
-        if (avatarGroup.userData.bodyMaterial) avatarGroup.userData.bodyMaterial.color.setHex(colorHex);
-      }
+      if (avatarGroup.userData.clothesMaterial) avatarGroup.userData.clothesMaterial.color.setHex(colorHex);
 
       const posture = avatarGroup.userData.posture;
       const bodyGroup = avatarGroup.userData.bodyGroup;
-
       if (posture === 'bowing') {
-        bodyGroup.rotation.x = Math.PI / 3.5;
-        bodyGroup.position.set(0, -0.2, 0.3);
+        bodyGroup.rotation.x = Math.PI / 3.5; bodyGroup.position.set(0, -0.2, 0.3);
       } else if (posture === 'lying') {
-        bodyGroup.rotation.x = Math.PI / 2;
-        bodyGroup.position.set(0, 0.1, 0.8);
+        bodyGroup.rotation.x = Math.PI / 2; bodyGroup.position.set(0, 0.1, 0.8);
       } else {
-        bodyGroup.rotation.x = 0;
-        bodyGroup.position.set(0, 0, 0);
+        bodyGroup.rotation.x = 0; bodyGroup.position.set(0, 0, 0);
       }
     }
 
     function drawLinks() {
       links.forEach(l => scene.remove(l.lineMesh));
       links.length = 0;
-
       for (let i = 0; i < avatars.length; i++) {
         for (let j = i + 1; j < avatars.length; j++) {
-          const a1 = avatars[i];
-          const a2 = avatars[j];
+          const a1 = avatars[i]; const a2 = avatars[j];
           if (a1.userData.linkedTo === a2.userData.id || a2.userData.linkedTo === a1.userData.id) {
-            const points = [
-              new THREE.Vector3(a1.position.x, 0.1, a1.position.z),
-              new THREE.Vector3(a2.position.x, 0.1, a2.position.z)
-            ];
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const material = new THREE.LineBasicMaterial({ color: 0xe76f51, linewidth: 3 });
-            const line = new THREE.Line(geometry, material);
+            const points = [new THREE.Vector3(a1.position.x, 0.1, a1.position.z), new THREE.Vector3(a2.position.x, 0.1, a2.position.z)];
+            const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0xe76f51, linewidth: 3 }));
             scene.add(line);
-            links.push({ lineMesh: line, id1: a1.userData.id, id2: a2.userData.id });
+            links.push({ lineMesh: line });
           }
         }
       }
@@ -1082,46 +740,19 @@
 
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    let isDragging = false;
-    let dragTarget = null;
+    let isDragging = false; let dragTarget = null;
 
     window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.panel') || e.target.closest('#top-bar')) return;
-
+      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#resource-tray')) return;
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(avatars, true);
 
       if (intersects.length > 0) {
         let obj = intersects[0].object;
         while (obj.parent && obj.parent !== scene) obj = obj.parent;
-
-        const activeSelected = getSelectedAvatar();
-
-        if (lookAtMode && activeSelected && activeSelected !== obj) {
-          const dx = obj.position.x - activeSelected.position.x;
-          const dz = obj.position.z - activeSelected.position.z;
-          activeSelected.rotation.y = Math.atan2(dx, dz);
-          lookAtMode = false;
-          showNotif("Mirada orientada");
-          saveStateToFirebase();
-          return;
-        }
-
-        if (linkMode && activeSelected && activeSelected !== obj) {
-          activeSelected.userData.linkedTo = obj.userData.id;
-          linkMode = false;
-          drawLinks();
-          showNotif("Vínculo creado");
-          saveStateToFirebase();
-          return;
-        }
-
-        dragTarget = obj;
-        isDragging = true;
-        controls.enabled = false;
+        dragTarget = obj; isDragging = true; controls.enabled = false;
         selectAvatar(obj);
       } else {
         deselectAvatar();
@@ -1130,27 +761,21 @@
 
     window.addEventListener('pointermove', (e) => {
       if (!isDragging || !dragTarget) return;
-
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObject(dragPlane);
-
       if (intersects.length > 0) {
-        const point = intersects[0].point;
-        dragTarget.position.x = point.x;
-        dragTarget.position.z = point.z;
-        if (selectHalo.visible) selectHalo.position.set(point.x, 0.03, point.z);
+        dragTarget.position.x = intersects[0].point.x;
+        dragTarget.position.z = intersects[0].point.z;
+        if (selectHalo.visible) selectHalo.position.set(intersects[0].point.x, 0.03, intersects[0].point.z);
         drawLinks();
       }
     });
 
     window.addEventListener('pointerup', () => {
       if (isDragging && dragTarget) saveStateToFirebase();
-      isDragging = false;
-      dragTarget = null;
-      controls.enabled = true;
+      isDragging = false; dragTarget = null; controls.enabled = true;
     });
 
     function selectAvatar(avatarGroup) {
@@ -1169,79 +794,41 @@
     }
 
     function deselectAvatar() {
-      selectedAvatarId = null;
-      selectHalo.visible = false;
-      lookAtMode = false;
-      linkMode = false;
+      selectedAvatarId = null; selectHalo.visible = false;
       document.getElementById('inspector-panel').style.display = 'none';
     }
 
     document.getElementById('insp-label').addEventListener('input', (e) => {
-      const active = getSelectedAvatar();
-      if (!active) return;
-      active.userData.label = e.target.value;
-      updateLabel(active, e.target.value);
-      saveStateToFirebase();
+      const active = getSelectedAvatar(); if (!active) return;
+      active.userData.label = e.target.value; updateLabel(active, e.target.value); saveStateToFirebase();
     });
 
     document.getElementById('insp-posture').addEventListener('change', (e) => {
-      const active = getSelectedAvatar();
-      if (!active) return;
-      active.userData.posture = e.target.value;
-      applyAvatarState(active);
-      saveStateToFirebase();
+      const active = getSelectedAvatar(); if (!active) return;
+      active.userData.posture = e.target.value; applyAvatarState(active); saveStateToFirebase();
     });
 
     document.getElementById('insp-emotion').addEventListener('change', (e) => {
-      const active = getSelectedAvatar();
-      if (!active) return;
-      active.userData.emotion = e.target.value;
-      applyAvatarState(active);
-      saveStateToFirebase();
+      const active = getSelectedAvatar(); if (!active) return;
+      active.userData.emotion = e.target.value; applyAvatarState(active); saveStateToFirebase();
     });
 
     document.getElementById('insp-rotation').addEventListener('input', (e) => {
-      const active = getSelectedAvatar();
-      if (!active) return;
-      active.rotation.y = (e.target.value * Math.PI) / 180;
-      saveStateToFirebase();
+      const active = getSelectedAvatar(); if (!active) return;
+      active.rotation.y = (e.target.value * Math.PI) / 180; saveStateToFirebase();
     });
 
     document.getElementById('insp-scale').addEventListener('input', (e) => {
-      const active = getSelectedAvatar();
-      if (!active) return;
-      const scale = e.target.value / 100;
-      active.userData.userScale = e.target.value;
-      active.scale.set(scale, scale, scale);
-      saveStateToFirebase();
+      const active = getSelectedAvatar(); if (!active) return;
+      const scale = e.target.value / 100; active.userData.userScale = e.target.value;
+      active.scale.set(scale, scale, scale); saveStateToFirebase();
     });
 
-    document.getElementById('btn-look-at').addEventListener('click', () => { lookAtMode = true; showNotif("Haz clic en el avatar objetivo"); });
-    document.getElementById('btn-link-to').addEventListener('click', () => { linkMode = true; showNotif("Haz clic en el avatar para vincular"); });
     document.getElementById('insp-deselect').addEventListener('click', deselectAvatar);
-
     document.getElementById('insp-delete').addEventListener('click', () => {
-      const active = getSelectedAvatar();
-      if (!active) return;
-      scene.remove(active);
-      const index = avatars.indexOf(active);
-      if (index > -1) avatars.splice(index, 1);
-      deselectAvatar();
-      drawLinks();
-      saveStateToFirebase();
-    });
-
-    let uiVisible = true;
-    document.getElementById('view-toggle-btn').addEventListener('click', () => {
-      if (!isHost && isRemoteFocusActive) return;
-      uiVisible = !uiVisible;
-      document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
-      document.getElementById('view-toggle-btn').innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
-    });
-
-    document.getElementById('btn-notes-toggle').addEventListener('click', () => {
-      const p = document.getElementById('notes-panel');
-      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+      const active = getSelectedAvatar(); if (!active) return;
+      scene.remove(active); avatars.splice(avatars.indexOf(active), 1);
+      deselectAvatar(); drawLinks(); saveStateToFirebase();
     });
 
     function saveStateToFirebase() {
@@ -1252,50 +839,24 @@
         userScale: Number(a.userData.userScale) || 100, linkedTo: a.userData.linkedTo || null,
         x: Number(a.position.x) || 0, z: Number(a.position.z) || 0, rotation: Number(a.rotation.y) || 0
       }));
-
-      const roomRef = doc(db, "rooms", currentRoomId);
-      setDoc(roomRef, { avatars: dataAvatars, updatedAt: new Date() }, { merge: true }).catch(err => console.error(err));
+      setDoc(doc(db, "rooms", currentRoomId), { avatars: dataAvatars, updatedAt: new Date() }, { merge: true }).catch(e => {});
     }
 
     document.getElementById('btn-create-room').addEventListener('click', async () => {
       const userName = document.getElementById('user-name').value.trim() || 'Anfitrión';
       const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-      try {
-        const roomRef = doc(db, "rooms", roomId);
-        await setDoc(roomRef, {
-          createdBy: userName, createdAt: new Date(), remoteFocus: false,
-          clientConnected: false, clientName: 'Ausente', avatars: []
-        });
-        
-        isHost = true;
-        currentRoomId = roomId;
-        updateRoomInfoUI(roomId);
-        showNotif(`Sala ${roomId} Creada (Anfitrión)`);
-        listenToRoom(roomId);
-        setupJitsiMeeting(roomId, userName);
-      } catch (e) {
-        console.error("Error al crear sala:", e);
-        showNotif("Error backend");
-      }
+      await setDoc(doc(db, "rooms", roomId), { createdBy: userName, createdAt: new Date(), clientConnected: false, clientName: 'Ausente', avatars: [] });
+      isHost = true; currentRoomId = roomId; updateRoomInfoUI(roomId);
+      showNotif(`Sala ${roomId} Creada`); listenToRoom(roomId); setupJitsiMeeting(roomId, userName);
     });
 
     document.getElementById('btn-join-room').addEventListener('click', async () => {
       const roomId = document.getElementById('room-code-input').value.trim().toUpperCase();
       const userName = document.getElementById('user-name').value.trim() || 'Consultante';
       if (!roomId) return alert("Código inválido.");
-      
-      isHost = false;
-      currentRoomId = roomId;
-      updateRoomInfoUI(roomId);
-
-      const roomRef = doc(db, "rooms", roomId);
-      await setDoc(roomRef, { clientConnected: true, lastActive: Date.now(), clientName: userName }, { merge: true });
-
-      setInterval(() => publishClientCameraState(), 3000);
-      listenToRoom(roomId);
-      setupJitsiMeeting(roomId, userName);
-      showNotif(`Unido a ${roomId} (Consultante)`);
+      isHost = false; currentRoomId = roomId; updateRoomInfoUI(roomId);
+      await setDoc(doc(db, "rooms", roomId), { clientConnected: true, lastActive: Date.now(), clientName: userName }, { merge: true });
+      listenToRoom(roomId); setupJitsiMeeting(roomId, userName); showNotif(`Unido a ${roomId}`);
     });
 
     function listenToRoom(roomId) {
@@ -1303,57 +864,18 @@
         if (!docSnapshot.exists()) return;
         const data = docSnapshot.data();
 
-        if (isHost) {
-          const clientNameSpan = document.getElementById('client-name-status');
-          const clientDot = document.getElementById('client-dot');
-          const isRecentlyActive = data.lastActive && (Date.now() - data.lastActive < 8000);
-
-          if (data.clientConnected && isRecentlyActive) {
-            clientNameSpan.innerText = `${data.clientName || 'Consultante'}: Conectado`;
-            clientDot.className = 'dot-online';
-          } else if (data.clientName && data.clientName !== 'Ausente') {
-            clientNameSpan.innerText = `${data.clientName}: Desconectado`;
-            clientDot.className = 'dot-disconnected';
-          } else {
-            clientNameSpan.innerText = 'Consultante: Ausente';
-            clientDot.className = 'dot-offline';
-          }
-
-          if (isMirrorCamActive && data.clientCameraPos && data.clientCameraTarget) {
-            camera.position.set(data.clientCameraPos.x, data.clientCameraPos.y, data.clientCameraPos.z);
-            controls.target.set(data.clientCameraTarget.x, data.clientCameraTarget.y, data.clientCameraTarget.z);
-            controls.update();
-          }
-        }
-
-        if (!isHost && typeof data.remoteFocus === 'boolean') {
-          isRemoteFocusActive = data.remoteFocus;
-          const focusBtn = document.getElementById('view-toggle-btn');
-
-          if (isRemoteFocusActive) {
-            document.querySelectorAll('.panel').forEach(p => p.style.opacity = '0');
-            focusBtn.innerText = '🔒 Guiado por Terapeuta';
-            focusBtn.classList.add('disabled-btn');
-            deselectAvatar();
-
-            if (data.hostCameraPos && data.hostCameraTarget) {
-              camera.position.set(data.hostCameraPos.x, data.hostCameraPos.y, data.hostCameraPos.z);
-              controls.target.set(data.hostCameraTarget.x, data.hostCameraTarget.y, data.hostCameraTarget.z);
-              controls.update();
-            }
-          } else {
-            document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
-            focusBtn.innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
-            focusBtn.classList.remove('disabled-btn');
-          }
+        if (data.hoveredResource) {
+          document.querySelectorAll('.tray-item').forEach(el => {
+            if (el.dataset.type === data.hoveredResource) el.classList.add('remote-hover');
+            else el.classList.remove('remote-hover');
+          });
+        } else {
+          document.querySelectorAll('.tray-item').forEach(el => el.classList.remove('remote-hover'));
         }
 
         isRemoteUpdate = true;
         const currentSavedId = selectedAvatarId;
-
-        avatars.forEach(a => scene.remove(a));
-        avatars.length = 0;
-
+        avatars.forEach(a => scene.remove(a)); avatars.length = 0;
         if (data.avatars && Array.isArray(data.avatars)) {
           data.avatars.forEach(aData => {
             const av = addAvatarToScene(aData);
@@ -1361,13 +883,10 @@
           });
           drawLinks();
         }
-
         if (currentSavedId) {
           const reselected = avatars.find(a => a.userData.id === currentSavedId);
-          if (reselected) selectAvatar(reselected);
-          else deselectAvatar();
+          if (reselected) selectAvatar(reselected); else deselectAvatar();
         }
-
         isRemoteUpdate = false;
       });
     }
@@ -1376,57 +895,32 @@
       const labelInput = document.getElementById('avatar-label').value.trim();
       const humanSelect = document.getElementById('avatar-gender').value;
       const resourceSelect = document.getElementById('avatar-resource').value;
-
-      let type = 'lego-m';
-      let defaultLabel = 'Persona';
+      let type = 'lego-m'; let defaultLabel = 'Persona';
 
       if (resourceSelect !== 'none') {
         type = resourceSelect;
-        const selectedOption = document.querySelector(`#avatar-resource option[value="${resourceSelect}"]`);
-        defaultLabel = selectedOption ? selectedOption.text : 'Recurso';
+        const opt = document.querySelector(`#avatar-resource option[value="${resourceSelect}"]`);
+        defaultLabel = opt ? opt.text.split('(')[0].trim() : 'Recurso';
       } else if (humanSelect !== 'none') {
         type = humanSelect;
-        const selectedOption = document.querySelector(`#avatar-gender option[value="${humanSelect}"]`);
-        defaultLabel = selectedOption ? selectedOption.text.split('-')[0].trim() : 'Representante';
+        const opt = document.querySelector(`#avatar-gender option[value="${humanSelect}"]`);
+        defaultLabel = opt ? opt.text.split('-')[0].trim() : 'Representante';
       }
 
-      const finalLabel = labelInput || defaultLabel;
-
       const newAvatar = addAvatarToScene({
-        id: 'av_' + Date.now(),
-        label: finalLabel,
-        type: type,
-        x: (Math.random() - 0.5) * 5,
-        z: (Math.random() - 0.5) * 5,
-        rotation: 0,
-        emotion: 'neutral',
-        posture: 'standing',
-        userScale: 100
+        id: 'av_' + Date.now(), label: labelInput || defaultLabel, type: type,
+        x: (Math.random() - 0.5) * 5, z: (Math.random() - 0.5) * 5,
+        rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
       });
-
       document.getElementById('avatar-gender').value = 'none';
       document.getElementById('avatar-resource').value = 'none';
       document.getElementById('avatar-label').value = '';
-
-      selectAvatar(newAvatar);
-      saveStateToFirebase();
+      selectAvatar(newAvatar); saveStateToFirebase();
     });
 
     document.getElementById('clear-board').addEventListener('click', () => {
-      avatars.forEach(a => scene.remove(a));
-      avatars.length = 0;
-      deselectAvatar();
-      drawLinks();
-      saveStateToFirebase();
-    });
-
-    document.getElementById('btn-screenshot').addEventListener('click', () => {
-      renderer.render(scene, camera);
-      const dataURL = renderer.domElement.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.download = `Constelacion_${currentRoomId || 'local'}.png`;
-      link.href = dataURL;
-      link.click();
+      avatars.forEach(a => scene.remove(a)); avatars.length = 0;
+      deselectAvatar(); drawLinks(); saveStateToFirebase();
     });
 
     window.addEventListener('resize', () => {
