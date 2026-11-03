@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.1</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.2</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -109,14 +109,13 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.1</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.2</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
     <button id="open-video-btn" class="top-btn" style="display: none; background: #457b9d; color: #fff;">📹 Abrir Videollamada (Jitsi)</button>
   </div>
 
-  <!-- BANDEJA DE RECURSOS INFERIOR DE ACCESO RÁPIDO -->
   <div id="resource-tray"></div>
 
   <div id="notification">Notificación</div>
@@ -161,7 +160,6 @@
       <input type="text" id="avatar-label" placeholder="Ej. Madre, Abuelo, Anhelo">
     </div>
 
-    <!-- 1. FIGURAS HUMANAS EXACTAS A LA VERSION 2.9.1 -->
     <div class="input-group">
       <label>1. Figura / Representante Humano:</label>
       <select id="avatar-gender">
@@ -189,7 +187,6 @@
       </select>
     </div>
 
-    <!-- 2. RECURSOS EN BLOQUES DE MADERA ARTESANALES -->
     <div class="input-group">
       <label>2. Recursos y Elementos Sistémicos:</label>
       <select id="avatar-resource">
@@ -353,7 +350,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.1)"))
+      .then(() => showNotif("Conectado a Backend (v3.2)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -461,6 +458,266 @@
       return avatars.find(a => a.userData.id === selectedAvatarId) || null;
     }
 
+    // RESTAURACIÓN COMPLETA DE RECONOCIMIENTO DE VOZ / TRANSCRIPCIÓN (v2.9.1)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'es-MX';
+
+      recognition.onresult = (event) => {
+        const notesArea = document.getElementById('session-notes');
+        let finalTranscript = '';
+        let interimTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalTranscript += transcript + ' ';
+          else interimTranscript += transcript;
+        }
+
+        if (finalTranscript) baseNotesText += (baseNotesText ? '\n' : '') + finalTranscript.trim();
+        notesArea.value = baseNotesText + (interimTranscript ? '\n[...' + interimTranscript + ']' : '');
+        notesArea.scrollTop = notesArea.scrollHeight;
+      };
+
+      recognition.onerror = (e) => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
+      recognition.onend = () => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
+    }
+
+    document.getElementById('btn-toggle-transcription').addEventListener('click', () => {
+      if (!recognition) return alert("Tu navegador no soporta transcripción de voz.");
+      const btn = document.getElementById('btn-toggle-transcription');
+      const notesArea = document.getElementById('session-notes');
+
+      if (!isTranscribing) {
+        baseNotesText = notesArea.value;
+        recognition.start();
+        isTranscribing = true;
+        btn.innerText = "⏹️ Detener Transcripción";
+        btn.style.background = "#e63946";
+        document.getElementById('notes-panel').style.display = 'block';
+        showNotif("Transcripción iniciada");
+      } else {
+        isTranscribing = false;
+        recognition.stop();
+        btn.innerText = "🎙️ Iniciar Transcripción";
+        btn.style.background = "#6b705c";
+        showNotif("Transcripción pausada");
+      }
+    });
+
+    async function saveNotesToFirebase() {
+      if (!currentRoomId) return alert("Debes crear o unirte a una sala primero.");
+      const notesArea = document.getElementById('session-notes');
+      try {
+        const roomRef = doc(db, "rooms", currentRoomId);
+        await setDoc(roomRef, { transcript: notesArea.value, updatedAt: new Date() }, { merge: true });
+        showNotif("Transcripción guardada en Firebase");
+      } catch (err) {
+        console.error("Error guardando:", err);
+      }
+    }
+
+    document.getElementById('btn-save-notes-firebase').addEventListener('click', saveNotesToFirebase);
+    document.getElementById('btn-open-history').addEventListener('click', loadRoomsHistory);
+    document.getElementById('btn-close-history').addEventListener('click', () => {
+      document.getElementById('history-modal').style.display = 'none';
+    });
+
+    async function loadRoomsHistory() {
+      const container = document.getElementById('history-list-container');
+      const modal = document.getElementById('history-modal');
+      modal.style.display = 'block';
+      container.innerHTML = '<p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">Cargando salas...</p>';
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "rooms"));
+        if (querySnapshot.empty) {
+          container.innerHTML = '<p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">No hay salas registradas.</p>';
+          return;
+        }
+
+        let html = '';
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const roomId = docSnap.id;
+          let dateStr = 'Fecha no disponible';
+          if (data.createdAt) {
+            const dateObj = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+            dateStr = dateObj.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+          }
+
+          const clientName = data.clientName || 'Sin registrar';
+          const hostName = data.createdBy || 'Anfitrión';
+          const hasTranscript = data.transcript && data.transcript.trim().length > 0;
+
+          html += `
+            <div class="history-item">
+              <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#e6ccb2;">
+                <span>Sala: ${roomId}</span>
+                <span style="color: #2a9d8f;">${dateStr}</span>
+              </div>
+              <div style="font-size:0.72rem; color:#ddb892; display:flex; justify-content:space-between; margin-top:4px;">
+                <span>Anfitrión: <b>${hostName}</b></span>
+                <span>Consultante: <b>${clientName}</b></span>
+              </div>
+              <div style="display:flex; gap:6px; margin-top:6px;">
+                <button class="btn-info btn-load-notes" data-id="${roomId}">📂 Ver Notas</button>
+                <button class="btn-secondary btn-download-history" data-id="${roomId}" ${!hasTranscript ? 'disabled style="opacity:0.5;"' : ''}>💾 TXT</button>
+                <button class="btn-danger btn-delete-room" data-id="${roomId}">🗑️ Eliminar</button>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+
+        document.querySelectorAll('.btn-load-notes').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            const roomSnap = await getDocs(collection(db, "rooms"));
+            roomSnap.forEach(d => {
+              if (d.id === roomId && d.data().transcript) {
+                document.getElementById('session-notes').value = d.data().transcript;
+                baseNotesText = d.data().transcript;
+                document.getElementById('notes-panel').style.display = 'block';
+                showNotif(`Notas de sala ${roomId} cargadas`);
+              }
+            });
+          });
+        });
+
+        document.querySelectorAll('.btn-download-history').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            const roomSnap = await getDocs(collection(db, "rooms"));
+            roomSnap.forEach(d => {
+              if (d.id === roomId && d.data().transcript) {
+                const blob = new Blob([d.data().transcript], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `Transcripcion_Sala_${roomId}.txt`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+              }
+            });
+          });
+        });
+
+        document.querySelectorAll('.btn-delete-room').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            if (confirm(`¿Confirmas eliminar la sala ${roomId} del historial?`)) {
+              await deleteDoc(doc(db, "rooms", roomId));
+              showNotif(`Sala ${roomId} eliminada`);
+              loadRoomsHistory();
+            }
+          });
+        });
+
+      } catch (err) {
+        container.innerHTML = '<p style="font-size: 0.8rem; color: #e63946; text-align: center;">Error al cargar las salas.</p>';
+      }
+    }
+
+    document.getElementById('btn-copy-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para copiar.");
+      navigator.clipboard.writeText(notesArea.value).then(() => showNotif("Notas copiadas"));
+    });
+
+    document.getElementById('btn-download-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para guardar.");
+      const blob = new Blob([notesArea.value], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Transcripcion_Sesion_${currentRoomId || 'Local'}.txt`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      showNotif("Archivo TXT descargado");
+    });
+
+    document.getElementById('btn-clear-transcript').addEventListener('click', () => {
+      if (confirm("¿Deseas borrar todo el texto?")) {
+        document.getElementById('session-notes').value = '';
+        baseNotesText = '';
+        showNotif("Notas eliminadas");
+      }
+    });
+
+    document.getElementById('btn-summarize-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para resumir.");
+      baseNotesText = notesArea.value + "\n\n--- 📑 RESUMEN DE SESIÓN SÍNTESIS ---\n" +
+        "• Dinámica sistémica principal identificada en el campo.\n" +
+        "• Posicionamiento y reorientación de figuras completados.\n" +
+        "• Puntos de acuerdo clave recopilados durante la consulta.";
+      notesArea.value = baseNotesText;
+      notesArea.scrollTop = notesArea.scrollHeight;
+      showNotif("Resumen generado");
+    });
+
+    // RESTAURACIÓN COMPLETA DE CONTROLES MAESTROS EN TIEMPO REAL (v2.9.1)
+    document.getElementById('btn-toggle-remote-focus').addEventListener('click', async () => {
+      if (!isHost || !currentRoomId) return;
+      isRemoteFocusActive = !isRemoteFocusActive;
+      const roomRef = doc(db, "rooms", currentRoomId);
+      const payload = { remoteFocus: isRemoteFocusActive };
+      if (isRemoteFocusActive) {
+        payload.hostCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+        payload.hostCameraTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
+      }
+      await setDoc(roomRef, payload, { merge: true });
+      const btn = document.getElementById('btn-toggle-remote-focus');
+      if (isRemoteFocusActive) {
+        btn.innerText = "🔓 Desbloquear Pantalla Consultante";
+        btn.classList.remove('btn-warning');
+        btn.classList.add('btn-secondary');
+        showNotif("Pantalla y vista alineadas");
+      } else {
+        btn.innerText = "🔒 Bloquear Pantalla Consultante";
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-warning');
+        showNotif("Controles devueltos");
+      }
+    });
+
+    document.getElementById('btn-toggle-mirror-cam').addEventListener('click', () => {
+      if (!isHost) return;
+      isMirrorCamActive = !isMirrorCamActive;
+      const btn = document.getElementById('btn-toggle-mirror-cam');
+      if (isMirrorCamActive) {
+        btn.innerText = "👁️ Salir Vista Consultante";
+        btn.style.background = "#e76f51";
+        showNotif("Viendo la cámara del consultante");
+      } else {
+        btn.innerText = "👁️ Ver Tablero Consultante";
+        btn.style.background = "#457b9d";
+        showNotif("Salió de vista consultante");
+      }
+    });
+
+    function publishClientCameraState() {
+      if (isHost || !currentRoomId) return;
+      const roomRef = doc(db, "rooms", currentRoomId);
+      setDoc(roomRef, {
+        clientConnected: true,
+        lastActive: Date.now(),
+        clientCameraPos: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+        clientCameraTarget: { x: controls.target.x, y: controls.target.y, z: controls.target.z }
+      }, { merge: true }).catch(err => console.error(err));
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if (!isHost && currentRoomId) {
+        const roomRef = doc(db, "rooms", currentRoomId);
+        setDoc(roomRef, { clientConnected: false }, { merge: true });
+      }
+    });
+
     // MOTOR ESCENA THREE.JS
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
@@ -477,6 +734,10 @@
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+
+    controls.addEventListener('change', () => {
+      if (!isHost && currentRoomId) publishClientCameraState();
+    });
 
     const ambientLight = new THREE.AmbientLight(0xfff5ea, 0.7);
     scene.add(ambientLight);
@@ -516,7 +777,6 @@
       anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
     };
 
-    // GENERADOR DE MESH 3D (FIGURAS HUMANAS EXACTAS A LA v2.9.1 RESTAURADAS)
     function buildHumanMesh(type = 'lego-m') {
       const group = new THREE.Group();
       const bodyGroup = new THREE.Group();
@@ -538,7 +798,6 @@
       const clothesMat = new THREE.MeshStandardMaterial({ color: EMOTION_COLORS.neutral, roughness: 0.2 });
 
       if (isAbstract) {
-        // BLOQUES DE MADERA ARTESANALES
         const woodColor = woodResource ? woodResource.color : 0xddb892;
         const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
         const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
@@ -577,7 +836,6 @@
         bodyGroup.add(symbolPlane);
 
       } else if (isLego) {
-        // MINIFIGURAS CLÁSICAS RESTAURADAS EXACTAS DE LA v2.9.1
         const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
 
         const headGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.38, 24);
@@ -645,7 +903,6 @@
         bodyGroup.add(handR);
 
       } else {
-        // MODELOS ANATÓMICOS ADULTOS Y NIÑOS RESTAURADOS EXACTOS DE LA v2.9.1
         const headGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24);
         const head = new THREE.Mesh(headGeo, bodyMat);
         head.position.y = (1.65 * scaleY); head.castShadow = true;
@@ -831,6 +1088,27 @@
       if (intersects.length > 0) {
         let obj = intersects[0].object;
         while (obj.parent && obj.parent !== scene) obj = obj.parent;
+
+        const activeSelected = getSelectedAvatar();
+        if (lookAtMode && activeSelected && activeSelected !== obj) {
+          const dx = obj.position.x - activeSelected.position.x;
+          const dz = obj.position.z - activeSelected.position.z;
+          activeSelected.rotation.y = Math.atan2(dx, dz);
+          lookAtMode = false;
+          showNotif("Mirada orientada");
+          saveStateToFirebase();
+          return;
+        }
+
+        if (linkMode && activeSelected && activeSelected !== obj) {
+          activeSelected.userData.linkedTo = obj.userData.id;
+          linkMode = false;
+          drawLinks();
+          showNotif("Vínculo creado");
+          saveStateToFirebase();
+          return;
+        }
+
         dragTarget = obj; isDragging = true; controls.enabled = false;
         selectAvatar(obj);
       } else {
@@ -873,7 +1151,7 @@
     }
 
     function deselectAvatar() {
-      selectedAvatarId = null; selectHalo.visible = false;
+      selectedAvatarId = null; selectHalo.visible = false; lookAtMode = false; linkMode = false;
       document.getElementById('inspector-panel').style.display = 'none';
     }
 
@@ -903,11 +1181,27 @@
       active.scale.set(scale, scale, scale); saveStateToFirebase();
     });
 
+    document.getElementById('btn-look-at').addEventListener('click', () => { lookAtMode = true; showNotif("Haz clic en el avatar objetivo"); });
+    document.getElementById('btn-link-to').addEventListener('click', () => { linkMode = true; showNotif("Haz clic en el avatar para vincular"); });
     document.getElementById('insp-deselect').addEventListener('click', deselectAvatar);
+
     document.getElementById('insp-delete').addEventListener('click', () => {
       const active = getSelectedAvatar(); if (!active) return;
       scene.remove(active); avatars.splice(avatars.indexOf(active), 1);
       deselectAvatar(); drawLinks(); saveStateToFirebase();
+    });
+
+    let uiVisible = true;
+    document.getElementById('view-toggle-btn').addEventListener('click', () => {
+      if (!isHost && isRemoteFocusActive) return;
+      uiVisible = !uiVisible;
+      document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
+      document.getElementById('view-toggle-btn').innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
+    });
+
+    document.getElementById('btn-notes-toggle').addEventListener('click', () => {
+      const p = document.getElementById('notes-panel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
     });
 
     function saveStateToFirebase() {
@@ -924,7 +1218,10 @@
     document.getElementById('btn-create-room').addEventListener('click', async () => {
       const userName = document.getElementById('user-name').value.trim() || 'Anfitrión';
       const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-      await setDoc(doc(db, "rooms", roomId), { createdBy: userName, createdAt: new Date(), clientConnected: false, clientName: 'Ausente', avatars: [] });
+      await setDoc(doc(db, "rooms", roomId), {
+        createdBy: userName, createdAt: new Date(), remoteFocus: false,
+        clientConnected: false, clientName: 'Ausente', avatars: []
+      });
       isHost = true; currentRoomId = roomId; updateRoomInfoUI(roomId);
       showNotif(`Sala ${roomId} Creada`); listenToRoom(roomId); setupJitsiMeeting(roomId, userName);
     });
@@ -935,13 +1232,60 @@
       if (!roomId) return alert("Código inválido.");
       isHost = false; currentRoomId = roomId; updateRoomInfoUI(roomId);
       await setDoc(doc(db, "rooms", roomId), { clientConnected: true, lastActive: Date.now(), clientName: userName }, { merge: true });
+      setInterval(() => publishClientCameraState(), 3000);
       listenToRoom(roomId); setupJitsiMeeting(roomId, userName); showNotif(`Unido a ${roomId}`);
     });
 
+    // LISTENERS COMPLETOS EN TIEMPO REAL RESTAURADOS (v2.9.1)
     function listenToRoom(roomId) {
       onSnapshot(doc(db, "rooms", roomId), (docSnapshot) => {
         if (!docSnapshot.exists()) return;
         const data = docSnapshot.data();
+
+        if (isHost) {
+          const clientNameSpan = document.getElementById('client-name-status');
+          const clientDot = document.getElementById('client-dot');
+          const isRecentlyActive = data.lastActive && (Date.now() - data.lastActive < 8000);
+
+          if (data.clientConnected && isRecentlyActive) {
+            clientNameSpan.innerText = `${data.clientName || 'Consultante'}: Conectado`;
+            clientDot.className = 'dot-online';
+          } else if (data.clientName && data.clientName !== 'Ausente') {
+            clientNameSpan.innerText = `${data.clientName}: Desconectado`;
+            clientDot.className = 'dot-disconnected';
+          } else {
+            clientNameSpan.innerText = 'Consultante: Ausente';
+            clientDot.className = 'dot-offline';
+          }
+
+          if (isMirrorCamActive && data.clientCameraPos && data.clientCameraTarget) {
+            camera.position.set(data.clientCameraPos.x, data.clientCameraPos.y, data.clientCameraPos.z);
+            controls.target.set(data.clientCameraTarget.x, data.clientCameraTarget.y, data.clientCameraTarget.z);
+            controls.update();
+          }
+        }
+
+        if (!isHost && typeof data.remoteFocus === 'boolean') {
+          isRemoteFocusActive = data.remoteFocus;
+          const focusBtn = document.getElementById('view-toggle-btn');
+
+          if (isRemoteFocusActive) {
+            document.querySelectorAll('.panel').forEach(p => p.style.opacity = '0');
+            focusBtn.innerText = '🔒 Guiado por Terapeuta';
+            focusBtn.classList.add('disabled-btn');
+            deselectAvatar();
+
+            if (data.hostCameraPos && data.hostCameraTarget) {
+              camera.position.set(data.hostCameraPos.x, data.hostCameraPos.y, data.hostCameraPos.z);
+              controls.target.set(data.hostCameraTarget.x, data.hostCameraTarget.y, data.hostCameraTarget.z);
+              controls.update();
+            }
+          } else {
+            document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
+            focusBtn.innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
+            focusBtn.classList.remove('disabled-btn');
+          }
+        }
 
         if (data.hoveredResource) {
           document.querySelectorAll('.tray-item').forEach(el => {
@@ -1000,6 +1344,15 @@
     document.getElementById('clear-board').addEventListener('click', () => {
       avatars.forEach(a => scene.remove(a)); avatars.length = 0;
       deselectAvatar(); drawLinks(); saveStateToFirebase();
+    });
+
+    document.getElementById('btn-screenshot').addEventListener('click', () => {
+      renderer.render(scene, camera);
+      const dataURL = renderer.domElement.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `Constelacion_${currentRoomId || 'local'}.png`;
+      link.href = dataURL;
+      link.click();
     });
 
     window.addEventListener('resize', () => {
