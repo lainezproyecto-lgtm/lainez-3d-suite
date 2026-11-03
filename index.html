@@ -1,17 +1,11 @@
- 
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.6.1</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v2.6.2</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: radial-gradient(circle at center, #231c19 0%, #120e0d 100%);
@@ -20,412 +14,112 @@
       height: 100vh;
       width: 100vw;
     }
-    #canvas-container {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-    }
+    #canvas-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
     .panel {
-      position: absolute;
-      z-index: 10;
-      background: rgba(28, 24, 22, 0.92);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(212, 163, 115, 0.3);
-      border-radius: 12px;
-      padding: 14px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-      max-height: 90vh;
-      overflow-y: auto;
-      transition: opacity 0.3s ease;
+      position: absolute; z-index: 10;
+      background: rgba(28, 24, 22, 0.92); backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 163, 115, 0.3); border-radius: 12px;
+      padding: 14px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      max-height: 90vh; overflow-y: auto; transition: opacity 0.3s ease;
     }
-    #sync-panel {
-      top: 20px;
-      left: 20px;
-      width: 280px;
-    }
-    #controls-panel {
-      top: 20px;
-      right: 20px;
-      width: 320px;
-    }
-    #inspector-panel {
-      bottom: 20px;
-      left: 20px;
-      width: 350px;
-      display: none;
-    }
-    #notes-panel {
-      bottom: 20px;
-      right: 20px;
-      width: 340px;
-      display: none;
-    }
+    #sync-panel { top: 20px; left: 20px; width: 280px; }
+    #controls-panel { top: 20px; right: 20px; width: 320px; }
+    #inspector-panel { bottom: 20px; left: 20px; width: 350px; display: none; }
+    #notes-panel { bottom: 20px; right: 20px; width: 340px; display: none; }
     #history-modal {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 200;
-      width: 90%;
-      max-width: 600px;
-      max-height: 80vh;
-      display: none;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 200; width: 90%; max-width: 600px; max-height: 80vh; display: none;
     }
-
-    /* BARRA SUPERIOR */
     #top-bar {
-      position: absolute;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
-      display: flex;
-      gap: 8px;
-      align-items: center;
+      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 100; display: flex; gap: 8px; align-items: center;
     }
     .top-btn {
-      background: rgba(28, 24, 22, 0.88);
-      border: 1px solid rgba(212, 163, 115, 0.4);
-      color: #e6ccb2;
-      padding: 6px 14px;
-      border-radius: 16px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      backdrop-filter: blur(8px);
-      transition: all 0.2s ease;
-      white-space: nowrap;
+      background: rgba(28, 24, 22, 0.88); border: 1px solid rgba(212, 163, 115, 0.4);
+      color: #e6ccb2; padding: 6px 14px; border-radius: 16px; font-size: 0.78rem;
+      font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px); transition: all 0.2s ease; white-space: nowrap;
     }
-    .top-btn:hover {
-      background: rgba(212, 163, 115, 0.25);
-      color: #fff;
-    }
-    .top-btn.active-audio, .top-btn.active-video {
-      background: #588157;
-      color: #fff;
-      border-color: #a3b18a;
-    }
-    .top-btn.muted-audio, .top-btn.stopped-video {
-      background: #9a031e;
-      color: #fff;
-      border-color: #e63946;
-    }
-    .top-btn.disabled-btn {
-      pointer-events: none;
-      opacity: 0.7;
-      background: rgba(40, 30, 25, 0.9);
-      color: #e9c46a;
-      border-color: rgba(233, 196, 106, 0.5);
-    }
+    .top-btn:hover { background: rgba(212, 163, 115, 0.25); color: #fff; }
+    .top-btn.active-audio, .top-btn.active-video { background: #588157; color: #fff; border-color: #a3b18a; }
+    .top-btn.muted-audio, .top-btn.stopped-video { background: #9a031e; color: #fff; border-color: #e63946; }
+    .top-btn.disabled-btn { pointer-events: none; opacity: 0.7; background: rgba(40, 30, 25, 0.9); color: #e9c46a; }
     .version-tag {
-      position: absolute;
-      bottom: 8px;
-      left: 12px;
-      z-index: 100;
-      font-size: 0.68rem;
-      color: rgba(212, 163, 115, 0.6);
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      pointer-events: none;
+      position: absolute; bottom: 8px; left: 12px; z-index: 100;
+      font-size: 0.68rem; color: rgba(212, 163, 115, 0.6); font-weight: 600;
+      letter-spacing: 0.5px; pointer-events: none;
     }
-
-    /* VENTANA ÚNICA DE VIDEO DEL OTRO PARTICIPANTE */
     #remote-video-box {
-      position: absolute;
-      top: 14px;
-      right: 360px;
-      width: 140px;
-      height: 105px;
-      background: rgba(28, 24, 22, 0.95);
-      border: 1px solid rgba(69, 123, 157, 0.6);
-      border-radius: 10px;
-      overflow: hidden;
-      z-index: 95;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      backdrop-filter: blur(8px);
+      position: absolute; top: 14px; right: 360px; width: 140px; height: 105px;
+      background: rgba(28, 24, 22, 0.95); border: 1px solid rgba(69, 123, 157, 0.6);
+      border-radius: 10px; overflow: hidden; z-index: 95; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
       display: none;
     }
-    #remote-video-box video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background: #110d0c;
-    }
+    #remote-video-box video { width: 100%; height: 100%; object-fit: cover; background: #110d0c; }
     .video-label {
-      position: absolute;
-      bottom: 4px;
-      left: 6px;
-      font-size: 0.62rem;
-      font-weight: 600;
-      color: #f5efe6;
-      background: rgba(0,0,0,0.7);
-      padding: 1px 6px;
-      border-radius: 4px;
+      position: absolute; bottom: 4px; left: 6px; font-size: 0.62rem; font-weight: 600;
+      color: #f5efe6; background: rgba(0,0,0,0.7); padding: 1px 6px; border-radius: 4px;
     }
-
-    h2, h3 {
-      color: #e6ccb2;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .input-group {
-      margin-bottom: 8px;
-    }
-    label {
-      display: block;
-      font-size: 0.75rem;
-      color: #ddb892;
-      margin-bottom: 3px;
-    }
+    h2, h3 { color: #e6ccb2; margin-bottom: 10px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
+    .input-group { margin-bottom: 8px; }
+    label { display: block; font-size: 0.75rem; color: #ddb892; margin-bottom: 3px; }
     input, select, button, textarea {
-      width: 100%;
-      padding: 7px 9px;
-      border-radius: 6px;
-      border: 1px solid #7f5539;
-      background: #27211e;
-      color: #f5efe6;
-      font-size: 0.82rem;
-      outline: none;
+      width: 100%; padding: 7px 9px; border-radius: 6px; border: 1px solid #7f5539;
+      background: #27211e; color: #f5efe6; font-size: 0.82rem; outline: none;
     }
-    textarea {
-      resize: vertical;
-      height: 140px;
-      font-family: inherit;
-      overflow-y: scroll;
-      scrollbar-width: thin;
-      scrollbar-color: #7f5539 #1a1614;
-    }
-    textarea::-webkit-scrollbar {
-      width: 8px;
-    }
-    textarea::-webkit-scrollbar-track {
-      background: #1a1614;
-      border-radius: 4px;
-    }
-    textarea::-webkit-scrollbar-thumb {
-      background: #7f5539;
-      border-radius: 4px;
-    }
-    textarea::-webkit-scrollbar-thumb:hover {
-      background: #9c6644;
-    }
-    button {
-      background: #b08968;
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-      margin-top: 4px;
-    }
-    button:hover {
-      background: #9c6644;
-    }
-    .btn-secondary {
-      background: #588157;
-    }
-    .btn-secondary:hover {
-      background: #3a5a40;
-    }
-    .btn-danger {
-      background: #9a031e;
-    }
-    .btn-danger:hover {
-      background: #5f0f40;
-    }
-    .btn-warning {
-      background: #d4a373;
-      color: #1a1614;
-    }
-    .btn-warning:hover {
-      background: #e6ccb2;
-    }
-    .btn-info {
-      background: #457b9d;
-      color: #fff;
-    }
-    .btn-info:hover {
-      background: #1d3557;
-    }
-    .btn-group {
-      display: flex;
-      gap: 6px;
-    }
-    .btn-group button {
-      flex: 1;
-    }
-    #room-info {
-      margin-top: 8px;
-      padding: 8px;
-      background: rgba(230, 204, 178, 0.08);
-      border-radius: 6px;
-      font-size: 0.78rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      align-items: center;
-    }
-    .btn-copy {
-      background: #7f5539;
-      color: #f5efe6;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      margin-top: 2px;
-      width: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .btn-copy:hover {
-      background: #9c6644;
-    }
+    textarea { resize: vertical; height: 140px; font-family: inherit; }
+    button { background: #b08968; color: #fff; font-weight: 600; cursor: pointer; border: none; margin-top: 4px; }
+    button:hover { background: #9c6644; }
+    .btn-secondary { background: #588157; }
+    .btn-danger { background: #9a031e; }
+    .btn-warning { background: #d4a373; color: #1a1614; }
+    .btn-info { background: #457b9d; color: #fff; }
+    .btn-group { display: flex; gap: 6px; }
+    .btn-group button { flex: 1; }
+    #room-info { margin-top: 8px; padding: 8px; background: rgba(230, 204, 178, 0.08); border-radius: 6px; font-size: 0.78rem; text-align: center; }
+    .btn-copy { background: #7f5539; color: #f5efe6; padding: 4px 10px; border-radius: 4px; font-size: 0.72rem; margin-top: 2px; width: auto; }
     #notification {
-      position: absolute;
-      top: 55px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
-      padding: 6px 16px;
-      border-radius: 14px;
-      background: #b08968;
-      color: white;
-      font-size: 0.8rem;
-      font-weight: 500;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-      display: none;
+      position: absolute; top: 55px; left: 50%; transform: translateX(-50%); z-index: 100;
+      padding: 6px 16px; border-radius: 14px; background: #b08968; color: white; font-size: 0.8rem; display: none;
     }
-    .badge {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      background: rgba(255,255,255,0.1);
-      margin-left: 4px;
-    }
-    .status-box {
-      font-size: 0.73rem;
-      padding: 5px 8px;
-      border-radius: 6px;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(212,163,115,0.2);
-      width: 100%;
-      text-align: left;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .dot-online {
-      height: 8px;
-      width: 8px;
-      background-color: #2a9d8f;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 8px #2a9d8f;
-    }
-    .dot-offline {
-      height: 8px;
-      width: 8px;
-      background-color: #8d99ae;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .dot-disconnected {
-      height: 8px;
-      width: 8px;
-      background-color: #e63946;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 8px #e63946;
-      animation: blinker 1s linear infinite;
-    }
-    @keyframes blinker {
-      50% { opacity: 0.2; }
-    }
-    .history-item {
-      background: rgba(39, 33, 30, 0.8);
-      border: 1px solid rgba(212, 163, 115, 0.2);
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #e6ccb2;
-    }
-    .history-details {
-      font-size: 0.72rem;
-      color: #ddb892;
-      display: flex;
-      justify-content: space-between;
-    }
-    .history-actions {
-      display: flex;
-      gap: 6px;
-      margin-top: 4px;
-    }
-    .history-actions button {
-      padding: 4px 8px;
-      font-size: 0.7rem;
-      margin-top: 0;
-    }
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; background: rgba(255,255,255,0.1); }
+    .status-box { font-size: 0.73rem; padding: 5px 8px; border-radius: 6px; background: rgba(0,0,0,0.3); border: 1px solid rgba(212,163,115,0.2); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .dot-online { height: 8px; width: 8px; background-color: #2a9d8f; border-radius: 50%; display: inline-block; }
+    .dot-offline { height: 8px; width: 8px; background-color: #8d99ae; border-radius: 50%; display: inline-block; }
+    .dot-disconnected { height: 8px; width: 8px; background-color: #e63946; border-radius: 50%; display: inline-block; }
+    .history-item { background: rgba(39, 33, 30, 0.8); border: 1px solid rgba(212, 163, 115, 0.2); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
   </style>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v2.6.1</div>
+  <div class="version-tag">Lainez 3D Pro Suite v2.6.2</div>
   
-  <!-- BARRA SUPERIOR -->
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
     <button id="audio-toggle-btn" class="top-btn">🎙️ Conectar Audio</button>
     <button id="video-toggle-btn" class="top-btn">📹 Ver Participante</button>
   </div>
 
-  <!-- VENTANA ÚNICA DEL OTRO PARTICIPANTE -->
   <div id="remote-video-box">
     <video id="remote-video" autoplay playsinline></video>
     <span id="remote-video-label" class="video-label">Participante</span>
   </div>
 
   <div id="notification">Notificación</div>
-
-  <!-- REPRODUCTOR DE AUDIO REMOTO CON AUTOPLAY Y PLAYSLINE -->
   <audio id="remote-audio" autoplay playsinline></audio>
 
-  <!-- Panel Sincronización -->
   <div id="sync-panel" class="panel">
     <h2>Sincronización en Vivo</h2>
     <div class="input-group">
       <label for="user-name">Tu Nombre / Rol:</label>
       <input type="text" id="user-name" placeholder="Ej. Consultante">
     </div>
-
     <div id="host-create-section">
       <button id="btn-create-room" class="btn-secondary">Crear Nueva Sala (Anfitrión)</button>
     </div>
-
     <div id="join-section">
       <div style="margin: 8px 0; text-align: center; font-size: 0.72rem; color: #ddb892;">— O ÚNETE A UNA —</div>
       <div class="input-group">
@@ -434,28 +128,22 @@
       </div>
       <button id="btn-join-room">Unirse a la Sala</button>
     </div>
-
     <div id="room-info">
       <span id="room-status-text">Estado: Modo local activo</span>
     </div>
-
     <button id="btn-open-history" style="margin-top: 8px; background: #7f5539; display: none;">📜 Historial de Salas</button>
-
     <div id="host-controls" style="display: none; margin-top: 10px; border-top: 1px dashed rgba(212,163,115,0.3); padding-top: 8px;">
       <label style="font-size: 0.7rem; color: #e9c46a;">CONTROL MAESTRO ANFITRIÓN:</label>
-      
       <div class="status-box" style="margin-top: 4px;">
         <span id="client-name-status">Consultante: Ausente</span>
         <span id="client-dot" class="dot-offline"></span>
       </div>
-
       <button id="btn-toggle-remote-focus" class="btn-warning" style="margin-bottom: 4px;">🔒 Bloquear Pantalla Consultante</button>
       <button id="btn-toggle-mirror-cam" class="btn-info" style="margin-bottom: 4px;">👁️ Ver Tablero Consultante</button>
       <button id="btn-toggle-transcription" style="background: #6b705c; color: #fff;">🎙️ Iniciar Transcripción</button>
     </div>
   </div>
 
-  <!-- Panel Creación -->
   <div id="controls-panel" class="panel">
     <h2>Añadir Elemento al Campo</h2>
     <div class="input-group">
@@ -502,15 +190,12 @@
     </div>
   </div>
 
-  <!-- Panel Inspector -->
   <div id="inspector-panel" class="panel">
     <h2>Propiedades <span id="insp-title" class="badge"></span></h2>
-    
     <div class="input-group">
       <label>Etiqueta / Nombre:</label>
       <input type="text" id="insp-label">
     </div>
-
     <div class="input-group">
       <label>Postura Sistémica:</label>
       <select id="insp-posture">
@@ -519,7 +204,6 @@
         <option value="lying">Tumbado (Fallecido / Excluido)</option>
       </select>
     </div>
-
     <div class="input-group">
       <label>Estado / Aura Emocional (Color Vestimenta):</label>
       <select id="insp-emotion">
@@ -531,39 +215,32 @@
         <option value="exclusion">Exclusión (Sombra Oscura)</option>
       </select>
     </div>
-
     <div class="input-group">
       <label>Orientación / Mirada (Grados):</label>
       <input type="range" id="insp-rotation" min="0" max="360" value="0">
     </div>
-
     <div class="input-group">
       <label>Escala / Proporción:</label>
       <input type="range" id="insp-scale" min="50" max="150" value="100">
     </div>
-
     <hr style="border-color: rgba(212,163,115,0.2); margin: 8px 0;">
     <div class="btn-group" style="margin-bottom: 6px;">
       <button id="btn-look-at" style="background: #2a9d8f;">🎯 Mirar A...</button>
       <button id="btn-link-to" style="background: #e76f51;">🔗 Crear Vínculo</button>
     </div>
-
     <div class="btn-group">
       <button id="insp-deselect">Deseleccionar</button>
       <button id="insp-delete" class="btn-danger">Eliminar</button>
     </div>
   </div>
 
-  <!-- Panel Notas Privado de Anfitrión -->
   <div id="notes-panel" class="panel">
     <h2>Notas Confidenciales & Transcripción</h2>
     <textarea id="session-notes" placeholder="Apunta observaciones sistémicas o inicia la transcripción automática de audio..."></textarea>
-    
     <div class="btn-group" style="margin-top: 6px;">
       <button id="btn-summarize-notes" class="btn-secondary">✨ Resumen</button>
       <button id="btn-save-notes-firebase" class="btn-warning">☁️ Guardar Firebase</button>
     </div>
-
     <div class="btn-group" style="margin-top: 4px;">
       <button id="btn-copy-notes" class="btn-info">📋 Copiar</button>
       <button id="btn-download-notes" style="background: #7f5539;">💾 TXT</button>
@@ -571,7 +248,6 @@
     </div>
   </div>
 
-  <!-- Modal Historial de Salas -->
   <div id="history-modal" class="panel">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <h2>📜 Historial de Salas Creadas</h2>
@@ -624,13 +300,13 @@
       }
     }
 
-    // WEBRTC ESTADO MULTIMEDIA
-    let localStream = new MediaStream();
+    // WEBRTC NATIVO Y GESTIÓN DE AUDIO (v2.6.2 CORREGIDO)
+    let localAudioTrack = null;
+    let localVideoTrack = null;
     let peerConnection = null;
     let isAudioConnected = false;
     let isMuted = false;
     let isCameraActive = false;
-    let remoteStream = new MediaStream();
 
     const rtcServers = {
       iceServers: [
@@ -642,7 +318,7 @@
     };
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v2.6.1)"))
+      .then(() => showNotif("Conectado a Backend (v2.6.2)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -666,9 +342,7 @@
           const shareUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}&role=client`;
           navigator.clipboard.writeText(shareUrl).then(() => {
             showNotif("Enlace de acceso copiado al portapapeles");
-          }).catch(err => {
-            console.error("Error copiando enlace:", err);
-          });
+          }).catch(err => console.error(err));
         });
 
         document.getElementById('join-section').style.display = 'none';
@@ -687,75 +361,22 @@
       return avatars.find(a => a.userData.id === selectedAvatarId) || null;
     }
 
-    // TRANSMISIÓN DE CÁMARA (ENCENDIDO / APAGADO)
-    document.getElementById('video-toggle-btn').addEventListener('click', async () => {
-      if (!currentRoomId) return alert("Primero debes crear o unirte a una sala.");
-
-      const videoBtn = document.getElementById('video-toggle-btn');
-      const remoteBox = document.getElementById('remote-video-box');
-
-      if (!isCameraActive) {
-        try {
-          const vidStream = await navigator.mediaDevices.getUserMedia({ video: true });
-          const videoTrack = vidStream.getVideoTracks()[0];
-          
-          localStream.addTrack(videoTrack);
-
-          if (peerConnection) {
-            const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-            if (sender) {
-              sender.replaceTrack(videoTrack);
-            } else {
-              peerConnection.addTrack(videoTrack, localStream);
-            }
-          }
-
-          isCameraActive = true;
-          videoBtn.innerText = "📹 Desconectar Cámara";
-          videoBtn.classList.add('stopped-video');
-          remoteBox.style.display = 'block';
-          showNotif("Cámara encendida");
-        } catch (err) {
-          console.error("Error al acceder a la cámara:", err);
-          showNotif("Permiso de cámara denegado");
-        }
-      } else {
-        const videoTrack = localStream.getVideoTracks()[0];
-        if (videoTrack) {
-          videoTrack.stop();
-          localStream.removeTrack(videoTrack);
-        }
-        
-        isCameraActive = false;
-        videoBtn.innerText = "📹 Ver Participante";
-        videoBtn.classList.remove('stopped-video');
-        remoteBox.style.display = 'none';
-        showNotif("Cámara apagada");
-      }
-    });
-
-    // CONTROL DE MICROFONO Y SILENCIO (v2.6.1)
+    // CONTROL DE MICRÓFONO Y SILENCIO DEFINITIVO (v2.6.2)
     async function toggleAudioConnection() {
       const audioBtn = document.getElementById('audio-toggle-btn');
       
       if (!currentRoomId) {
-        return alert("Primero debes crear o unirte a una sala para activar el audio.");
+        return alert("Primero debes crear o unirte a una sala.");
       }
 
+      // 1. Si no está conectado, solicitar permiso y capturar el track local
       if (!isAudioConnected) {
         try {
           const audStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          const audioTrack = audStream.getAudioTracks()[0];
+          localAudioTrack = audStream.getAudioTracks()[0];
           
-          localStream.addTrack(audioTrack);
-
           if (peerConnection) {
-            const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'audio');
-            if (sender) {
-              sender.replaceTrack(audioTrack);
-            } else {
-              peerConnection.addTrack(audioTrack, localStream);
-            }
+            peerConnection.addTrack(localAudioTrack, audStream);
           }
 
           isAudioConnected = true;
@@ -765,14 +386,14 @@
           showNotif("Micrófono conectado");
 
         } catch (err) {
-          console.error("Error micrófono:", err);
+          console.error("Error al capturar micrófono:", err);
           showNotif("Permiso de micrófono denegado");
         }
       } else {
-        const audioTrack = localStream.getAudioTracks()[0];
-        if (audioTrack) {
+        // 2. Si ya está conectado, alternar SILENCIO directamente sobre la pista activa
+        if (localAudioTrack) {
           isMuted = !isMuted;
-          audioTrack.enabled = !isMuted;
+          localAudioTrack.enabled = !isMuted; // Apaga la transmisión de audio
           
           if (isMuted) {
             audioBtn.innerText = "🔇 Mic Silenciado";
@@ -790,6 +411,125 @@
     }
 
     document.getElementById('audio-toggle-btn').addEventListener('click', toggleAudioConnection);
+
+    // CÁMARA LOCAL Y TRANSMISIÓN
+    document.getElementById('video-toggle-btn').addEventListener('click', async () => {
+      if (!currentRoomId) return alert("Primero debes crear o unirte a una sala.");
+
+      const videoBtn = document.getElementById('video-toggle-btn');
+      const remoteBox = document.getElementById('remote-video-box');
+
+      if (!isCameraActive) {
+        try {
+          const vidStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          localVideoTrack = vidStream.getVideoTracks()[0];
+
+          if (peerConnection) {
+            peerConnection.addTrack(localVideoTrack, vidStream);
+          }
+
+          isCameraActive = true;
+          videoBtn.innerText = "📹 Desconectar Cámara";
+          videoBtn.classList.add('stopped-video');
+          remoteBox.style.display = 'block';
+          showNotif("Cámara encendida");
+        } catch (err) {
+          console.error("Error cámara:", err);
+          showNotif("Permiso de cámara denegado");
+        }
+      } else {
+        if (localVideoTrack) {
+          localVideoTrack.stop();
+          localVideoTrack = null;
+        }
+        isCameraActive = false;
+        videoBtn.innerText = "📹 Ver Participante";
+        videoBtn.classList.remove('stopped-video');
+        remoteBox.style.display = 'none';
+        showNotif("Cámara apagada");
+      }
+    });
+
+    // INICIALIZACIÓN DE LA CONEXIÓN WEBRTC (Sincronizada con Firebase)
+    async function setupWebRTCConnection() {
+      peerConnection = new RTCPeerConnection(rtcServers);
+
+      // Si el micrófono o la cámara se encendieron antes de establecer la conexión, agregarlos
+      if (localAudioTrack) peerConnection.addTrack(localAudioTrack);
+      if (localVideoTrack) peerConnection.addTrack(localVideoTrack);
+
+      // RECEPCIÓN DE AUDIO Y VIDEO REMOTO
+      peerConnection.ontrack = event => {
+        const remoteAudio = document.getElementById('remote-audio');
+        const remoteVideo = document.getElementById('remote-video');
+        const remoteBox = document.getElementById('remote-video-box');
+
+        if (event.track.kind === 'audio') {
+          remoteAudio.srcObject = event.streams[0];
+          remoteAudio.play().then(() => showNotif("Audio entrante activo"))
+            .catch(err => console.log("Autoplay diferido de audio:", err));
+        }
+
+        if (event.track.kind === 'video') {
+          remoteVideo.srcObject = event.streams[0];
+          remoteBox.style.display = 'block';
+          remoteVideo.play().catch(err => console.log("Autoplay diferido de video:", err));
+        }
+      };
+
+      const roomRef = doc(db, "rooms", currentRoomId);
+      const callerCandidates = collection(roomRef, "callerCandidates");
+      const calleeCandidates = collection(roomRef, "calleeCandidates");
+
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          const targetCol = isHost ? callerCandidates : calleeCandidates;
+          addDoc(targetCol, event.candidate.toJSON());
+        }
+      };
+
+      if (isHost) {
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp } }, { merge: true });
+
+        onSnapshot(roomRef, async snapshot => {
+          const data = snapshot.data();
+          if (peerConnection && !peerConnection.currentRemoteDescription && data && data.answer) {
+            const answer = new RTCSessionDescription(data.answer);
+            await peerConnection.setRemoteDescription(answer);
+          }
+        });
+
+        onSnapshot(calleeCandidates, snapshot => {
+          snapshot.docChanges().forEach(async change => {
+            if (change.type === 'added') {
+              const candidate = new RTCIceCandidate(change.doc.data());
+              await peerConnection.addIceCandidate(candidate);
+            }
+          });
+        });
+      } else {
+        onSnapshot(roomRef, async snapshot => {
+          const data = snapshot.data();
+          if (peerConnection && !peerConnection.currentRemoteDescription && data && data.offer) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            await setDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } }, { merge: true });
+          }
+        });
+
+        onSnapshot(callerCandidates, snapshot => {
+          snapshot.docChanges().forEach(async change => {
+            if (change.type === 'added') {
+              const candidate = new RTCIceCandidate(change.doc.data());
+              await peerConnection.addIceCandidate(candidate);
+            }
+          });
+        });
+      }
+    }
 
     // TRANSCRIPCIÓN EN VIVO
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -823,15 +563,11 @@
 
       recognition.onerror = (e) => {
         console.error("Error Transcripción:", e);
-        if (isTranscribing) {
-          try { recognition.start(); } catch(err) {}
-        }
+        if (isTranscribing) { try { recognition.start(); } catch(err) {} }
       };
 
       recognition.onend = () => {
-        if (isTranscribing) {
-          try { recognition.start(); } catch(err) {}
-        }
+        if (isTranscribing) { try { recognition.start(); } catch(err) {} }
       };
     }
 
@@ -864,19 +600,15 @@
       
       try {
         const roomRef = doc(db, "rooms", currentRoomId);
-        await setDoc(roomRef, {
-          transcript: notesArea.value,
-          updatedAt: new Date()
-        }, { merge: true });
+        await setDoc(roomRef, { transcript: notesArea.value, updatedAt: new Date() }, { merge: true });
         showNotif("Transcripción guardada en Firebase");
       } catch (err) {
-        console.error("Error guardando en Firebase:", err);
+        console.error("Error guardando:", err);
         showNotif("Error al guardar");
       }
     }
 
     document.getElementById('btn-save-notes-firebase').addEventListener('click', saveNotesToFirebase);
-
     document.getElementById('btn-open-history').addEventListener('click', loadRoomsHistory);
     document.getElementById('btn-close-history').addEventListener('click', () => {
       document.getElementById('history-modal').style.display = 'none';
@@ -912,15 +644,15 @@
 
           html += `
             <div class="history-item">
-              <div class="history-header">
+              <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#e6ccb2;">
                 <span>Sala: ${roomId}</span>
                 <span style="color: #2a9d8f;">${dateStr}</span>
               </div>
-              <div class="history-details">
+              <div style="font-size:0.72rem; color:#ddb892; display:flex; justify-content:space-between; margin-top:4px;">
                 <span>Anfitrión: <b>${hostName}</b></span>
                 <span>Consultante: <b>${clientName}</b></span>
               </div>
-              <div class="history-actions">
+              <div style="display:flex; gap:6px; margin-top:6px;">
                 <button class="btn-info btn-load-notes" data-id="${roomId}">📂 Ver Notas</button>
                 <button class="btn-secondary btn-download-history" data-id="${roomId}" ${!hasTranscript ? 'disabled style="opacity:0.5;"' : ''}>💾 TXT</button>
                 <button class="btn-danger btn-delete-room" data-id="${roomId}">🗑️ Eliminar</button>
@@ -983,16 +715,12 @@
     document.getElementById('btn-copy-notes').addEventListener('click', () => {
       const notesArea = document.getElementById('session-notes');
       if (!notesArea.value.trim()) return alert("No hay texto para copiar.");
-      
-      navigator.clipboard.writeText(notesArea.value).then(() => {
-        showNotif("Notas copiadas al portapapeles");
-      }).catch(err => console.error("Error al copiar:", err));
+      navigator.clipboard.writeText(notesArea.value).then(() => showNotif("Notas copiadas"));
     });
 
     document.getElementById('btn-download-notes').addEventListener('click', () => {
       const notesArea = document.getElementById('session-notes');
       if (!notesArea.value.trim()) return alert("No hay texto para guardar.");
-
       const blob = new Blob([notesArea.value], { type: 'text/plain;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -1003,9 +731,8 @@
     });
 
     document.getElementById('btn-clear-transcript').addEventListener('click', () => {
-      if (confirm("¿Deseas borrar todo el texto de las notas y la transcripción?")) {
-        const notesArea = document.getElementById('session-notes');
-        notesArea.value = '';
+      if (confirm("¿Deseas borrar todo el texto?")) {
+        document.getElementById('session-notes').value = '';
         baseNotesText = '';
         showNotif("Notas eliminadas");
       }
@@ -1043,12 +770,12 @@
         btn.innerText = "🔓 Desbloquear Pantalla Consultante";
         btn.classList.remove('btn-warning');
         btn.classList.add('btn-secondary');
-        showNotif("Pantalla y vista del consultante alineadas");
+        showNotif("Pantalla y vista alineadas");
       } else {
         btn.innerText = "🔒 Bloquear Pantalla Consultante";
         btn.classList.remove('btn-secondary');
         btn.classList.add('btn-warning');
-        showNotif("Controles devueltos al consultante");
+        showNotif("Controles devueltos");
       }
     });
 
@@ -1086,94 +813,7 @@
       }
     });
 
-    async function setupWebRTCConnection() {
-      peerConnection = new RTCPeerConnection(rtcServers);
-
-      // Vincular cualquier pista capturada previamente
-      localStream.getTracks().forEach(track => {
-        peerConnection.addTrack(track, localStream);
-      });
-
-      // MANEJO DE RECEPCIÓN DE MEDIOS REMOTOS (v2.6.1)
-      peerConnection.ontrack = event => {
-        event.streams[0].getTracks().forEach(track => {
-          remoteStream.addTrack(track);
-        });
-
-        const remoteAudio = document.getElementById('remote-audio');
-        const remoteVideo = document.getElementById('remote-video');
-        const remoteBox = document.getElementById('remote-video-box');
-
-        remoteAudio.srcObject = remoteStream;
-        remoteVideo.srcObject = remoteStream;
-
-        if (event.track.kind === 'video') {
-          remoteBox.style.display = 'block';
-          remoteVideo.play().catch(err => console.log("Video Autoplay diferido"));
-        }
-        
-        if (event.track.kind === 'audio') {
-          remoteAudio.play().then(() => {
-            showNotif("Audio WebRTC activo");
-          }).catch(err => console.log("Audio Autoplay diferido"));
-        }
-      };
-
-      const roomRef = doc(db, "rooms", currentRoomId);
-      const callerCandidates = collection(roomRef, "callerCandidates");
-      const calleeCandidates = collection(roomRef, "calleeCandidates");
-
-      peerConnection.onicecandidate = event => {
-        if (event.candidate) {
-          const targetCol = isHost ? callerCandidates : calleeCandidates;
-          addDoc(targetCol, event.candidate.toJSON());
-        }
-      };
-
-      if (isHost) {
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        await setDoc(roomRef, { offer: { type: offer.type, sdp: offer.sdp } }, { merge: true });
-
-        onSnapshot(roomRef, async snapshot => {
-          const data = snapshot.data();
-          if (peerConnection && !peerConnection.currentRemoteDescription && data && data.answer) {
-            const answer = new RTCSessionDescription(data.answer);
-            await peerConnection.setRemoteDescription(answer);
-          }
-        });
-
-        onSnapshot(calleeCandidates, snapshot => {
-          snapshot.docChanges().forEach(async change => {
-            if (change.type === 'added') {
-              const candidate = new RTCIceCandidate(change.doc.data());
-              await peerConnection.addIceCandidate(candidate);
-            }
-          });
-        });
-      } else {
-        onSnapshot(roomRef, async snapshot => {
-          const data = snapshot.data();
-          if (peerConnection && !peerConnection.currentRemoteDescription && data && data.offer) {
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-            await setDoc(roomRef, { answer: { type: answer.type, sdp: answer.sdp } }, { merge: true });
-          }
-        });
-
-        onSnapshot(callerCandidates, snapshot => {
-          snapshot.docChanges().forEach(async change => {
-            if (change.type === 'added') {
-              const candidate = new RTCIceCandidate(change.doc.data());
-              await peerConnection.addIceCandidate(candidate);
-            }
-          });
-        });
-      }
-    }
-
-    // ESCENA THREE.JS
+    // MOTOR ESCENA THREE.JS
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
 
@@ -1191,12 +831,9 @@
     controls.dampingFactor = 0.05;
 
     controls.addEventListener('change', () => {
-      if (!isHost && currentRoomId) {
-        publishClientCameraState();
-      }
+      if (!isHost && currentRoomId) publishClientCameraState();
     });
 
-    // ILUMINACIÓN DE ESTUDIO
     const ambientLight = new THREE.AmbientLight(0xfff5ea, 0.7);
     scene.add(ambientLight);
 
@@ -1212,15 +849,9 @@
     fillLight.position.set(-10, 15, -10);
     scene.add(fillLight);
 
-    // TABLERO PRO SUITE
     const boardGroup = new THREE.Group();
-
     const boardGeo = new THREE.CylinderGeometry(9, 9.2, 0.5, 64);
-    const boardMat = new THREE.MeshStandardMaterial({ 
-      color: 0x5c3a21, 
-      roughness: 0.45,
-      metalness: 0.1
-    });
+    const boardMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.45, metalness: 0.1 });
     const mainBoard = new THREE.Mesh(boardGeo, boardMat);
     mainBoard.position.y = -0.25;
     mainBoard.receiveShadow = true;
@@ -1228,12 +859,7 @@
 
     const ringGeo = new THREE.RingGeometry(8.7, 8.9, 64);
     ringGeo.rotateX(-Math.PI / 2);
-    const ringMat = new THREE.MeshBasicMaterial({ 
-      color: 0xd4a373, 
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.4
-    });
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xd4a373, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
     ringMesh.position.y = 0.01;
     boardGroup.add(ringMesh);
@@ -1480,15 +1106,9 @@
       group.add(sprite);
 
       group.userData = {
-        bodyGroup,
-        bodyMaterial: bodyMat,
-        clothesMaterial: clothesMat,
-        auraMesh: aura,
-        labelCanvas: canvas,
-        labelTexture: texture,
-        labelSprite: sprite,
-        type,
-        scaleY
+        bodyGroup, bodyMaterial: bodyMat, clothesMaterial: clothesMat,
+        auraMesh: aura, labelCanvas: canvas, labelTexture: texture,
+        labelSprite: sprite, type, scaleY
       };
 
       return group;
@@ -1668,17 +1288,13 @@
         const point = intersects[0].point;
         dragTarget.position.x = point.x;
         dragTarget.position.z = point.z;
-        if (selectHalo.visible) {
-          selectHalo.position.set(point.x, 0.03, point.z);
-        }
+        if (selectHalo.visible) selectHalo.position.set(point.x, 0.03, point.z);
         drawLinks();
       }
     });
 
     window.addEventListener('pointerup', () => {
-      if (isDragging && dragTarget) {
-        saveStateToFirebase();
-      }
+      if (isDragging && dragTarget) saveStateToFirebase();
       isDragging = false;
       dragTarget = null;
       controls.enabled = true;
@@ -1747,16 +1363,8 @@
       saveStateToFirebase();
     });
 
-    document.getElementById('btn-look-at').addEventListener('click', () => {
-      lookAtMode = true;
-      showNotif("Haz clic en el avatar objetivo");
-    });
-
-    document.getElementById('btn-link-to').addEventListener('click', () => {
-      linkMode = true;
-      showNotif("Haz clic en el avatar para vincular");
-    });
-
+    document.getElementById('btn-look-at').addEventListener('click', () => { lookAtMode = true; showNotif("Haz clic en el avatar objetivo"); });
+    document.getElementById('btn-link-to').addEventListener('click', () => { linkMode = true; showNotif("Haz clic en el avatar para vincular"); });
     document.getElementById('insp-deselect').addEventListener('click', deselectAvatar);
 
     document.getElementById('insp-delete').addEventListener('click', () => {
@@ -1773,7 +1381,6 @@
     let uiVisible = true;
     document.getElementById('view-toggle-btn').addEventListener('click', () => {
       if (!isHost && isRemoteFocusActive) return;
-
       uiVisible = !uiVisible;
       document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
       document.getElementById('view-toggle-btn').innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
@@ -1786,25 +1393,15 @@
 
     function saveStateToFirebase() {
       if (!currentRoomId || isRemoteUpdate) return;
-
       const dataAvatars = avatars.map(a => ({
-        id: a.userData.id,
-        label: a.userData.label || 'Persona',
-        type: a.userData.type || 'lego-m',
-        emotion: a.userData.emotion || 'neutral',
-        posture: a.userData.posture || 'standing',
-        userScale: Number(a.userData.userScale) || 100,
-        linkedTo: a.userData.linkedTo || null,
-        x: Number(a.position.x) || 0,
-        z: Number(a.position.z) || 0,
-        rotation: Number(a.rotation.y) || 0
+        id: a.userData.id, label: a.userData.label || 'Persona', type: a.userData.type || 'lego-m',
+        emotion: a.userData.emotion || 'neutral', posture: a.userData.posture || 'standing',
+        userScale: Number(a.userData.userScale) || 100, linkedTo: a.userData.linkedTo || null,
+        x: Number(a.position.x) || 0, z: Number(a.position.z) || 0, rotation: Number(a.rotation.y) || 0
       }));
 
       const roomRef = doc(db, "rooms", currentRoomId);
-      setDoc(roomRef, {
-        avatars: dataAvatars,
-        updatedAt: new Date()
-      }, { merge: true }).catch(err => console.error("Error guardando:", err));
+      setDoc(roomRef, { avatars: dataAvatars, updatedAt: new Date() }, { merge: true }).catch(err => console.error(err));
     }
 
     document.getElementById('btn-create-room').addEventListener('click', async () => {
@@ -1814,18 +1411,14 @@
       try {
         const roomRef = doc(db, "rooms", roomId);
         await setDoc(roomRef, {
-          createdBy: userName,
-          createdAt: new Date(),
-          remoteFocus: false,
-          clientConnected: false,
-          clientName: 'Ausente',
-          avatars: []
+          createdBy: userName, createdAt: new Date(), remoteFocus: false,
+          clientConnected: false, clientName: 'Ausente', avatars: []
         });
         
         isHost = true;
         currentRoomId = roomId;
         updateRoomInfoUI(roomId);
-        showNotif(`Sala ${roomId} Creada (Modo Anfitrión)`);
+        showNotif(`Sala ${roomId} Creada (Anfitrión)`);
         listenToRoom(roomId);
         await setupWebRTCConnection();
       } catch (e) {
@@ -1844,17 +1437,12 @@
       updateRoomInfoUI(roomId);
 
       const roomRef = doc(db, "rooms", roomId);
-      await setDoc(roomRef, {
-        clientConnected: true,
-        lastActive: Date.now(),
-        clientName: userName
-      }, { merge: true });
+      await setDoc(roomRef, { clientConnected: true, lastActive: Date.now(), clientName: userName }, { merge: true });
 
       setInterval(() => publishClientCameraState(), 3000);
-
       listenToRoom(roomId);
       await setupWebRTCConnection();
-      showNotif(`Unido a ${roomId} (Modo Consultante)`);
+      showNotif(`Unido a ${roomId} (Consultante)`);
     });
 
     function listenToRoom(roomId) {
@@ -1927,11 +1515,8 @@
 
         if (currentSavedId) {
           const reselected = avatars.find(a => a.userData.id === currentSavedId);
-          if (reselected) {
-            selectAvatar(reselected);
-          } else {
-            deselectAvatar();
-          }
+          if (reselected) selectAvatar(reselected);
+          else deselectAvatar();
         }
 
         isRemoteUpdate = false;
@@ -1943,15 +1528,9 @@
       const type = document.getElementById('avatar-gender').value;
 
       const newAvatar = addAvatarToScene({
-        id: 'av_' + Date.now(),
-        label,
-        type,
-        x: (Math.random() - 0.5) * 5,
-        z: (Math.random() - 0.5) * 5,
-        rotation: 0,
-        emotion: 'neutral',
-        posture: 'standing',
-        userScale: 100
+        id: 'av_' + Date.now(), label, type,
+        x: (Math.random() - 0.5) * 5, z: (Math.random() - 0.5) * 5,
+        rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
       });
 
       selectAvatar(newAvatar);
