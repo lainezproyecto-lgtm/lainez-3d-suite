@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.5</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.6</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -24,35 +24,57 @@
     }
     #sync-panel { top: 20px; left: 20px; width: 280px; }
     #controls-panel { top: 20px; right: 20px; width: 330px; }
-    #inspector-panel { bottom: 110px; left: 20px; width: 330px; display: none; }
-    #notes-panel { bottom: 110px; right: 20px; width: 340px; display: none; }
+    #inspector-panel { bottom: 190px; left: 20px; width: 330px; display: none; }
+    #notes-panel { bottom: 190px; right: 20px; width: 340px; display: none; }
     
-    /* CARROUSEL / BANDEJA DE RECURSOS WOODCRAFT INFERIOR */
-    #resource-tray {
-      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
-      z-index: 90; display: flex; gap: 8px; padding: 8px 14px;
-      background: rgba(20, 16, 14, 0.94); border: 1px solid rgba(212, 163, 115, 0.4);
-      border-radius: 16px; backdrop-filter: blur(10px); max-width: 90vw;
-      overflow-x: auto; scrollbar-width: thin; box-shadow: 0 8px 28px rgba(0,0,0,0.7);
+    /* ESTRUCTURA DE DOBLE BANDEJA Y CARROUSELES CON FLECHAS (v3.6) */
+    #bottom-tray-container {
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+      z-index: 90; display: flex; flex-direction: column; gap: 6px; width: 92vw; max-width: 900px;
     }
+    .carousel-section {
+      background: rgba(20, 16, 14, 0.94); border: 1px solid rgba(212, 163, 115, 0.35);
+      border-radius: 12px; padding: 4px 10px 6px 10px; backdrop-filter: blur(10px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.7); display: flex; flex-direction: column;
+    }
+    .carousel-header-title {
+      font-size: 0.65rem; color: #e9c46a; font-weight: bold; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 2px; text-align: center;
+    }
+    .carousel-wrapper {
+      display: flex; align-items: center; position: relative; width: 100%;
+    }
+    .carousel-track {
+      display: flex; gap: 8px; overflow-x: hidden; scroll-behavior: smooth;
+      width: 100%; padding: 4px 2px;
+    }
+    .carousel-arrow {
+      background: rgba(45, 36, 32, 0.9); border: 1px solid rgba(212, 163, 115, 0.5);
+      color: #ffd166; width: 26px; height: 50px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.9rem; z-index: 2; flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .carousel-arrow:hover { background: rgba(212, 163, 115, 0.4); color: #fff; }
+
     .tray-item {
-      flex: 0 0 auto; width: 68px; height: 76px; background: rgba(45, 36, 32, 0.8);
-      border: 1px solid rgba(212, 163, 115, 0.25); border-radius: 10px;
+      flex: 0 0 auto; width: 62px; height: 68px; background: rgba(45, 36, 32, 0.8);
+      border: 1px solid rgba(212, 163, 115, 0.25); border-radius: 8px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.2s ease; position: relative; padding: 4px;
+      cursor: pointer; transition: all 0.2s ease; position: relative; padding: 2px;
     }
     .tray-item:hover, .tray-item.remote-hover {
       background: rgba(212, 163, 115, 0.35); border-color: #ffd166;
-      transform: translateY(-4px); box-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
+      transform: translateY(-3px); box-shadow: 0 0 10px rgba(255, 209, 102, 0.6);
     }
     .tray-item.remote-hover::after {
-      content: '👁️ Mirando'; position: absolute; top: -18px; background: #e76f51;
-      color: white; font-size: 0.58rem; padding: 1px 4px; border-radius: 4px; white-space: nowrap;
+      content: '👁️ Mirando'; position: absolute; top: -16px; background: #e76f51;
+      color: white; font-size: 0.55rem; padding: 1px 3px; border-radius: 4px; white-space: nowrap;
     }
-    .tray-icon { font-size: 1.5rem; margin-bottom: 2px; }
-    .tray-label { font-size: 0.62rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
+    .tray-icon { font-size: 1.3rem; margin-bottom: 2px; }
+    .tray-label { font-size: 0.58rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
 
-    /* MODAL EDITOR VISUAL DE AVATARES v3.5 INTERACTIVO */
+    /* MODAL EDITOR VISUAL DE AVATARES */
     #editor-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       z-index: 250; width: 94%; max-width: 820px; display: none;
@@ -125,18 +147,38 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.5</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.6</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
     <button id="open-video-btn" class="top-btn" style="display: none; background: #457b9d; color: #fff;">📹 Abrir Videollamada (Jitsi)</button>
   </div>
 
-  <div id="resource-tray"></div>
+  <!-- CONTENEDOR DE DOBLE CARROUSEL CON NAVEGACIÓN POR FLECHAS (v3.6) -->
+  <div id="bottom-tray-container">
+    <!-- CARRUSEL 1: RECURSOS -->
+    <div class="carousel-section">
+      <div class="carousel-header-title">🌿 Recursos y Elementos Sistémicos</div>
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow" id="arrow-prev-resources">◀</button>
+        <div class="carousel-track" id="track-resources"></div>
+        <button class="carousel-arrow" id="arrow-next-resources">▶</button>
+      </div>
+    </div>
+    <!-- CARRUSEL 2: AVATARES PERSONALIZADOS -->
+    <div class="carousel-section">
+      <div class="carousel-header-title">🎭 Avatares Personalizados</div>
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow" id="arrow-prev-custom">◀</button>
+        <div class="carousel-track" id="track-custom"></div>
+        <button class="carousel-arrow" id="arrow-next-custom">▶</button>
+      </div>
+    </div>
+  </div>
 
   <div id="notification">Notificación</div>
 
-  <!-- MODAL EDITOR VISUAL DE AVATARES INTERACTIVO PRO (v3.5) -->
+  <!-- MODAL EDITOR VISUAL DE AVATARES -->
   <div id="editor-modal">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h2>🎨 Studio Interactivo de Avatares 3D</h2>
@@ -273,7 +315,7 @@
           </div>
         </div>
 
-        <button id="btn-save-custom-avatar" class="btn-secondary" style="margin-top: 10px; padding: 10px; font-size: 0.9rem;">💾 Añadir Avatar Personalizado a la Bandeja</button>
+        <button id="btn-save-custom-avatar" class="btn-secondary" style="margin-top: 10px; padding: 10px; font-size: 0.9rem;">💾 Añadir a "Avatares Personalizados"</button>
       </div>
     </div>
   </div>
@@ -491,7 +533,8 @@
     let baseNotesText = '';
     let jitsiRoomUrl = '';
 
-    const WOODCRAFT_RESOURCES = [
+    // RECURSOS BASE SISTÉMICOS (CARRUSEL 1)
+    const SYSTEMIC_RESOURCES = [
       { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-cyl' },
       { type: 'symptom', label: 'Hacer Terapia', icon: '🩺', symbol: '🩺', color: 0xb5838d, shape: 'wood-cyl' },
       { type: 'secret', label: 'Lo No Dicho', icon: '✉️', symbol: 'P', color: 0x6b705c, shape: 'wood-box' },
@@ -517,6 +560,14 @@
       { type: 'vida-f', label: 'Vida Femenino', icon: '☀️', symbol: '♀', color: 0xffb703, shape: 'wood-cyl' }
     ];
 
+    // AVATARES PERSONALIZADOS CREADOS (CARRUSEL 2)
+    const CUSTOM_AVATARS = [
+      {
+        type: 'cust_default_1', label: 'Consultante Principal', icon: '🎭', symbol: '★', color: 0x2a9d8f, shape: 'lego-m',
+        customData: { shape: 'lego-m', colorHex: 0x2a9d8f, gaze: 'front', mouth: 'happy', hairStyle: 'short', hairColorHex: 0x3d2314, symbol: '★', icon: '🎭' }
+      }
+    ];
+
     const urlParams = new URLSearchParams(window.location.search);
     const urlRoom = urlParams.get('room');
     const urlRole = urlParams.get('role');
@@ -530,7 +581,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.5)"))
+      .then(() => showNotif("Conectado a Backend (v3.6)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -540,38 +591,66 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    const resourceTray = document.getElementById('resource-tray');
-    function renderTrayItems() {
-      resourceTray.innerHTML = '';
-      WOODCRAFT_RESOURCES.forEach(res => {
-        const item = document.createElement('div');
-        item.className = 'tray-item';
-        item.dataset.type = res.type;
-        item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
+    // RENDERIZADO Y LÓGICA DE DOBLE CARROUSEL CON FLECHAS (v3.6)
+    function renderCarousels() {
+      const trackResources = document.getElementById('track-resources');
+      const trackCustom = document.getElementById('track-custom');
 
-        item.addEventListener('mouseenter', () => broadcastHoverState(res.type, true));
-        item.addEventListener('mouseleave', () => broadcastHoverState(res.type, false));
+      trackResources.innerHTML = '';
+      SYSTEMIC_RESOURCES.forEach(res => {
+        trackResources.appendChild(createTrayCard(res));
+      });
 
-        item.addEventListener('click', () => {
-          const active = getSelectedAvatar();
-          if (active) {
-            replaceAvatarType(active, res.type, res.label);
-            showNotif(`Figura modificada a: ${res.label}`);
-          } else {
-            const newAv = addAvatarToScene({
-              id: 'av_' + Date.now(), label: res.label, type: res.type,
-              x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
-              rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100,
-              customData: res.customData || null
-            });
-            selectAvatar(newAv); saveStateToFirebase();
-            showNotif(`Añadido: ${res.label}`);
-          }
-        });
-        resourceTray.appendChild(item);
+      trackCustom.innerHTML = '';
+      CUSTOM_AVATARS.forEach(res => {
+        trackCustom.appendChild(createTrayCard(res));
       });
     }
-    renderTrayItems();
+
+    function createTrayCard(res) {
+      const item = document.createElement('div');
+      item.className = 'tray-item';
+      item.dataset.type = res.type;
+      item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
+
+      item.addEventListener('mouseenter', () => broadcastHoverState(res.type, true));
+      item.addEventListener('mouseleave', () => broadcastHoverState(res.type, false));
+
+      item.addEventListener('click', () => {
+        const active = getSelectedAvatar();
+        if (active) {
+          replaceAvatarType(active, res.type, res.label);
+          showNotif(`Figura modificada a: ${res.label}`);
+        } else {
+          const newAv = addAvatarToScene({
+            id: 'av_' + Date.now(), label: res.label, type: res.type,
+            x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
+            rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100,
+            customData: res.customData || null
+          });
+          selectAvatar(newAv); saveStateToFirebase();
+          showNotif(`Añadido: ${res.label}`);
+        }
+      });
+      return item;
+    }
+
+    // EVENTOS DE FLECHAS EN CADA CARRUSEL
+    document.getElementById('arrow-prev-resources').addEventListener('click', () => {
+      document.getElementById('track-resources').scrollBy({ left: -220, behavior: 'smooth' });
+    });
+    document.getElementById('arrow-next-resources').addEventListener('click', () => {
+      document.getElementById('track-resources').scrollBy({ left: 220, behavior: 'smooth' });
+    });
+
+    document.getElementById('arrow-prev-custom').addEventListener('click', () => {
+      document.getElementById('track-custom').scrollBy({ left: -220, behavior: 'smooth' });
+    });
+    document.getElementById('arrow-next-custom').addEventListener('click', () => {
+      document.getElementById('track-custom').scrollBy({ left: 220, behavior: 'smooth' });
+    });
+
+    renderCarousels();
 
     function broadcastHoverState(type, isHovered) {
       if (!currentRoomId) return;
@@ -583,8 +662,12 @@
       avatarGroup.userData.type = newType;
       avatarGroup.userData.label = newLabel;
 
+      let customData = null;
+      const foundCustom = CUSTOM_AVATARS.find(c => c.type === newType);
+      if (foundCustom) customData = foundCustom.customData;
+
       while(avatarGroup.children.length > 0){ avatarGroup.remove(avatarGroup.children[0]); }
-      const freshGroup = buildHumanMesh(newType, avatarGroup.userData.customData);
+      const freshGroup = buildHumanMesh(newType, customData);
       while(freshGroup.children.length > 0){ avatarGroup.add(freshGroup.children[0]); }
 
       avatarGroup.userData.bodyGroup = freshGroup.userData.bodyGroup;
@@ -594,6 +677,7 @@
       avatarGroup.userData.labelCanvas = freshGroup.userData.labelCanvas;
       avatarGroup.userData.labelTexture = freshGroup.userData.labelTexture;
       avatarGroup.userData.labelSprite = freshGroup.userData.labelSprite;
+      avatarGroup.userData.customData = customData;
 
       updateLabel(avatarGroup, newLabel);
       applyAvatarState(avatarGroup);
@@ -601,7 +685,7 @@
       saveStateToFirebase();
     }
 
-    // MOTOR VISTA PREVIA EDITOR 3D (v3.5 - CÁMARA FIJA, FRENTE Y CENTRADA)
+    // MOTOR VISTA PREVIA EDITOR 3D (v3.6 - REPARACIÓN SECCIONES 2 Y 3)
     let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
     function initEditorPreview() {
       const container = document.getElementById('editor-preview-container');
@@ -609,7 +693,7 @@
 
       edScene = new THREE.Scene();
       edCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-      edCamera.position.set(0, 1.15, 2.9); // Posición perfectamente de frente y centrada
+      edCamera.position.set(0, 1.15, 2.9);
 
       edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       edRenderer.setSize(container.clientWidth, container.clientHeight);
@@ -617,10 +701,10 @@
 
       edControls = new THREE.OrbitControls(edCamera, edRenderer.domElement);
       edControls.enableDamping = true;
-      edControls.target.set(0, 0.85, 0); // Enfoque directo al pecho/rostro
-      edControls.autoRotate = false; // DESACTIVADA ROTACIÓN (Figura Fija de frente)
+      edControls.target.set(0, 0.85, 0);
+      edControls.autoRotate = false;
 
-      const ambLight = new THREE.AmbientLight(0xffffff, 0.9);
+      const ambLight = new THREE.AmbientLight(0xffffff, 0.95);
       edScene.add(ambLight);
       const dLight = new THREE.DirectionalLight(0xffe8d6, 1.1);
       dLight.position.set(2, 6, 5);
@@ -688,8 +772,13 @@
       updateEditorPreview();
     });
 
+    // LISTENERS REPARADOS EN SECCIONES 2 Y 3
     ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth', 'ed-hair-style', 'ed-hair-color', 'ed-symbol-custom', 'ed-icon-select'].forEach(id => {
-      document.getElementById(id).addEventListener('input', updateEditorPreview);
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', updateEditorPreview);
+        el.addEventListener('change', updateEditorPreview);
+      }
     });
 
     document.getElementById('btn-save-custom-avatar').addEventListener('click', () => {
@@ -697,13 +786,13 @@
       const label = document.getElementById('ed-label').value.trim() || 'Avatar Custom';
       const customId = 'cust_' + Date.now();
 
-      WOODCRAFT_RESOURCES.push({
+      CUSTOM_AVATARS.push({
         type: customId, label: label, icon: cData.icon, symbol: cData.symbol, color: cData.colorHex, shape: cData.shape, customData: cData
       });
 
-      renderTrayItems();
+      renderCarousels();
       document.getElementById('editor-modal').style.display = 'none';
-      showNotif(`¡Avatar "${label}" añadido a la bandeja!`);
+      showNotif(`¡Avatar "${label}" guardado en Avatares Personalizados!`);
 
       const newAv = addAvatarToScene({
         id: 'av_' + Date.now(), label: label, type: customId,
@@ -1143,7 +1232,6 @@
       return bodyGroup;
     }
 
-    // CONSTRUCTOR INTERACTIVO DE CABELLO 3D (v3.5)
     function buildHairMesh(style, hairColorHex, scaleXZ, scaleY, isLego) {
       if (!style || style === 'none') return null;
       const hairGroup = new THREE.Group();
@@ -1209,8 +1297,11 @@
       let isFemale = type.includes('-f') || type === 'lego-f';
       let isVariant2 = type.endsWith('2');
 
-      let woodResource = WOODCRAFT_RESOURCES.find(r => r.type === type);
-      let isAbstract = !!woodResource;
+      let systemicResource = SYSTEMIC_RESOURCES.find(r => r.type === type);
+      let customResource = CUSTOM_AVATARS.find(r => r.type === type);
+      let isAbstract = !!systemicResource;
+
+      if (customResource && customResource.customData) customData = customResource.customData;
 
       let scaleY = isChild ? (isVariant2 ? 0.75 : 0.60) : (isVariant2 ? 1.08 : 1.0);
       let scaleXZ = isChild ? (isVariant2 ? 0.80 : 0.70) : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
@@ -1223,7 +1314,7 @@
 
       let bodyGroup;
       if (isAbstract) {
-        bodyGroup = buildWoodcraftOrHuman(woodResource);
+        bodyGroup = buildWoodcraftOrHuman(systemicResource);
         group.add(bodyGroup);
       } else if (isLego) {
         bodyGroup = new THREE.Group();
@@ -1240,7 +1331,6 @@
         studMesh.position.y = 1.51; studMesh.castShadow = true;
         bodyGroup.add(studMesh);
 
-        // DIRECCIÓN DE LA MIRADA Y OJOS (v3.5)
         const gaze = customData ? customData.gaze : 'front';
         let gazeX = 0, gazeY = 0;
         if (gaze === 'left') gazeX = -0.04;
@@ -1263,7 +1353,6 @@
           eyeR.position.set(0.09 + gazeX, 1.32 + gazeY, 0.22); bodyGroup.add(eyeR);
         }
 
-        // BOCA Y EXPRESIÓN FACIAL (v3.5)
         const mouthType = customData ? customData.mouth : 'neutral';
         const mouthMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
         let mouthGeo;
@@ -1537,7 +1626,7 @@
     let isDragging = false; let dragTarget = null;
 
     window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#resource-tray') || e.target.closest('#editor-modal')) return;
+      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#bottom-tray-container') || e.target.closest('#editor-modal')) return;
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
