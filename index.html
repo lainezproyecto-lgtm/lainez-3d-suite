@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7.1</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7.3</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -49,19 +49,13 @@
       font-size: 0.65rem; color: #e9c46a; font-weight: bold; text-transform: uppercase;
       letter-spacing: 0.5px; margin-bottom: 2px; text-align: center;
     }
-    .carousel-wrapper {
-      display: flex; align-items: center; position: relative; width: 100%;
-    }
-    .carousel-track {
-      display: flex; gap: 6px; overflow-x: hidden; scroll-behavior: smooth;
-      width: 100%; padding: 4px 2px;
-    }
+    .carousel-wrapper { display: flex; align-items: center; position: relative; width: 100%; }
+    .carousel-track { display: flex; gap: 6px; overflow-x: hidden; scroll-behavior: smooth; width: 100%; padding: 4px 2px; }
     .carousel-arrow {
       background: rgba(45, 36, 32, 0.9); border: 1px solid rgba(212, 163, 115, 0.5);
       color: #ffd166; width: 24px; height: 46px; border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 0.85rem; z-index: 2; flex-shrink: 0;
-      transition: all 0.2s ease;
+      cursor: pointer; font-size: 0.85rem; z-index: 2; flex-shrink: 0; transition: all 0.2s ease;
     }
     .carousel-arrow:hover { background: rgba(212, 163, 115, 0.4); color: #fff; }
 
@@ -82,7 +76,7 @@
     .tray-icon { font-size: 1.2rem; margin-bottom: 2px; }
     .tray-label { font-size: 0.55rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
 
-    /* MODAL EDITOR VISUAL DE AVATARES */
+    /* STUDIO DE AVATARES */
     #editor-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       z-index: 250; width: 94%; max-width: 860px; display: none;
@@ -100,10 +94,7 @@
     .editor-controls-column { flex: 1 1 380px; display: flex; flex-direction: column; gap: 8px; }
     .editor-section-title { font-size: 0.76rem; color: #e9c46a; font-weight: bold; text-transform: uppercase; margin-top: 4px; border-bottom: 1px solid rgba(212,163,115,0.2); padding-bottom: 2px; }
 
-    #top-bar {
-      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
-      z-index: 100; display: flex; gap: 8px; align-items: center;
-    }
+    #top-bar { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; gap: 8px; align-items: center; }
     .top-btn {
       background: rgba(28, 24, 22, 0.88); border: 1px solid rgba(212, 163, 115, 0.4);
       color: #e6ccb2; padding: 6px 14px; border-radius: 16px; font-size: 0.78rem;
@@ -111,11 +102,7 @@
       backdrop-filter: blur(8px); transition: all 0.2s ease; white-space: nowrap;
     }
     .top-btn:hover { background: rgba(212, 163, 115, 0.25); color: #fff; }
-    .version-tag {
-      position: absolute; bottom: 8px; left: 12px; z-index: 100;
-      font-size: 0.68rem; color: rgba(212, 163, 115, 0.6); font-weight: 600;
-      letter-spacing: 0.5px; pointer-events: none;
-    }
+    .version-tag { position: absolute; bottom: 8px; left: 12px; z-index: 100; font-size: 0.68rem; color: rgba(212, 163, 115, 0.6); font-weight: 600; pointer-events: none; }
 
     h2, h3 { color: #e6ccb2; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
     .input-group { margin-bottom: 6px; }
@@ -140,9 +127,6 @@
       padding: 6px 16px; border-radius: 14px; background: #b08968; color: white; font-size: 0.8rem; display: none;
     }
     .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; background: rgba(255,255,255,0.1); }
-    .status-box { font-size: 0.73rem; padding: 5px 8px; border-radius: 6px; background: rgba(0,0,0,0.3); border: 1px solid rgba(212,163,115,0.2); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
-    .dot-online { height: 8px; width: 8px; background-color: #2a9d8f; border-radius: 50%; display: inline-block; }
-    .dot-offline { height: 8px; width: 8px; background-color: #8d99ae; border-radius: 50%; display: inline-block; }
   </style>
 
   <script type="importmap">
@@ -157,7 +141,7 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.7.1</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.7.3</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
@@ -187,8 +171,8 @@
 
   <div id="editor-modal">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>🎨 Studio Interactivo de Avatares 3D (v3.7.1)</h2>
-      <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 3px 10px;">✕ Cerrar</button>
+      <h2>🎨 Studio Interactivo de Avatares 3D</h2>
+      <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 4px 12px; cursor: pointer;">✕ Cerrar</button>
     </div>
     <div class="editor-layout">
       <div id="editor-preview-container">
@@ -464,6 +448,7 @@
 
     let currentRoomId = null;
     let selectedAvatarId = null;
+    const avatars = [];
 
     const SYSTEMIC_RESOURCES = [
       { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-cyl' },
@@ -483,7 +468,7 @@
       }
     ];
 
-    signInAnonymously(auth).then(() => showNotif("v3.7.1 Listo"));
+    signInAnonymously(auth).then(() => showNotif("v3.7.3 Conectado"));
 
     function showNotif(msg) {
       const notif = document.getElementById('notification');
@@ -492,7 +477,57 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    /* SISTEMA DE TEXTURA DE ROSTRO CORREGIDO CON CANVAS 2D */
+    /* CARROUSELES SUPERIORES EN BANDEJA */
+    function renderCarousels() {
+      const trackResources = document.getElementById('track-resources');
+      const trackCustom = document.getElementById('track-custom');
+      if (!trackResources || !trackCustom) return;
+
+      trackResources.innerHTML = '';
+      SYSTEMIC_RESOURCES.forEach(res => {
+        trackResources.appendChild(createTrayCard(res));
+      });
+
+      trackCustom.innerHTML = '';
+      CUSTOM_AVATARS.forEach(res => {
+        trackCustom.appendChild(createTrayCard(res));
+      });
+    }
+
+    function createTrayCard(res) {
+      const item = document.createElement('div');
+      item.className = 'tray-item';
+      item.dataset.type = res.type;
+      item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
+
+      item.addEventListener('click', () => {
+        const newAv = addAvatarToScene({
+          id: 'av_' + Date.now(), label: res.label, type: res.type,
+          x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
+          rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100,
+          customData: res.customData || null
+        });
+        showNotif(`Añadido: ${res.label}`);
+      });
+      return item;
+    }
+
+    document.getElementById('arrow-prev-resources').addEventListener('click', () => {
+      document.getElementById('track-resources').scrollBy({ left: -180, behavior: 'smooth' });
+    });
+    document.getElementById('arrow-next-resources').addEventListener('click', () => {
+      document.getElementById('track-resources').scrollBy({ left: 180, behavior: 'smooth' });
+    });
+    document.getElementById('arrow-prev-custom').addEventListener('click', () => {
+      document.getElementById('track-custom').scrollBy({ left: -180, behavior: 'smooth' });
+    });
+    document.getElementById('arrow-next-custom').addEventListener('click', () => {
+      document.getElementById('track-custom').scrollBy({ left: 180, behavior: 'smooth' });
+    });
+
+    renderCarousels();
+
+    /* RENDERIZADO FACIAL 2D SOBRE TEXTURA */
     function createFaceTexture(mouthType, gazeType) {
       const canvas = document.createElement('canvas');
       canvas.width = 256; canvas.height = 256;
@@ -505,7 +540,6 @@
       else if (gazeType === 'up') gazeY = -12;
       else if (gazeType === 'down') gazeY = 12;
 
-      // Dibujar Ojos
       ctx.fillStyle = "#1a1412";
       if (gazeType === 'closed') {
         ctx.lineWidth = 6; ctx.strokeStyle = "#1a1412";
@@ -516,7 +550,6 @@
         ctx.beginPath(); ctx.arc(171 + gazeX, 100 + gazeY, 10, 0, Math.PI * 2); ctx.fill();
       }
 
-      // Dibujar Boca Emocional Dinámica
       ctx.lineWidth = 8; ctx.strokeStyle = "#1a1412"; ctx.fillStyle = "#1a1412";
       ctx.beginPath();
       if (mouthType === 'happy' || mouthType === 'laughing') {
@@ -528,7 +561,6 @@
       } else if (mouthType === 'angry') {
         ctx.arc(128, 180, 28, 1.1 * Math.PI, 1.9 * Math.PI, false);
         ctx.stroke();
-        // Cejas enojadas
         ctx.lineWidth = 6;
         ctx.beginPath(); ctx.moveTo(70, 75); ctx.lineTo(105, 88); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(186, 75); ctx.lineTo(151, 88); ctx.stroke();
@@ -536,7 +568,6 @@
         ctx.arc(128, 155, 14, 0, Math.PI * 2);
         ctx.fill();
       } else {
-        // Neutral
         ctx.moveTo(100, 160); ctx.lineTo(156, 160);
         ctx.stroke();
       }
@@ -544,6 +575,141 @@
       return new THREE.CanvasTexture(canvas);
     }
 
+    /* ACCESORIOS DE CABEZA */
+    function buildHatMesh(hatStyle, headY, scaleXZ, scaleY) {
+      if (!hatStyle || hatStyle === 'none') return null;
+      const hatGroup = new THREE.Group();
+
+      if (hatStyle === 'crown') {
+        const crownMat = new THREE.MeshStandardMaterial({ color: 0xffd166, metalness: 0.6, roughness: 0.2 });
+        const crownGeo = new THREE.CylinderGeometry(0.26 * scaleXZ, 0.22 * scaleXZ, 0.22 * scaleY, 8);
+        const crown = new THREE.Mesh(crownGeo, crownMat);
+        crown.position.set(0, headY + 0.22 * scaleY, 0); hatGroup.add(crown);
+      } else if (hatStyle === 'cap') {
+        const capMat = new THREE.MeshStandardMaterial({ color: 0x1d3557, roughness: 0.4 });
+        const capGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
+        const cap = new THREE.Mesh(capGeo, capMat);
+        cap.position.set(0, headY + 0.02 * scaleY, 0); hatGroup.add(cap);
+        const visorGeo = new THREE.BoxGeometry(0.28 * scaleXZ, 0.02, 0.18 * scaleXZ);
+        const visor = new THREE.Mesh(visorGeo, capMat);
+        visor.position.set(0, headY + 0.01 * scaleY, 0.22 * scaleXZ); hatGroup.add(visor);
+      } else if (hatStyle === 'top-hat') {
+        const hatMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3 });
+        const baseGeo = new THREE.CylinderGeometry(0.38 * scaleXZ, 0.38 * scaleXZ, 0.03, 24);
+        const base = new THREE.Mesh(baseGeo, hatMat);
+        base.position.set(0, headY + 0.15 * scaleY, 0); hatGroup.add(base);
+        const topGeo = new THREE.CylinderGeometry(0.24 * scaleXZ, 0.24 * scaleXZ, 0.35 * scaleY, 24);
+        const top = new THREE.Mesh(topGeo, hatMat);
+        top.position.set(0, headY + 0.32 * scaleY, 0); hatGroup.add(top);
+      } else if (hatStyle === 'headband') {
+        const bandMat = new THREE.MeshStandardMaterial({ color: 0xe63946, roughness: 0.3 });
+        const bandGeo = new THREE.TorusGeometry(0.275 * scaleXZ, 0.025 * scaleXZ, 8, 24);
+        bandGeo.rotateX(Math.PI / 2);
+        const band = new THREE.Mesh(bandGeo, bandMat);
+        band.position.set(0, headY + 0.06 * scaleY, 0); hatGroup.add(band);
+      }
+
+      return hatGroup;
+    }
+
+    function buildHairMesh(style, hairColorHex, scaleXZ, scaleY, isLego, isWood) {
+      if (!style || style === 'none') return null;
+      const hairGroup = new THREE.Group();
+      const hairMat = new THREE.MeshStandardMaterial({ color: hairColorHex || 0x3d2314, roughness: 0.6 });
+
+      if (isWood) {
+        const headY = 1.15;
+        if (style === 'short' || style === 'toupee') {
+          const capGeo = new THREE.BoxGeometry(0.76, 0.14, 0.38);
+          const cap = new THREE.Mesh(capGeo, hairMat);
+          cap.position.set(0, headY + 0.05, 0); hairGroup.add(cap);
+        } else if (style === 'long' || style === 'ponytail') {
+          const capGeo = new THREE.BoxGeometry(0.76, 0.14, 0.38);
+          const cap = new THREE.Mesh(capGeo, hairMat);
+          cap.position.set(0, headY + 0.05, 0); hairGroup.add(cap);
+          const tailGeo = new THREE.CylinderGeometry(0.06, 0.1, 0.45, 12);
+          const tail = new THREE.Mesh(tailGeo, hairMat);
+          tail.position.set(0, headY - 0.15, -0.22); tail.rotation.x = 0.2; hairGroup.add(tail);
+        } else if (style === 'curly' || style === 'elder') {
+          const afGeo = new THREE.BoxGeometry(0.8, 0.22, 0.42);
+          const af = new THREE.Mesh(afGeo, hairMat);
+          af.position.set(0, headY + 0.08, 0); hairGroup.add(af);
+        }
+      } else if (isLego) {
+        const headY = 1.46 * scaleY;
+        if (style === 'short') {
+          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
+          const cap = new THREE.Mesh(capGeo, hairMat);
+          cap.position.set(0, headY, 0); hairGroup.add(cap);
+        } else if (style === 'long') {
+          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
+          const cap = new THREE.Mesh(capGeo, hairMat);
+          cap.position.set(0, headY, 0); hairGroup.add(cap);
+          const sideGeo = new THREE.BoxGeometry(0.48 * scaleXZ, 0.3 * scaleY, 0.12 * scaleXZ);
+          const side = new THREE.Mesh(sideGeo, hairMat);
+          side.position.set(0, headY - 0.15 * scaleY, -0.15 * scaleXZ); hairGroup.add(side);
+        } else if (style === 'ponytail') {
+          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
+          const cap = new THREE.Mesh(capGeo, hairMat);
+          cap.position.set(0, headY, 0); hairGroup.add(cap);
+          const tailGeo = new THREE.CylinderGeometry(0.05 * scaleXZ, 0.09 * scaleXZ, 0.35 * scaleY, 12);
+          const tail = new THREE.Mesh(tailGeo, hairMat);
+          tail.position.set(0, headY - 0.05 * scaleY, -0.2 * scaleXZ); tail.rotation.x = 0.3; hairGroup.add(tail);
+        } else if (style === 'curly') {
+          const afGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 14, 14);
+          const af = new THREE.Mesh(afGeo, hairMat);
+          af.position.set(0, headY + 0.04 * scaleY, 0); hairGroup.add(af);
+        } else if (style === 'toupee') {
+          const topGeo = new THREE.BoxGeometry(0.22 * scaleXZ, 0.12 * scaleY, 0.25 * scaleXZ);
+          const top = new THREE.Mesh(topGeo, hairMat);
+          top.position.set(0, headY + 0.06 * scaleY, 0.02 * scaleXZ); hairGroup.add(top);
+        } else if (style === 'elder') {
+          const hairMatWhite = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.8 });
+          const capGeo = new THREE.SphereGeometry(0.25 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.5);
+          const cap = new THREE.Mesh(capGeo, hairMatWhite);
+          cap.position.set(0, headY, 0); hairGroup.add(cap);
+        }
+      } else {
+        const headY = 1.68 * scaleY;
+        const rad = 0.275 * scaleXZ;
+        if (style === 'short') {
+          const hairGeo = new THREE.SphereGeometry(rad, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4);
+          const hair = new THREE.Mesh(hairGeo, hairMat);
+          hair.position.set(0, headY + 0.015 * scaleY, -0.01 * scaleXZ); hairGroup.add(hair);
+        } else if (style === 'long') {
+          const capGeo = new THREE.SphereGeometry(rad, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4);
+          const cap = new THREE.Mesh(capGeo, hairMat);
+          cap.position.set(0, headY + 0.015 * scaleY, -0.01 * scaleXZ); hairGroup.add(cap);
+          const strandGeo = new THREE.BoxGeometry(0.52 * scaleXZ, 0.45 * scaleY, 0.15 * scaleXZ);
+          const strand = new THREE.Mesh(strandGeo, hairMat);
+          strand.position.set(0, headY - 0.2 * scaleY, -0.16 * scaleXZ); hairGroup.add(strand);
+        } else if (style === 'curly') {
+          const afGeo = new THREE.SphereGeometry(rad * 1.08, 16, 16);
+          const af = new THREE.Mesh(afGeo, hairMat);
+          af.position.set(0, headY + 0.03 * scaleY, 0); hairGroup.add(af);
+        } else if (style === 'ponytail') {
+          const capGeo = new THREE.SphereGeometry(rad, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4);
+          const cap = new THREE.Mesh(capGeo, hairMat);
+          cap.position.set(0, headY + 0.015 * scaleY, -0.01 * scaleXZ); hairGroup.add(cap);
+          const tailGeo = new THREE.CylinderGeometry(0.05 * scaleXZ, 0.09 * scaleXZ, 0.4 * scaleY, 12);
+          const tail = new THREE.Mesh(tailGeo, hairMat);
+          tail.position.set(0, headY - 0.05 * scaleY, -0.25 * scaleXZ); tail.rotation.x = 0.35; hairGroup.add(tail);
+        } else if (style === 'toupee') {
+          const topGeo = new THREE.BoxGeometry(0.24 * scaleXZ, 0.12 * scaleY, 0.28 * scaleXZ);
+          const top = new THREE.Mesh(topGeo, hairMat);
+          top.position.set(0, headY + 0.16 * scaleY, 0.03 * scaleXZ); hairGroup.add(top);
+        } else if (style === 'elder') {
+          const hairMatWhite = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.8 });
+          const capGeo = new THREE.SphereGeometry(rad, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4);
+          const cap = new THREE.Mesh(capGeo, hairMatWhite);
+          cap.position.set(0, headY + 0.015 * scaleY, -0.01 * scaleXZ); hairGroup.add(cap);
+        }
+      }
+
+      return hairGroup;
+    }
+
+    /* CONSTRUCCIÓN 3D COMPLETA DE FIGURAS ANATÓMICAS Y MINIFIGURAS */
     function buildHumanMesh(type = 'lego-m', customData = null) {
       const group = new THREE.Group();
       let isLego = type.startsWith('lego-');
@@ -582,35 +748,176 @@
         facePlane.position.set(0, 0.85, zPos);
         bodyGroup.add(facePlane);
 
-      } else {
-        const headMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.24 * scaleXZ, 0.24 * scaleXZ, 0.38 * scaleY, 24), bodyMat);
-        headMesh.position.y = 1.28 * scaleY; bodyGroup.add(headMesh);
+        if (customData && customData.hairStyle) {
+          const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, 1, 1, false, true);
+          if (hair) bodyGroup.add(hair);
+        }
+        if (customData && customData.hatStyle) {
+          const hat = buildHatMesh(customData.hatStyle, 1.15, 1, 1);
+          if (hat) bodyGroup.add(hat);
+        }
+
+      } else if (isLego) {
+        const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
+        const headGeo = new THREE.CylinderGeometry(0.24 * scaleXZ, 0.24 * scaleXZ, 0.38 * scaleY, 24);
+        const headMesh = new THREE.Mesh(headGeo, yellowSkinMat);
+        headMesh.position.y = 1.28 * scaleY; headMesh.castShadow = true;
+        bodyGroup.add(headMesh);
+
+        const studGeo = new THREE.CylinderGeometry(0.12 * scaleXZ, 0.12 * scaleXZ, 0.08 * scaleY, 16);
+        const studMesh = new THREE.Mesh(studGeo, yellowSkinMat);
+        studMesh.position.y = 1.51 * scaleY; studMesh.castShadow = true;
+        bodyGroup.add(studMesh);
 
         const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.4 * scaleXZ, 0.4 * scaleY), faceMat);
         facePlane.position.set(0, 1.28 * scaleY, (0.24 * scaleXZ) + 0.01);
         bodyGroup.add(facePlane);
 
-        const torsoMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.3 * scaleXZ, 0.42 * scaleXZ, 0.55 * scaleY, 4), clothesMat);
-        torsoMesh.position.y = 0.82 * scaleY; bodyGroup.add(torsoMesh);
+        const torsoGeo = new THREE.CylinderGeometry(0.3 * scaleXZ, 0.42 * scaleXZ, 0.55 * scaleY, 4);
+        torsoGeo.rotateY(Math.PI / 4);
+        const torsoMesh = new THREE.Mesh(torsoGeo, clothesMat);
+        torsoMesh.position.y = 0.82 * scaleY; torsoMesh.castShadow = true;
+        bodyGroup.add(torsoMesh);
+
+        const hipGeo = new THREE.BoxGeometry(0.44 * scaleXZ, 0.12 * scaleY, 0.26 * scaleXZ);
+        const hipMesh = new THREE.Mesh(hipGeo, clothesMat);
+        hipMesh.position.y = 0.48 * scaleY; hipMesh.castShadow = true;
+        bodyGroup.add(hipMesh);
+
+        const legGeo = new THREE.BoxGeometry(0.19 * scaleXZ, 0.42 * scaleY, 0.24 * scaleXZ);
+        const legL = new THREE.Mesh(legGeo, clothesMat);
+        legL.position.set(-0.11 * scaleXZ, 0.21 * scaleY, 0); legL.castShadow = true;
+        bodyGroup.add(legL);
+        const legR = new THREE.Mesh(legGeo, clothesMat);
+        legR.position.set(0.11 * scaleXZ, 0.21 * scaleY, 0); legR.castShadow = true;
+        bodyGroup.add(legR);
+
+        const armGeo = new THREE.CylinderGeometry(0.06 * scaleXZ, 0.06 * scaleXZ, 0.4 * scaleY, 12);
+        const armL = new THREE.Mesh(armGeo, clothesMat);
+        armL.position.set(-0.27 * scaleXZ, 0.82 * scaleY, 0); armL.rotation.z = 0.35; armL.castShadow = true;
+        bodyGroup.add(armL);
+        const armR = new THREE.Mesh(armGeo, clothesMat);
+        armR.position.set(0.27 * scaleXZ, 0.82 * scaleY, 0); armR.rotation.z = -0.35; armR.castShadow = true;
+        bodyGroup.add(armR);
+
+        const handGeo = new THREE.TorusGeometry(0.05 * scaleXZ, 0.02 * scaleXZ, 8, 16, Math.PI * 1.5);
+        const handL = new THREE.Mesh(handGeo, yellowSkinMat);
+        handL.position.set(-0.33 * scaleXZ, 0.62 * scaleY, 0.05 * scaleXZ); handL.rotation.x = Math.PI / 2;
+        bodyGroup.add(handL);
+        const handR = new THREE.Mesh(handGeo, yellowSkinMat);
+        handR.position.set(0.33 * scaleXZ, 0.62 * scaleY, 0.05 * scaleXZ); handR.rotation.x = Math.PI / 2;
+        bodyGroup.add(handR);
+
+        if (customData && customData.hairStyle) {
+          const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, scaleXZ, scaleY, true, false);
+          if (hair) bodyGroup.add(hair);
+        }
+        if (customData && customData.hatStyle) {
+          const hat = buildHatMesh(customData.hatStyle, 1.48 * scaleY, scaleXZ, scaleY);
+          if (hat) bodyGroup.add(hat);
+        }
+
+      } else {
+        const headMesh = new THREE.Mesh(new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24), bodyMat);
+        headMesh.position.y = 1.65 * scaleY; headMesh.castShadow = true;
+        bodyGroup.add(headMesh);
+
+        const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.44 * scaleXZ, 0.44 * scaleY), faceMat);
+        facePlane.position.set(0, 1.62 * scaleY, (0.23 * scaleXZ) + 0.01);
+        bodyGroup.add(facePlane);
+
+        const noseGeo = new THREE.ConeGeometry(0.045 * scaleXZ, 0.12 * scaleY, 12);
+        noseGeo.rotateX(Math.PI / 2);
+        const nose = new THREE.Mesh(noseGeo, bodyMat);
+        nose.position.set(0, headMesh.position.y - 0.01 * scaleY, 0.27 * scaleXZ); bodyGroup.add(nose);
+
+        const neckGeo = new THREE.CylinderGeometry(0.09 * scaleXZ, 0.1 * scaleXZ, 0.12 * scaleY, 12);
+        const neck = new THREE.Mesh(neckGeo, bodyMat);
+        neck.position.y = 1.48 * scaleY; bodyGroup.add(neck);
+
+        const torsoGeo = new THREE.CylinderGeometry(0.35 * scaleXZ, 0.26 * scaleXZ, 0.55 * scaleY, 16);
+        const torso = new THREE.Mesh(torsoGeo, bodyMat);
+        torso.position.y = 1.18 * scaleY; torso.castShadow = true;
+        bodyGroup.add(torso);
+
+        const hipGeo = new THREE.CylinderGeometry(0.26 * scaleXZ, 0.24 * scaleXZ, 0.3 * scaleY, 16);
+        const hip = new THREE.Mesh(hipGeo, bodyMat);
+        hip.position.y = 0.78 * scaleY; hip.castShadow = true;
+        bodyGroup.add(hip);
+
+        const legGeo = new THREE.CylinderGeometry(0.08 * scaleXZ, 0.06 * scaleXZ, 0.65 * scaleY, 12);
+        const legL = new THREE.Mesh(legGeo, bodyMat);
+        legL.position.set(-0.11 * scaleXZ, 0.325 * scaleY, 0); legL.castShadow = true;
+        bodyGroup.add(legL);
+        const legR = new THREE.Mesh(legGeo, bodyMat);
+        legR.position.set(0.11 * scaleXZ, 0.325 * scaleY, 0); legR.castShadow = true;
+        bodyGroup.add(legR);
+
+        const armGeo = new THREE.CylinderGeometry(0.065 * scaleXZ, 0.05 * scaleXZ, 0.55 * scaleY, 12);
+        const armL = new THREE.Mesh(armGeo, bodyMat);
+        armL.position.set(-0.4 * scaleXZ, 1.1 * scaleY, 0); armL.rotation.z = 0.15; armL.castShadow = true;
+        bodyGroup.add(armL);
+        const armR = new THREE.Mesh(armGeo, bodyMat);
+        armR.position.set(0.4 * scaleXZ, 1.1 * scaleY, 0); armR.rotation.z = -0.15; armR.castShadow = true;
+        bodyGroup.add(armR);
+
+        if (customData && customData.hairStyle) {
+          const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, scaleXZ, scaleY, false, false);
+          if (hair) bodyGroup.add(hair);
+        }
+        if (customData && customData.hatStyle) {
+          const hat = buildHatMesh(customData.hatStyle, 1.68 * scaleY, scaleXZ, scaleY);
+          if (hat) bodyGroup.add(hat);
+        }
       }
 
       group.userData = { bodyGroup, label: customData ? customData.label : 'Persona' };
       return group;
     }
 
+    /* INICIALIZACIÓN DE LA ESCENA Y EL TABLERO 3D PRINCIPAL */
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 16, 22);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
     container.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
     const ambLight = new THREE.AmbientLight(0xfff5ea, 0.8);
     scene.add(ambLight);
 
+    const dirLight = new THREE.DirectionalLight(0xffe8d6, 0.95);
+    dirLight.position.set(10, 22, 10);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    /* CONSTRUCCIÓN DEL TABLERO CIRCULAR Y PLANO DE ARRASTRE */
+    const boardGroup = new THREE.Group();
+    const boardGeo = new THREE.CylinderGeometry(9, 9.2, 0.5, 64);
+    const boardMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.45, metalness: 0.1 });
+    const mainBoard = new THREE.Mesh(boardGeo, boardMat);
+    mainBoard.position.y = -0.25;
+    mainBoard.receiveShadow = true;
+    boardGroup.add(mainBoard);
+    scene.add(boardGroup);
+
+    function addAvatarToScene(data) {
+      const avatarGroup = buildHumanMesh(data.type || 'lego-m', data.customData || null);
+      avatarGroup.position.set(data.x || 0, 0, data.z || 0);
+      avatarGroup.rotation.y = data.rotation || 0;
+      scene.add(avatarGroup);
+      avatars.push(avatarGroup);
+      return avatarGroup;
+    }
+
+    /* PREVISUALIZADOR DEL STUDIO DE AVATARES */
     let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
     function initEditorPreview() {
       const el = document.getElementById('editor-preview-canvas');
@@ -649,8 +956,11 @@
       const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
       const gaze = document.getElementById('ed-gaze').value;
       const mouth = document.getElementById('ed-mouth').value;
+      const hairStyle = document.getElementById('ed-hair-style').value;
+      const hairColorHex = parseInt(document.getElementById('ed-hair-color').value.replace('#', '0x'));
+      const hatStyle = document.getElementById('ed-hat-style').value;
 
-      const cData = { shape, colorHex, gaze, mouth };
+      const cData = { shape, colorHex, gaze, mouth, hairStyle, hairColorHex, hatStyle };
       const mesh = buildHumanMesh(shape, cData);
       edPreviewMeshGroup.add(mesh);
     }
@@ -660,9 +970,40 @@
       initEditorPreview(); updateEditorPreview();
     });
 
-    ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth'].forEach(id => {
+    document.getElementById('btn-close-editor').addEventListener('click', () => {
+      document.getElementById('editor-modal').style.display = 'none';
+    });
+
+    ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth', 'ed-hair-style', 'ed-hair-color', 'ed-hat-style'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.addEventListener('change', updateEditorPreview);
+      if (el) {
+        el.addEventListener('input', updateEditorPreview);
+        el.addEventListener('change', updateEditorPreview);
+      }
+    });
+
+    document.getElementById('add-avatar').addEventListener('click', () => {
+      const labelInput = document.getElementById('avatar-label').value.trim();
+      const humanSelect = document.getElementById('avatar-gender').value;
+      const type = humanSelect !== 'none' ? humanSelect : 'lego-m';
+
+      addAvatarToScene({
+        id: 'av_' + Date.now(), label: labelInput || 'Representante', type: type,
+        x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4, rotation: 0
+      });
+      showNotif("Figura introducida al campo");
+    });
+
+    document.getElementById('clear-board').addEventListener('click', () => {
+      avatars.forEach(a => scene.remove(a));
+      avatars.length = 0;
+      showNotif("Tablero limpiado");
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
     function animate() {
