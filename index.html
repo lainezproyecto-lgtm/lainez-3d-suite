@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7.3</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -27,20 +27,14 @@
     #inspector-panel { bottom: 120px; left: 20px; width: 330px; display: none; }
     #notes-panel { bottom: 120px; right: 20px; width: 340px; display: none; }
     
-    /* DISTRIBUCIÓN 70% / 30% EN BANDEJA INFERIOR */
+    /* ESTRUCTURA DE BANDEJA INFERIOR EN UNA SOLA LÍNEA HORIZONTAL */
     #bottom-tray-container {
       position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-      z-index: 90; display: flex; flex-direction: row; gap: 12px; width: 96vw; max-width: 1250px;
+      z-index: 90; display: flex; flex-direction: row; gap: 12px; width: 96vw; max-width: 1200px;
       justify-content: center;
     }
-    .carousel-section-resources {
-      flex: 7; min-width: 0;
-      background: rgba(20, 16, 14, 0.94); border: 1px solid rgba(212, 163, 115, 0.35);
-      border-radius: 12px; padding: 4px 8px 6px 8px; backdrop-filter: blur(10px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.7); display: flex; flex-direction: column;
-    }
-    .carousel-section-custom {
-      flex: 3; min-width: 0;
+    .carousel-section {
+      flex: 1; min-width: 0;
       background: rgba(20, 16, 14, 0.94); border: 1px solid rgba(212, 163, 115, 0.35);
       border-radius: 12px; padding: 4px 8px 6px 8px; backdrop-filter: blur(10px);
       box-shadow: 0 6px 20px rgba(0,0,0,0.7); display: flex; flex-direction: column;
@@ -49,13 +43,19 @@
       font-size: 0.65rem; color: #e9c46a; font-weight: bold; text-transform: uppercase;
       letter-spacing: 0.5px; margin-bottom: 2px; text-align: center;
     }
-    .carousel-wrapper { display: flex; align-items: center; position: relative; width: 100%; }
-    .carousel-track { display: flex; gap: 6px; overflow-x: hidden; scroll-behavior: smooth; width: 100%; padding: 4px 2px; }
+    .carousel-wrapper {
+      display: flex; align-items: center; position: relative; width: 100%;
+    }
+    .carousel-track {
+      display: flex; gap: 6px; overflow-x: hidden; scroll-behavior: smooth;
+      width: 100%; padding: 4px 2px;
+    }
     .carousel-arrow {
       background: rgba(45, 36, 32, 0.9); border: 1px solid rgba(212, 163, 115, 0.5);
       color: #ffd166; width: 24px; height: 46px; border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 0.85rem; z-index: 2; flex-shrink: 0; transition: all 0.2s ease;
+      cursor: pointer; font-size: 0.85rem; z-index: 2; flex-shrink: 0;
+      transition: all 0.2s ease;
     }
     .carousel-arrow:hover { background: rgba(212, 163, 115, 0.4); color: #fff; }
 
@@ -76,7 +76,7 @@
     .tray-icon { font-size: 1.2rem; margin-bottom: 2px; }
     .tray-label { font-size: 0.55rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
 
-    /* STUDIO DE AVATARES */
+    /* MODAL EDITOR VISUAL DE AVATARES */
     #editor-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       z-index: 250; width: 94%; max-width: 860px; display: none;
@@ -94,7 +94,14 @@
     .editor-controls-column { flex: 1 1 380px; display: flex; flex-direction: column; gap: 8px; }
     .editor-section-title { font-size: 0.76rem; color: #e9c46a; font-weight: bold; text-transform: uppercase; margin-top: 4px; border-bottom: 1px solid rgba(212,163,115,0.2); padding-bottom: 2px; }
 
-    #top-bar { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; gap: 8px; align-items: center; }
+    #history-modal {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 200; width: 90%; max-width: 600px; max-height: 80vh; display: none;
+    }
+    #top-bar {
+      position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 100; display: flex; gap: 8px; align-items: center;
+    }
     .top-btn {
       background: rgba(28, 24, 22, 0.88); border: 1px solid rgba(212, 163, 115, 0.4);
       color: #e6ccb2; padding: 6px 14px; border-radius: 16px; font-size: 0.78rem;
@@ -102,7 +109,12 @@
       backdrop-filter: blur(8px); transition: all 0.2s ease; white-space: nowrap;
     }
     .top-btn:hover { background: rgba(212, 163, 115, 0.25); color: #fff; }
-    .version-tag { position: absolute; bottom: 8px; left: 12px; z-index: 100; font-size: 0.68rem; color: rgba(212, 163, 115, 0.6); font-weight: 600; pointer-events: none; }
+    .top-btn.disabled-btn { pointer-events: none; opacity: 0.7; background: rgba(40, 30, 25, 0.9); color: #e9c46a; }
+    .version-tag {
+      position: absolute; bottom: 8px; left: 12px; z-index: 100;
+      font-size: 0.68rem; color: rgba(212, 163, 115, 0.6); font-weight: 600;
+      letter-spacing: 0.5px; pointer-events: none;
+    }
 
     h2, h3 { color: #e6ccb2; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
     .input-group { margin-bottom: 6px; }
@@ -127,6 +139,11 @@
       padding: 6px 16px; border-radius: 14px; background: #b08968; color: white; font-size: 0.8rem; display: none;
     }
     .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; background: rgba(255,255,255,0.1); }
+    .status-box { font-size: 0.73rem; padding: 5px 8px; border-radius: 6px; background: rgba(0,0,0,0.3); border: 1px solid rgba(212,163,115,0.2); margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; }
+    .dot-online { height: 8px; width: 8px; background-color: #2a9d8f; border-radius: 50%; display: inline-block; }
+    .dot-offline { height: 8px; width: 8px; background-color: #8d99ae; border-radius: 50%; display: inline-block; }
+    .dot-disconnected { height: 8px; width: 8px; background-color: #e63946; border-radius: 50%; display: inline-block; }
+    .history-item { background: rgba(39, 33, 30, 0.8); border: 1px solid rgba(212, 163, 115, 0.2); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
   </style>
 
   <script type="importmap">
@@ -141,7 +158,7 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.7.3</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.7</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
@@ -149,16 +166,16 @@
   </div>
 
   <div id="bottom-tray-container">
-    <div class="carousel-section-resources">
-      <div class="carousel-header-title">🌿 Recursos y Elementos Sistémicos (70%)</div>
+    <div class="carousel-section">
+      <div class="carousel-header-title">🌿 Recursos y Elementos Sistémicos</div>
       <div class="carousel-wrapper">
         <button class="carousel-arrow" id="arrow-prev-resources">◀</button>
         <div class="carousel-track" id="track-resources"></div>
         <button class="carousel-arrow" id="arrow-next-resources">▶</button>
       </div>
     </div>
-    <div class="carousel-section-custom">
-      <div class="carousel-header-title">🎭 Avatares (30%)</div>
+    <div class="carousel-section">
+      <div class="carousel-header-title">🎭 Avatares Personalizados</div>
       <div class="carousel-wrapper">
         <button class="carousel-arrow" id="arrow-prev-custom">◀</button>
         <div class="carousel-track" id="track-custom"></div>
@@ -171,8 +188,8 @@
 
   <div id="editor-modal">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>🎨 Studio Interactivo de Avatares 3D</h2>
-      <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 4px 12px; cursor: pointer;">✕ Cerrar</button>
+      <h2>🎨 Studio Interactivo de Avatares 3D (v3.7)</h2>
+      <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 3px 10px;">✕ Cerrar</button>
     </div>
     <div class="editor-layout">
       <div id="editor-preview-container">
@@ -353,11 +370,23 @@
     <div id="room-info">
       <span id="room-status-text">Estado: Modo local activo</span>
     </div>
+    <button id="btn-open-history" style="margin-top: 8px; background: #7f5539; display: none;">📜 Historial de Salas</button>
+    <div id="host-controls" style="display: none; margin-top: 10px; border-top: 1px dashed rgba(212,163,115,0.3); padding-top: 8px;">
+      <label style="font-size: 0.7rem; color: #e9c46a;">CONTROL MAESTRO ANFITRIÓN:</label>
+      <div class="status-box" style="margin-top: 4px;">
+        <span id="client-name-status">Consultante: Ausente</span>
+        <span id="client-dot" class="dot-offline"></span>
+      </div>
+      <button id="btn-toggle-remote-focus" class="btn-warning" style="margin-bottom: 4px;">🔒 Bloquear Pantalla Consultante</button>
+      <button id="btn-toggle-mirror-cam" class="btn-info" style="margin-bottom: 4px;">👁️ Ver Tablero Consultante</button>
+      <button id="btn-toggle-transcription" style="background: #6b705c; color: #fff;">🎙️ Iniciar Transcripción</button>
+    </div>
   </div>
 
   <div id="controls-panel" class="panel">
     <h2>Añadir Elemento al Campo</h2>
     <button id="open-editor-btn" class="btn-warning" style="margin-bottom: 12px; padding: 9px; font-weight: bold;">🎨 Abrir Studio de Avatares</button>
+
     <div class="input-group">
       <label>Nombre / Etiqueta:</label>
       <input type="text" id="avatar-label" placeholder="Ej. Madre, Abuelo, Anhelo">
@@ -375,10 +404,54 @@
         </optgroup>
         <optgroup label="Hombres Adultos (Anatómicos)">
           <option value="adult-m">Hombre Adulto (Modelo A - Estándar)</option>
+          <option value="adult-m2">Hombre Adulto (Modelo B - Robust/Alto)</option>
         </optgroup>
         <optgroup label="Mujeres Adultas (Anatómicas)">
           <option value="adult-f">Mujer Adulta (Modelo A - Estándar)</option>
+          <option value="adult-f2">Mujer Adulta (Modelo B - Estilizada)</option>
         </optgroup>
+        <optgroup label="Niños y Niñas (Anatómicos)">
+          <option value="child-m">Niño (Modelo A - Menor)</option>
+          <option value="child-m2">Niño (Modelo B - Mayor)</option>
+          <option value="child-f">Niña (Modelo A - Menor)</option>
+          <option value="child-f2">Niña (Modelo B - Mayor)</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>2. Recursos y Elementos Sistémicos:</label>
+      <select id="avatar-resource">
+        <option value="none">-- Seleccionar Elemento Sistémico --</option>
+        <option value="symptom">Hacer Terapia / El Síntoma (🩺)</option>
+        <option value="secret">Secretos Familiares / Lo No Dicho (P)</option>
+        <option value="pareja">La Pareja (Corazón ♥)</option>
+        <option value="mascota">La Mascota (Huella 🐾)</option>
+        <option value="adicciones">Adicciones (Botella 🍶)</option>
+        <option value="muerte">La Muerte / Duelo (Cruz ✝)</option>
+        <option value="pensador">El Pensador (Cerebro 🧠)</option>
+        <option value="resource">Recurso / Fuerza Ancestral (Planta 🌱)</option>
+        <option value="desire">Anhelo / Meta (🌟)</option>
+        <option value="material">Lo Material / Dinero ($)</option>
+        <option value="negador">El Negador (No)</option>
+        <option value="charlatan">El Charlatán (Boca 💬)</option>
+        <option value="maltrato">Maltrato / Abuso (Mano ✋)</option>
+        <option value="energia">Energía / Fuerza (Onda 〰)</option>
+        <option value="locura">La Locura (Carita 🌀)</option>
+        <option value="desarraigo">Desarraigo (Ancla ⚓)</option>
+        <option value="aborto">Aborto (💔)</option>
+        <option value="pasado">Pasado (⏳)</option>
+        <option value="presente">Presente (📍)</option>
+        <option value="futuro">Futuro (🚀)</option>
+        <option value="espiritualidad">Espiritualidad (🕊️)</option>
+        <option value="infertilidad">Infertilidad (🌱)</option>
+        <option value="peterpan">Peter Pan (🎈)</option>
+        <option value="creencias-m">Creencias Masculino (👔)</option>
+        <option value="creencias-f">Creencias Femenino (👗)</option>
+        <option value="enfermedad-m">Enfermedad Masculino (🩹)</option>
+        <option value="enfermedad-f">Enfermedad Femenino (🩹)</option>
+        <option value="vida-m">Vida Masculino (☀️)</option>
+        <option value="vida-f">Vida Femenino (☀️)</option>
       </select>
     </div>
 
@@ -420,9 +493,42 @@
       <label>Orientación / Mirada (Grados):</label>
       <input type="range" id="insp-rotation" min="0" max="360" value="0">
     </div>
+    <div class="input-group">
+      <label>Escala / Proporción:</label>
+      <input type="range" id="insp-scale" min="50" max="150" value="100">
+    </div>
+    <hr style="border-color: rgba(212,163,115,0.2); margin: 8px 0;">
+    <div class="btn-group" style="margin-bottom: 6px;">
+      <button id="btn-look-at" style="background: #2a9d8f;">🎯 Mirar A...</button>
+      <button id="btn-link-to" style="background: #e76f51;">🔗 Crear Vínculo</button>
+    </div>
     <div class="btn-group">
       <button id="insp-deselect">Deseleccionar</button>
       <button id="insp-delete" class="btn-danger">Eliminar</button>
+    </div>
+  </div>
+
+  <div id="notes-panel" class="panel">
+    <h2>Notas Confidenciales & Transcripción</h2>
+    <textarea id="session-notes" placeholder="Apunta observaciones sistémicas o inicia la transcripción automática de audio..."></textarea>
+    <div class="btn-group" style="margin-top: 6px;">
+      <button id="btn-summarize-notes" class="btn-secondary">✨ Resumen</button>
+      <button id="btn-save-notes-firebase" class="btn-warning">☁️ Guardar Firebase</button>
+    </div>
+    <div class="btn-group" style="margin-top: 4px;">
+      <button id="btn-copy-notes" class="btn-info">📋 Copiar</button>
+      <button id="btn-download-notes" style="background: #7f5539;">💾 TXT</button>
+      <button id="btn-clear-transcript" class="btn-danger">🗑️ Borrar</button>
+    </div>
+  </div>
+
+  <div id="history-modal" class="panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2>📜 Historial de Salas Creadas</h2>
+      <button id="btn-close-history" class="btn-danger" style="width: auto; padding: 2px 8px;">✕ Cerrar</button>
+    </div>
+    <div id="history-list-container">
+      <p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">Cargando lista de salas...</p>
     </div>
   </div>
 
@@ -430,7 +536,7 @@
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDocs, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -447,8 +553,17 @@
     const auth = getAuth(app);
 
     let currentRoomId = null;
+    let isHost = false;
+    let isRemoteUpdate = false;
     let selectedAvatarId = null;
-    const avatars = [];
+    let lookAtMode = false;
+    let linkMode = false;
+    let isRemoteFocusActive = false;
+    let isMirrorCamActive = false;
+    let recognition = null;
+    let isTranscribing = false;
+    let baseNotesText = '';
+    let jitsiRoomUrl = '';
 
     const SYSTEMIC_RESOURCES = [
       { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-cyl' },
@@ -458,7 +573,22 @@
       { type: 'adicciones', label: 'Adicciones', icon: '🍾', symbol: '🍶', color: 0x9a031e, shape: 'wood-box' },
       { type: 'muerte', label: 'Duelo / Muerte', icon: '✝️', symbol: '✝', color: 0x3d348b, shape: 'wood-box' },
       { type: 'pensador', label: 'El Pensador', icon: '🧠', symbol: '🧠', color: 0x457b9d, shape: 'wood-cyl' },
-      { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157, shape: 'wood-cyl' }
+      { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157, shape: 'wood-cyl' },
+      { type: 'desire', label: 'Anhelo / Meta', icon: '🌟', symbol: '▲', color: 0xe9c46a, shape: 'wood-cyl' },
+      { type: 'material', label: 'Lo Material', icon: '💰', symbol: '$', color: 0xd4a373, shape: 'wood-box' },
+      { type: 'aborto', label: 'Aborto', icon: '💔', symbol: '✖', color: 0x800f2f, shape: 'wood-box' },
+      { type: 'pasado', label: 'Pasado', icon: '⏳', symbol: '◂', color: 0x6c757d, shape: 'wood-cyl' },
+      { type: 'presente', label: 'Presente', icon: '📍', symbol: '●', color: 0x2a9d8f, shape: 'wood-cyl' },
+      { type: 'futuro', label: 'Futuro', icon: '🚀', symbol: '▸', color: 0x457b9d, shape: 'wood-cyl' },
+      { type: 'espiritualidad', label: 'Espiritualidad', icon: '🕊️', symbol: '✨', color: 0xe9c46a, shape: 'wood-cyl' },
+      { type: 'infertilidad', label: 'Infertilidad', icon: '🌱', symbol: '∅', color: 0xa8dede, shape: 'wood-box' },
+      { type: 'peterpan', label: 'Peter Pan', icon: '🎈', symbol: '👦', color: 0xf4a261, shape: 'wood-cyl' },
+      { type: 'creencias-m', label: 'Creencias Masc.', icon: '👔', symbol: '♂', color: 0x1d3557, shape: 'wood-box' },
+      { type: 'creencias-f', label: 'Creencias Fem.', icon: '👗', symbol: '♀', color: 0xe63946, shape: 'wood-box' },
+      { type: 'enfermedad-m', label: 'Enfermedad Masc.', icon: '🩹', symbol: '♂', color: 0x9a031e, shape: 'wood-box' },
+      { type: 'enfermedad-f', label: 'Enfermedad Fem.', icon: '🩹', symbol: '♀', color: 0x9a031e, shape: 'wood-box' },
+      { type: 'vida-m', label: 'Vida Masculino', icon: '☀️', symbol: '♂', color: 0xffb703, shape: 'wood-cyl' },
+      { type: 'vida-f', label: 'Vida Femenino', icon: '☀️', symbol: '♀', color: 0xffb703, shape: 'wood-cyl' }
     ];
 
     const CUSTOM_AVATARS = [
@@ -468,7 +598,21 @@
       }
     ];
 
-    signInAnonymously(auth).then(() => showNotif("v3.7.3 Conectado"));
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlRoom = urlParams.get('room');
+    const urlRole = urlParams.get('role');
+
+    if (urlRoom) {
+      document.getElementById('room-code-input').value = urlRoom.toUpperCase();
+      if (urlRole === 'client') {
+        document.getElementById('host-create-section').style.display = 'none';
+        document.getElementById('user-name').placeholder = "Ej. Consultante";
+      }
+    }
+
+    signInAnonymously(auth)
+      .then(() => showNotif("Conectado a Backend (v3.7)"))
+      .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
       const notif = document.getElementById('notification');
@@ -477,11 +621,9 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    /* CARROUSELES SUPERIORES EN BANDEJA */
     function renderCarousels() {
       const trackResources = document.getElementById('track-resources');
       const trackCustom = document.getElementById('track-custom');
-      if (!trackResources || !trackCustom) return;
 
       trackResources.innerHTML = '';
       SYSTEMIC_RESOURCES.forEach(res => {
@@ -500,14 +642,24 @@
       item.dataset.type = res.type;
       item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
 
+      item.addEventListener('mouseenter', () => broadcastHoverState(res.type, true));
+      item.addEventListener('mouseleave', () => broadcastHoverState(res.type, false));
+
       item.addEventListener('click', () => {
-        const newAv = addAvatarToScene({
-          id: 'av_' + Date.now(), label: res.label, type: res.type,
-          x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
-          rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100,
-          customData: res.customData || null
-        });
-        showNotif(`Añadido: ${res.label}`);
+        const active = getSelectedAvatar();
+        if (active) {
+          replaceAvatarType(active, res.type, res.label);
+          showNotif(`Figura modificada a: ${res.label}`);
+        } else {
+          const newAv = addAvatarToScene({
+            id: 'av_' + Date.now(), label: res.label, type: res.type,
+            x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
+            rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100,
+            customData: res.customData || null
+          });
+          selectAvatar(newAv); saveStateToFirebase();
+          showNotif(`Añadido: ${res.label}`);
+        }
       });
       return item;
     }
@@ -518,6 +670,7 @@
     document.getElementById('arrow-next-resources').addEventListener('click', () => {
       document.getElementById('track-resources').scrollBy({ left: 180, behavior: 'smooth' });
     });
+
     document.getElementById('arrow-prev-custom').addEventListener('click', () => {
       document.getElementById('track-custom').scrollBy({ left: -180, behavior: 'smooth' });
     });
@@ -527,52 +680,611 @@
 
     renderCarousels();
 
-    /* RENDERIZADO FACIAL 2D SOBRE TEXTURA */
-    function createFaceTexture(mouthType, gazeType) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 256; canvas.height = 256;
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, 256, 256);
+    function broadcastHoverState(type, isHovered) {
+      if (!currentRoomId) return;
+      setDoc(doc(db, "rooms", currentRoomId), { hoveredResource: isHovered ? type : null }, { merge: true }).catch(e => {});
+    }
+
+    function replaceAvatarType(avatarGroup, newType, newLabel) {
+      if (!avatarGroup) return;
+      avatarGroup.userData.type = newType;
+      avatarGroup.userData.label = newLabel;
+
+      let customData = null;
+      const foundCustom = CUSTOM_AVATARS.find(c => c.type === newType);
+      if (foundCustom) customData = foundCustom.customData;
+
+      while(avatarGroup.children.length > 0){ avatarGroup.remove(avatarGroup.children[0]); }
+      const freshGroup = buildHumanMesh(newType, customData);
+      while(freshGroup.children.length > 0){ avatarGroup.add(freshGroup.children[0]); }
+
+      avatarGroup.userData.bodyGroup = freshGroup.userData.bodyGroup;
+      avatarGroup.userData.bodyMaterial = freshGroup.userData.bodyMaterial;
+      avatarGroup.userData.clothesMaterial = freshGroup.userData.clothesMaterial;
+      avatarGroup.userData.auraMesh = freshGroup.userData.auraMesh;
+      avatarGroup.userData.labelCanvas = freshGroup.userData.labelCanvas;
+      avatarGroup.userData.labelTexture = freshGroup.userData.labelTexture;
+      avatarGroup.userData.labelSprite = freshGroup.userData.labelSprite;
+      avatarGroup.userData.customData = customData;
+
+      updateLabel(avatarGroup, newLabel);
+      applyAvatarState(avatarGroup);
+      selectAvatar(avatarGroup);
+      saveStateToFirebase();
+    }
+
+    let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
+    function initEditorPreview() {
+      const container = document.getElementById('editor-preview-canvas');
+      if (edRenderer) return;
+
+      edScene = new THREE.Scene();
+      edCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+      edCamera.position.set(0, 1.1, 2.7);
+
+      edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+      edRenderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(edRenderer.domElement);
+
+      edControls = new OrbitControls(edCamera, edRenderer.domElement);
+      edControls.enableDamping = true;
+      edControls.target.set(0, 0.85, 0);
+      edControls.autoRotate = false;
+
+      const ambLight = new THREE.AmbientLight(0xffffff, 0.95);
+      edScene.add(ambLight);
+      const dLight = new THREE.DirectionalLight(0xffe8d6, 1.15);
+      dLight.position.set(2, 6, 5);
+      edScene.add(dLight);
+
+      edPreviewMeshGroup = new THREE.Group();
+      edScene.add(edPreviewMeshGroup);
+
+      function animEd() {
+        requestAnimationFrame(animEd);
+        edControls.update();
+        edRenderer.render(edScene, edCamera);
+      }
+      animEd();
+    }
+
+    function getEditorStateData() {
+      const shape = document.getElementById('ed-shape').value;
+      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
+      const gaze = document.getElementById('ed-gaze').value;
+      const mouth = document.getElementById('ed-mouth').value;
+      const hairStyle = document.getElementById('ed-hair-style').value;
+      const hairColorHex = parseInt(document.getElementById('ed-hair-color').value.replace('#', '0x'));
+      const hatStyle = document.getElementById('ed-hat-style').value;
+
+      const symbolSel = document.getElementById('ed-symbol-select').value;
+      const symbol = symbolSel === 'custom' ? document.getElementById('ed-symbol-custom').value : symbolSel;
+      const icon = document.getElementById('ed-icon-select').value;
+
+      return {
+        shape, colorHex, gaze, mouth, hairStyle, hairColorHex, hatStyle, symbol, icon
+      };
+    }
+
+    function updateEditorPreview() {
+      if (!edPreviewMeshGroup) return;
+      while(edPreviewMeshGroup.children.length > 0) edPreviewMeshGroup.remove(edPreviewMeshGroup.children[0]);
+
+      const cData = getEditorStateData();
+      const mesh = buildHumanMesh(cData.shape, cData);
+      edPreviewMeshGroup.add(mesh);
+    }
+
+    document.getElementById('open-editor-btn').addEventListener('click', () => {
+      document.getElementById('editor-modal').style.display = 'block';
+      initEditorPreview();
+      updateEditorPreview();
+    });
+
+    document.getElementById('btn-close-editor').addEventListener('click', () => {
+      document.getElementById('editor-modal').style.display = 'none';
+    });
+
+    document.getElementById('ed-symbol-select').addEventListener('change', (e) => {
+      document.getElementById('ed-symbol-custom').style.display = e.target.value === 'custom' ? 'block' : 'none';
+      updateEditorPreview();
+    });
+
+    ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth', 'ed-hair-style', 'ed-hair-color', 'ed-hat-style', 'ed-symbol-custom', 'ed-icon-select'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', updateEditorPreview);
+        el.addEventListener('change', updateEditorPreview);
+      }
+    });
+
+    /* EXPORTAR RECUERDO DEL AVATAR COMO TARJETA/POSTAL DIGITAL */
+    document.getElementById('btn-export-avatar-card').addEventListener('click', () => {
+      if (!edRenderer) return;
+      edRenderer.render(edScene, edCamera);
+      const avatarImage = edRenderer.domElement.toDataURL('image/png');
+      const labelName = document.getElementById('ed-label').value.trim() || 'Avatar Sistémico';
+
+      const cardCanvas = document.createElement('canvas');
+      cardCanvas.width = 600; cardCanvas.height = 750;
+      const ctx = cardCanvas.getContext('2d');
+
+      // Fondo Elegante
+      const grad = ctx.createLinearGradient(0, 0, 0, 750);
+      grad.addColorStop(0, '#2b211d'); grad.addColorStop(1, '#120e0d');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, 600, 750);
+
+      // Marco dorado
+      ctx.strokeStyle = 'rgba(212, 163, 115, 0.8)';
+      ctx.lineWidth = 12; ctx.strokeRect(16, 16, 568, 718);
+
+      // Cargar Render 3D
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 50, 60, 500, 500);
+
+        // Título / Etiqueta
+        ctx.fillStyle = '#e9c46a'; ctx.font = 'Bold 36px "Segoe UI", sans-serif';
+        ctx.textAlign = 'center'; ctx.fillText(labelName, 300, 610);
+
+        // Subtítulo
+        ctx.fillStyle = '#ddb892'; ctx.font = '20px "Segoe UI", sans-serif';
+        ctx.fillText('Recuerdo de Sesión - Constelaciones 3D Pro', 300, 650);
+
+        // Marca de agua
+        ctx.fillStyle = 'rgba(212, 163, 115, 0.5)'; ctx.font = '15px sans-serif';
+        ctx.fillText('Lainez 3D Suite', 300, 690);
+
+        const link = document.createElement('a');
+        link.download = `Recuerdo_Avatar_${labelName.replace(/\s+/g, '_')}.png`;
+        link.href = cardCanvas.toDataURL('image/png');
+        link.click();
+        showNotif("📸 ¡Recuerdo de Avatar exportado con éxito!");
+      };
+      img.src = avatarImage;
+    });
+
+    document.getElementById('btn-save-custom-avatar').addEventListener('click', () => {
+      const cData = getEditorStateData();
+      const label = document.getElementById('ed-label').value.trim() || 'Avatar Custom';
+      const customId = 'cust_' + Date.now();
+
+      CUSTOM_AVATARS.push({
+        type: customId, label: label, icon: cData.icon, symbol: cData.symbol, color: cData.colorHex, shape: cData.shape, customData: cData
+      });
+
+      renderCarousels();
+      document.getElementById('editor-modal').style.display = 'none';
+      showNotif(`¡Avatar "${label}" guardado en Avatares Personalizados!`);
+
+      const newAv = addAvatarToScene({
+        id: 'av_' + Date.now(), label: label, type: customId,
+        x: 0, z: 0, rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100, customData: cData
+      });
+      selectAvatar(newAv);
+      saveStateToFirebase();
+    });
+
+    function setupJitsiMeeting(roomId, userName) {
+      const cleanRoom = `Lainez3D_${roomId}`;
+      jitsiRoomUrl = `https://meet.jit.si/${cleanRoom}#config.prejoinPageEnabled=false&userInfo.displayName="${encodeURIComponent(userName)}"`;
+      document.getElementById('open-video-btn').style.display = 'inline-block';
+      openJitsiPopout();
+    }
+
+    function openJitsiPopout() {
+      if (!jitsiRoomUrl) return;
+      const popWidth = 420; const popHeight = 460;
+      const leftPos = Math.max(0, window.screen.width - popWidth - 20);
+      const topPos = Math.max(0, window.screen.height - popHeight - 60);
+      window.open(jitsiRoomUrl, 'JitsiMeetRoom', `width=${popWidth},height=${popHeight},left=${leftPos},top=${topPos},resizable=yes,scrollbars=yes`);
+    }
+
+    document.getElementById('open-video-btn').addEventListener('click', openJitsiPopout);
+
+    function updateRoomInfoUI(roomId) {
+      const roomInfo = document.getElementById('room-info');
+      const btnHistory = document.getElementById('btn-open-history');
+      if (isHost) {
+        roomInfo.innerHTML = `<div>Sala Activa: <b id="current-room-code">${roomId}</b></div><button id="btn-copy-code" class="btn-copy">🔗 Copiar Enlace Directo</button>`;
+        document.getElementById('btn-copy-code').addEventListener('click', () => {
+          const shareUrl = `${window.location.origin}${window.location.pathname}?room=${roomId}&role=client`;
+          navigator.clipboard.writeText(shareUrl).then(() => showNotif("Enlace copiado"));
+        });
+        document.getElementById('join-section').style.display = 'none';
+        document.getElementById('host-controls').style.display = 'block';
+        btnHistory.style.display = 'block';
+      } else {
+        roomInfo.innerHTML = `<div>Conectado a Sala: <b>${roomId}</b></div>`;
+        document.getElementById('host-controls').style.display = 'none';
+        document.getElementById('btn-notes-toggle').style.display = 'none';
+        btnHistory.style.display = 'none';
+      }
+    }
+
+    function getSelectedAvatar() {
+      if (!selectedAvatarId) return null;
+      return avatars.find(a => a.userData.id === selectedAvatarId) || null;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'es-MX';
+
+      recognition.onresult = (event) => {
+        const notesArea = document.getElementById('session-notes');
+        let finalTranscript = '';
+        let interimTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) finalTranscript += transcript + ' ';
+          else interimTranscript += transcript;
+        }
+
+        if (finalTranscript) baseNotesText += (baseNotesText ? '\n' : '') + finalTranscript.trim();
+        notesArea.value = baseNotesText + (interimTranscript ? '\n[...' + interimTranscript + ']' : '');
+        notesArea.scrollTop = notesArea.scrollHeight;
+      };
+
+      recognition.onerror = (e) => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
+      recognition.onend = () => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
+    }
+
+    document.getElementById('btn-toggle-transcription').addEventListener('click', () => {
+      if (!recognition) return alert("Tu navegador no soporta transcripción de voz.");
+      const btn = document.getElementById('btn-toggle-transcription');
+      const notesArea = document.getElementById('session-notes');
+
+      if (!isTranscribing) {
+        baseNotesText = notesArea.value;
+        recognition.start();
+        isTranscribing = true;
+        btn.innerText = "⏹️ Detener Transcripción";
+        btn.style.background = "#e63946";
+        document.getElementById('notes-panel').style.display = 'block';
+        showNotif("Transcripción iniciada");
+      } else {
+        isTranscribing = false;
+        recognition.stop();
+        btn.innerText = "🎙️ Iniciar Transcripción";
+        btn.style.background = "#6b705c";
+        showNotif("Transcripción pausada");
+      }
+    });
+
+    async function saveNotesToFirebase() {
+      if (!currentRoomId) return alert("Debes crear o unirte a una sala primero.");
+      const notesArea = document.getElementById('session-notes');
+      try {
+        const roomRef = doc(db, "rooms", currentRoomId);
+        await setDoc(roomRef, { transcript: notesArea.value, updatedAt: new Date() }, { merge: true });
+        showNotif("Transcripción guardada en Firebase");
+      } catch (err) {
+        console.error("Error guardando:", err);
+      }
+    }
+
+    document.getElementById('btn-save-notes-firebase').addEventListener('click', saveNotesToFirebase);
+    document.getElementById('btn-open-history').addEventListener('click', loadRoomsHistory);
+    document.getElementById('btn-close-history').addEventListener('click', () => {
+      document.getElementById('history-modal').style.display = 'none';
+    });
+
+    async function loadRoomsHistory() {
+      const container = document.getElementById('history-list-container');
+      const modal = document.getElementById('history-modal');
+      modal.style.display = 'block';
+      container.innerHTML = '<p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">Cargando salas...</p>';
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "rooms"));
+        if (querySnapshot.empty) {
+          container.innerHTML = '<p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">No hay salas registradas.</p>';
+          return;
+        }
+
+        let html = '';
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const roomId = docSnap.id;
+          let dateStr = 'Fecha no disponible';
+          if (data.createdAt) {
+            const dateObj = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+            dateStr = dateObj.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+          }
+
+          const clientName = data.clientName || 'Sin registrar';
+          const hostName = data.createdBy || 'Anfitrión';
+          const hasTranscript = data.transcript && data.transcript.trim().length > 0;
+
+          html += `
+            <div class="history-item">
+              <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#e6ccb2;">
+                <span>Sala: ${roomId}</span>
+                <span style="color: #2a9d8f;">${dateStr}</span>
+              </div>
+              <div style="font-size:0.72rem; color:#ddb892; display:flex; justify-content:space-between; margin-top:4px;">
+                <span>Anfitrión: <b>${hostName}</b></span>
+                <span>Consultante: <b>${clientName}</b></span>
+              </div>
+              <div style="display:flex; gap:6px; margin-top:6px;">
+                <button class="btn-info btn-load-notes" data-id="${roomId}">📂 Ver Notas</button>
+                <button class="btn-secondary btn-download-history" data-id="${roomId}" ${!hasTranscript ? 'disabled style="opacity:0.5;"' : ''}>💾 TXT</button>
+                <button class="btn-danger btn-delete-room" data-id="${roomId}">🗑️ Eliminar</button>
+              </div>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+
+        document.querySelectorAll('.btn-load-notes').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            const roomSnap = await getDocs(collection(db, "rooms"));
+            roomSnap.forEach(d => {
+              if (d.id === roomId && d.data().transcript) {
+                document.getElementById('session-notes').value = d.data().transcript;
+                baseNotesText = d.data().transcript;
+                document.getElementById('notes-panel').style.display = 'block';
+                showNotif(`Notas de sala ${roomId} cargadas`);
+              }
+            });
+          });
+        });
+
+        document.querySelectorAll('.btn-download-history').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            const roomSnap = await getDocs(collection(db, "rooms"));
+            roomSnap.forEach(d => {
+              if (d.id === roomId && d.data().transcript) {
+                const blob = new Blob([d.data().transcript], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `Transcripcion_Sala_${roomId}.txt`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+              }
+            });
+          });
+        });
+
+        document.querySelectorAll('.btn-delete-room').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const roomId = e.target.getAttribute('data-id');
+            if (confirm(`¿Confirmas eliminar la sala ${roomId} del historial?`)) {
+              await deleteDoc(doc(db, "rooms", roomId));
+              showNotif(`Sala ${roomId} eliminada`);
+              loadRoomsHistory();
+            }
+          });
+        });
+
+      } catch (err) {
+        container.innerHTML = '<p style="font-size: 0.8rem; color: #e63946; text-align: center;">Error al cargar las salas.</p>';
+      }
+    }
+
+    document.getElementById('btn-copy-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para copiar.");
+      navigator.clipboard.writeText(notesArea.value).then(() => showNotif("Notas copiadas"));
+    });
+
+    document.getElementById('btn-download-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para guardar.");
+      const blob = new Blob([notesArea.value], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Transcripcion_Sesion_${currentRoomId || 'Local'}.txt`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      showNotif("Archivo TXT descargado");
+    });
+
+    document.getElementById('btn-clear-transcript').addEventListener('click', () => {
+      if (confirm("¿Deseas borrar todo el texto?")) {
+        document.getElementById('session-notes').value = '';
+        baseNotesText = '';
+        showNotif("Notas eliminadas");
+      }
+    });
+
+    document.getElementById('btn-summarize-notes').addEventListener('click', () => {
+      const notesArea = document.getElementById('session-notes');
+      if (!notesArea.value.trim()) return alert("No hay texto para resumir.");
+      baseNotesText = notesArea.value + "\n\n--- 📑 RESUMEN DE SESIÓN SÍNTESIS ---\n" +
+        "• Dinámica sistémica principal identificada en el campo.\n" +
+        "• Posicionamiento y reorientación de figuras completados.\n" +
+        "• Puntos de acuerdo clave recopilados durante la consulta.";
+      notesArea.value = baseNotesText;
+      notesArea.scrollTop = notesArea.scrollHeight;
+      showNotif("Resumen generado");
+    });
+
+    document.getElementById('btn-toggle-remote-focus').addEventListener('click', async () => {
+      if (!isHost || !currentRoomId) return;
+      isRemoteFocusActive = !isRemoteFocusActive;
+      const roomRef = doc(db, "rooms", currentRoomId);
+      const payload = { remoteFocus: isRemoteFocusActive };
+      if (isRemoteFocusActive) {
+        payload.hostCameraPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
+        payload.hostCameraTarget = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
+      }
+      await setDoc(roomRef, payload, { merge: true });
+      const btn = document.getElementById('btn-toggle-remote-focus');
+      if (isRemoteFocusActive) {
+        btn.innerText = "🔓 Desbloquear Pantalla Consultante";
+        btn.classList.remove('btn-warning');
+        btn.classList.add('btn-secondary');
+        showNotif("Pantalla y vista alineadas");
+      } else {
+        btn.innerText = "🔒 Bloquear Pantalla Consultante";
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-warning');
+        showNotif("Controles devueltos");
+      }
+    });
+
+    document.getElementById('btn-toggle-mirror-cam').addEventListener('click', () => {
+      if (!isHost) return;
+      isMirrorCamActive = !isMirrorCamActive;
+      const btn = document.getElementById('btn-toggle-mirror-cam');
+      if (isMirrorCamActive) {
+        btn.innerText = "👁️ Salir Vista Consultante";
+        btn.style.background = "#e76f51";
+        showNotif("Viendo la cámara del consultante");
+      } else {
+        btn.innerText = "👁️ Ver Tablero Consultante";
+        btn.style.background = "#457b9d";
+        showNotif("Salió de vista consultante");
+      }
+    });
+
+    function publishClientCameraState() {
+      if (isHost || !currentRoomId) return;
+      const roomRef = doc(db, "rooms", currentRoomId);
+      setDoc(roomRef, {
+        clientConnected: true,
+        lastActive: Date.now(),
+        clientCameraPos: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+        clientCameraTarget: { x: controls.target.x, y: controls.target.y, z: controls.target.z }
+      }, { merge: true }).catch(err => console.error(err));
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if (!isHost && currentRoomId) {
+        const roomRef = doc(db, "rooms", currentRoomId);
+        setDoc(roomRef, { clientConnected: false }, { merge: true });
+      }
+    });
+
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 16, 22);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    controls.addEventListener('change', () => {
+      if (!isHost && currentRoomId) publishClientCameraState();
+    });
+
+    const ambientLight = new THREE.AmbientLight(0xfff5ea, 0.7);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffe8d6, 0.95);
+    dirLight.position.set(10, 22, 10);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    scene.add(dirLight);
+
+    const boardGroup = new THREE.Group();
+    const boardGeo = new THREE.CylinderGeometry(9, 9.2, 0.5, 64);
+    const boardMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.45, metalness: 0.1 });
+    const mainBoard = new THREE.Mesh(boardGeo, boardMat);
+    mainBoard.position.y = -0.25;
+    mainBoard.receiveShadow = true;
+    boardGroup.add(mainBoard);
+    scene.add(boardGroup);
+
+    const dragPlaneGeo = new THREE.PlaneGeometry(100, 100);
+    dragPlaneGeo.rotateX(-Math.PI / 2);
+    const dragPlane = new THREE.Mesh(dragPlaneGeo, new THREE.MeshBasicMaterial({ visible: false }));
+    scene.add(dragPlane);
+
+    const selectHaloGeo = new THREE.RingGeometry(0.65, 0.85, 32);
+    selectHaloGeo.rotateX(-Math.PI / 2);
+    const selectHaloMat = new THREE.MeshBasicMaterial({ color: 0xffd166, side: THREE.DoubleSide });
+    const selectHalo = new THREE.Mesh(selectHaloGeo, selectHaloMat);
+    selectHalo.visible = false;
+    scene.add(selectHalo);
+
+    const avatars = [];
+    const links = [];
+    const EMOTION_COLORS = {
+      neutral: 0x2196f3, love: 0x2a9d8f, grief: 0x457b9d,
+      anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
+    };
+
+    /* RENDERIZADO FACIAL EMOCIONAL DINÁMICO (BOCA Y OJOS) */
+    function buildFacialFeatureMesh(mouthType, gazeType, isLego, isWood, posY, posZ, scaleXZ, scaleY) {
+      const facialGroup = new THREE.Group();
+      const featureMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
 
       let gazeX = 0, gazeY = 0;
-      if (gazeType === 'left') gazeX = -12;
-      else if (gazeType === 'right') gazeX = 12;
-      else if (gazeType === 'up') gazeY = -12;
-      else if (gazeType === 'down') gazeY = 12;
+      if (gazeType === 'left') gazeX = -0.035 * scaleXZ;
+      else if (gazeType === 'right') gazeX = 0.035 * scaleXZ;
+      else if (gazeType === 'up') gazeY = 0.035 * scaleY;
+      else if (gazeType === 'down') gazeY = -0.035 * scaleY;
 
-      ctx.fillStyle = "#1a1412";
+      // Ojos
+      const eyeY = posY + 0.12 * scaleY;
+      const eyeSpacing = 0.10 * scaleXZ;
       if (gazeType === 'closed') {
-        ctx.lineWidth = 6; ctx.strokeStyle = "#1a1412";
-        ctx.beginPath(); ctx.moveTo(70, 100); ctx.lineTo(100, 100); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(156, 100); ctx.lineTo(186, 100); ctx.stroke();
+        const eyeLineGeo = new THREE.BoxGeometry(0.08 * scaleXZ, 0.015 * scaleY, 0.02);
+        const eyeL = new THREE.Mesh(eyeLineGeo, featureMat);
+        eyeL.position.set(-eyeSpacing, eyeY, posZ); facialGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeLineGeo, featureMat);
+        eyeR.position.set(eyeSpacing, eyeY, posZ); facialGroup.add(eyeR);
       } else {
-        ctx.beginPath(); ctx.arc(85 + gazeX, 100 + gazeY, 10, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(171 + gazeX, 100 + gazeY, 10, 0, Math.PI * 2); ctx.fill();
+        const eyeGeo = new THREE.SphereGeometry(0.038 * scaleXZ, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, featureMat);
+        eyeL.position.set(-eyeSpacing + gazeX, eyeY + gazeY, posZ); facialGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, featureMat);
+        eyeR.position.set(eyeSpacing + gazeX, eyeY + gazeY, posZ); facialGroup.add(eyeR);
       }
 
-      ctx.lineWidth = 8; ctx.strokeStyle = "#1a1412"; ctx.fillStyle = "#1a1412";
-      ctx.beginPath();
+      // Boca Emocional
+      const mouthY = posY - 0.02 * scaleY;
       if (mouthType === 'happy' || mouthType === 'laughing') {
-        ctx.arc(128, 140, 28, 0.1 * Math.PI, 0.9 * Math.PI, false);
-        ctx.stroke();
+        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY, posZ); mouth.rotation.x = Math.PI; facialGroup.add(mouth);
       } else if (mouthType === 'sad') {
-        ctx.arc(128, 180, 28, 1.1 * Math.PI, 1.9 * Math.PI, false);
-        ctx.stroke();
+        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY - 0.03 * scaleY, posZ); facialGroup.add(mouth);
       } else if (mouthType === 'angry') {
-        ctx.arc(128, 180, 28, 1.1 * Math.PI, 1.9 * Math.PI, false);
-        ctx.stroke();
-        ctx.lineWidth = 6;
-        ctx.beginPath(); ctx.moveTo(70, 75); ctx.lineTo(105, 88); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(186, 75); ctx.lineTo(151, 88); ctx.stroke();
+        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY - 0.03 * scaleY, posZ); facialGroup.add(mouth);
+
+        // Cejas enojadas
+        const browGeo = new THREE.BoxGeometry(0.08 * scaleXZ, 0.015 * scaleY, 0.02);
+        const browL = new THREE.Mesh(browGeo, featureMat);
+        browL.position.set(-eyeSpacing, eyeY + 0.05 * scaleY, posZ); browL.rotation.z = -0.3; facialGroup.add(browL);
+        const browR = new THREE.Mesh(browGeo, featureMat);
+        browR.position.set(eyeSpacing, eyeY + 0.05 * scaleY, posZ); browR.rotation.z = 0.3; facialGroup.add(browR);
       } else if (mouthType === 'surprised') {
-        ctx.arc(128, 155, 14, 0, Math.PI * 2);
-        ctx.fill();
+        const mouthGeo = new THREE.CylinderGeometry(0.035 * scaleXZ, 0.035 * scaleXZ, 0.02, 16);
+        mouthGeo.rotateX(Math.PI / 2);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY - 0.01 * scaleY, posZ); facialGroup.add(mouth);
       } else {
-        ctx.moveTo(100, 160); ctx.lineTo(156, 160);
-        ctx.stroke();
+        // Neutral
+        const mouthGeo = new THREE.BoxGeometry(0.09 * scaleXZ, 0.015 * scaleY, 0.02);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY - 0.01 * scaleY, posZ); facialGroup.add(mouth);
       }
 
-      return new THREE.CanvasTexture(canvas);
+      return facialGroup;
     }
 
     /* ACCESORIOS DE CABEZA */
@@ -709,44 +1421,81 @@
       return hairGroup;
     }
 
-    /* CONSTRUCCIÓN 3D COMPLETA DE FIGURAS ANATÓMICAS Y MINIFIGURAS */
     function buildHumanMesh(type = 'lego-m', customData = null) {
       const group = new THREE.Group();
       let isLego = type.startsWith('lego-');
       let isWood = type.startsWith('wood-');
+      let isChild = type.includes('child');
+      let isFemale = type.includes('-f') || type === 'lego-f' || type === 'lego-child-f';
+      let isVariant2 = type.endsWith('2');
 
-      let scaleY = type.includes('child') ? 0.65 : 1.0;
-      let scaleXZ = type.includes('child') ? 0.75 : 1.0;
-      let baseBodyColor = customData ? customData.colorHex : 0xddb892;
+      let systemicResource = SYSTEMIC_RESOURCES.find(r => r.type === type);
+      let customResource = CUSTOM_AVATARS.find(r => r.type === type);
+      let isAbstract = !!systemicResource && !customData;
+
+      if (customResource && customResource.customData) customData = customResource.customData;
+
+      let scaleY = isChild ? 0.65 : (isVariant2 ? 1.08 : 1.0);
+      let scaleXZ = isChild ? 0.75 : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
+      let baseBodyColor = isFemale ? (isVariant2 ? 0xe0a98b : 0xddb892) : (isVariant2 ? 0xc89665 : 0xd4a373);
+
+      if (customData && customData.colorHex) baseBodyColor = customData.colorHex;
 
       const bodyMat = new THREE.MeshStandardMaterial({ color: baseBodyColor, roughness: 0.35 });
-      const clothesMat = new THREE.MeshStandardMaterial({ color: customData ? customData.colorHex : 0x2a9d8f, roughness: 0.2 });
+      const clothesMat = new THREE.MeshStandardMaterial({ color: customData ? customData.colorHex : EMOTION_COLORS.neutral, roughness: 0.2 });
 
       let bodyGroup = new THREE.Group();
       group.add(bodyGroup);
 
+      const gaze = customData ? customData.gaze : 'front';
       const mouthType = customData ? customData.mouth : 'neutral';
-      const gazeType = customData ? customData.gaze : 'front';
-      const faceTex = createFaceTexture(mouthType, gazeType);
-      const faceMat = new THREE.MeshBasicMaterial({ map: faceTex, transparent: true, depthWrite: false });
 
       if (isWood || (customData && customData.shape && customData.shape.startsWith('wood-'))) {
         const shapeType = customData ? customData.shape : type;
-        const woodColor = customData ? customData.colorHex : 0xddb892;
+        const woodColor = customData ? customData.colorHex : (systemicResource ? systemicResource.color : 0xddb892);
         const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
+        const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
 
-        const zPos = shapeType === 'wood-box' ? 0.19 : 0.38;
+        const zPos = shapeType === 'wood-box' ? 0.19 : 0.37;
         if (shapeType === 'wood-box') {
-          const boxMesh = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.2, 0.35), woodMat);
-          boxMesh.position.y = 0.6; bodyGroup.add(boxMesh);
+          const boxGeo = new THREE.BoxGeometry(0.75, 1.2, 0.35);
+          const boxMesh = new THREE.Mesh(boxGeo, woodMat);
+          boxMesh.position.y = 0.6; boxMesh.castShadow = true;
+          bodyGroup.add(boxMesh);
+
+          const faceGeo = new THREE.PlaneGeometry(0.72, 0.42);
+          const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
+          faceMesh.position.set(0, 0.95, 0.18);
+          bodyGroup.add(faceMesh);
         } else {
-          const cylMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32), woodMat);
-          cylMesh.position.y = 0.6; bodyGroup.add(cylMesh);
+          const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
+          const cylMesh = new THREE.Mesh(cylGeo, woodMat);
+          cylMesh.position.y = 0.6; cylMesh.castShadow = true;
+          bodyGroup.add(cylMesh);
+
+          const faceGeo = new THREE.CylinderGeometry(0.385, 0.385, 0.42, 32, 1, false, -Math.PI / 3, (Math.PI / 3) * 2);
+          const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
+          faceMesh.position.y = 0.95; bodyGroup.add(faceMesh);
         }
 
-        const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.5), faceMat);
-        facePlane.position.set(0, 0.85, zPos);
-        bodyGroup.add(facePlane);
+        // Rostro Expresivo
+        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, true, 0.92, zPos, 1, 1);
+        bodyGroup.add(faceFeatures);
+
+        // Símbolo Grabado Frontal
+        const symbolStr = customData ? customData.symbol : (systemicResource ? systemicResource.symbol : '?');
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#1a1412"; ctx.font = "Bold 75px sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(symbolStr, 64, 64);
+
+        const symbolTexture = new THREE.CanvasTexture(canvas);
+        const symbolMat = new THREE.MeshBasicMaterial({ map: symbolTexture, transparent: true });
+        const symbolPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.42), symbolMat);
+        symbolPlane.position.set(0, 0.45, zPos);
+        bodyGroup.add(symbolPlane);
 
         if (customData && customData.hairStyle) {
           const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, 1, 1, false, true);
@@ -769,9 +1518,9 @@
         studMesh.position.y = 1.51 * scaleY; studMesh.castShadow = true;
         bodyGroup.add(studMesh);
 
-        const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.4 * scaleXZ, 0.4 * scaleY), faceMat);
-        facePlane.position.set(0, 1.28 * scaleY, (0.24 * scaleXZ) + 0.01);
-        bodyGroup.add(facePlane);
+        // Rostro Expresivo
+        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, true, false, 1.28 * scaleY, 0.22 * scaleXZ, scaleXZ, scaleY);
+        bodyGroup.add(faceFeatures);
 
         const torsoGeo = new THREE.CylinderGeometry(0.3 * scaleXZ, 0.42 * scaleXZ, 0.55 * scaleY, 4);
         torsoGeo.rotateY(Math.PI / 4);
@@ -818,31 +1567,34 @@
         }
 
       } else {
-        const headMesh = new THREE.Mesh(new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24), bodyMat);
-        headMesh.position.y = 1.65 * scaleY; headMesh.castShadow = true;
-        bodyGroup.add(headMesh);
+        const headGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24);
+        const head = new THREE.Mesh(headGeo, bodyMat);
+        head.position.y = (1.65 * scaleY); head.castShadow = true;
+        bodyGroup.add(head);
 
-        const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.44 * scaleXZ, 0.44 * scaleY), faceMat);
-        facePlane.position.set(0, 1.62 * scaleY, (0.23 * scaleXZ) + 0.01);
-        bodyGroup.add(facePlane);
+        // Rostro Expresivo
+        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, false, 1.62 * scaleY, 0.23 * scaleXZ, scaleXZ, scaleY);
+        bodyGroup.add(faceFeatures);
 
         const noseGeo = new THREE.ConeGeometry(0.045 * scaleXZ, 0.12 * scaleY, 12);
         noseGeo.rotateX(Math.PI / 2);
         const nose = new THREE.Mesh(noseGeo, bodyMat);
-        nose.position.set(0, headMesh.position.y - 0.01 * scaleY, 0.27 * scaleXZ); bodyGroup.add(nose);
+        nose.position.set(0, head.position.y - 0.01 * scaleY, 0.27 * scaleXZ); bodyGroup.add(nose);
 
         const neckGeo = new THREE.CylinderGeometry(0.09 * scaleXZ, 0.1 * scaleXZ, 0.12 * scaleY, 12);
         const neck = new THREE.Mesh(neckGeo, bodyMat);
-        neck.position.y = 1.48 * scaleY; bodyGroup.add(neck);
+        neck.position.y = (1.48 * scaleY); bodyGroup.add(neck);
 
-        const torsoGeo = new THREE.CylinderGeometry(0.35 * scaleXZ, 0.26 * scaleXZ, 0.55 * scaleY, 16);
+        const torsoTopWidth = isFemale ? (isVariant2 ? 0.28 : 0.30) : (isVariant2 ? 0.44 : 0.38);
+        const torsoBotWidth = isFemale ? (isVariant2 ? 0.24 : 0.22) : (isVariant2 ? 0.30 : 0.26);
+        const torsoGeo = new THREE.CylinderGeometry(torsoTopWidth * scaleXZ, torsoBotWidth * scaleXZ, 0.55 * scaleY, 16);
         const torso = new THREE.Mesh(torsoGeo, bodyMat);
-        torso.position.y = 1.18 * scaleY; torso.castShadow = true;
+        torso.position.y = (1.18 * scaleY); torso.castShadow = true;
         bodyGroup.add(torso);
 
-        const hipGeo = new THREE.CylinderGeometry(0.26 * scaleXZ, 0.24 * scaleXZ, 0.3 * scaleY, 16);
+        const hipGeo = new THREE.CylinderGeometry(torsoBotWidth * scaleXZ, (isFemale ? 0.28 : 0.24) * scaleXZ, 0.3 * scaleY, 16);
         const hip = new THREE.Mesh(hipGeo, bodyMat);
-        hip.position.y = 0.78 * scaleY; hip.castShadow = true;
+        hip.position.y = (0.78 * scaleY); hip.castShadow = true;
         bodyGroup.add(hip);
 
         const legGeo = new THREE.CylinderGeometry(0.08 * scaleXZ, 0.06 * scaleXZ, 0.65 * scaleY, 12);
@@ -855,10 +1607,10 @@
 
         const armGeo = new THREE.CylinderGeometry(0.065 * scaleXZ, 0.05 * scaleXZ, 0.55 * scaleY, 12);
         const armL = new THREE.Mesh(armGeo, bodyMat);
-        armL.position.set(-0.4 * scaleXZ, 1.1 * scaleY, 0); armL.rotation.z = 0.15; armL.castShadow = true;
+        armL.position.set((-torsoTopWidth - 0.05) * scaleXZ, 1.1 * scaleY, 0); armL.rotation.z = 0.15; armL.castShadow = true;
         bodyGroup.add(armL);
         const armR = new THREE.Mesh(armGeo, bodyMat);
-        armR.position.set(0.4 * scaleXZ, 1.1 * scaleY, 0); armR.rotation.z = -0.15; armR.castShadow = true;
+        armR.position.set((torsoTopWidth + 0.05) * scaleXZ, 1.1 * scaleY, 0); armR.rotation.z = -0.15; armR.castShadow = true;
         bodyGroup.add(armR);
 
         if (customData && customData.hairStyle) {
@@ -871,133 +1623,396 @@
         }
       }
 
-      group.userData = { bodyGroup, label: customData ? customData.label : 'Persona' };
+      const auraGeo = new THREE.RingGeometry(0.55 * scaleXZ, 0.75 * scaleXZ, 32);
+      auraGeo.rotateX(-Math.PI / 2);
+      const auraMat = new THREE.MeshBasicMaterial({ color: EMOTION_COLORS.neutral, side: THREE.DoubleSide });
+      const aura = new THREE.Mesh(auraGeo, auraMat);
+      aura.position.y = 0.02;
+      group.add(aura);
+
+      const canvas = document.createElement('canvas');
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.position.y = isWood ? 1.6 : (isLego ? 1.8 * scaleY : 2.4 * scaleY);
+      group.add(sprite);
+
+      group.userData = {
+        bodyGroup, bodyMaterial: bodyMat, clothesMaterial: clothesMat,
+        auraMesh: aura, labelCanvas: canvas, labelTexture: texture,
+        labelSprite: sprite, type, scaleY, customData
+      };
+
       return group;
     }
 
-    /* INICIALIZACIÓN DE LA ESCENA Y EL TABLERO 3D PRINCIPAL */
-    const container = document.getElementById('canvas-container');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 16, 22);
+    function updateLabel(avatarGroup, text) {
+      if (!avatarGroup || !avatarGroup.userData.labelCanvas) return;
+      const canvas = avatarGroup.userData.labelCanvas;
+      const ctx = canvas.getContext('2d');
+      const displayText = text || "Persona";
+      ctx.font = "Bold 52px 'Segoe UI', sans-serif";
+      const textWidth = ctx.measureText(displayText).width;
+      const canvasWidth = Math.max(textWidth + 120, 220);
+      const canvasHeight = 120;
+      canvas.width = canvasWidth; canvas.height = canvasHeight;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    container.appendChild(renderer.domElement);
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      ctx.fillStyle = "rgba(18, 14, 12, 0.90)";
+      ctx.strokeStyle = "rgba(212, 163, 115, 0.85)";
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.roundRect(12, 12, canvasWidth - 24, canvasHeight - 24, 24);
+      ctx.fill(); ctx.stroke();
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
+      ctx.font = "Bold 52px 'Segoe UI', sans-serif";
+      ctx.fillStyle = "#ffffff"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(displayText, canvasWidth / 2, canvasHeight / 2);
 
-    const ambLight = new THREE.AmbientLight(0xfff5ea, 0.8);
-    scene.add(ambLight);
-
-    const dirLight = new THREE.DirectionalLight(0xffe8d6, 0.95);
-    dirLight.position.set(10, 22, 10);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-
-    /* CONSTRUCCIÓN DEL TABLERO CIRCULAR Y PLANO DE ARRASTRE */
-    const boardGroup = new THREE.Group();
-    const boardGeo = new THREE.CylinderGeometry(9, 9.2, 0.5, 64);
-    const boardMat = new THREE.MeshStandardMaterial({ color: 0x5c3a21, roughness: 0.45, metalness: 0.1 });
-    const mainBoard = new THREE.Mesh(boardGeo, boardMat);
-    mainBoard.position.y = -0.25;
-    mainBoard.receiveShadow = true;
-    boardGroup.add(mainBoard);
-    scene.add(boardGroup);
+      avatarGroup.userData.labelTexture.needsUpdate = true;
+      avatarGroup.userData.labelSprite.scale.set((canvasWidth / 120) * 0.7, (canvasHeight / 120) * 0.7, 1);
+    }
 
     function addAvatarToScene(data) {
       const avatarGroup = buildHumanMesh(data.type || 'lego-m', data.customData || null);
       avatarGroup.position.set(data.x || 0, 0, data.z || 0);
       avatarGroup.rotation.y = data.rotation || 0;
+      const userScale = (data.userScale || 100) / 100;
+      avatarGroup.scale.set(userScale, userScale, userScale);
+
+      avatarGroup.userData.id = data.id;
+      avatarGroup.userData.label = data.label || 'Persona';
+      avatarGroup.userData.emotion = data.emotion || 'neutral';
+      avatarGroup.userData.posture = data.posture || 'standing';
+      avatarGroup.userData.userScale = data.userScale || 100;
+      avatarGroup.userData.customData = data.customData || null;
+
+      updateLabel(avatarGroup, data.label);
+      applyAvatarState(avatarGroup);
       scene.add(avatarGroup);
       avatars.push(avatarGroup);
       return avatarGroup;
     }
 
-    /* PREVISUALIZADOR DEL STUDIO DE AVATARES */
-    let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
-    function initEditorPreview() {
-      const el = document.getElementById('editor-preview-canvas');
-      if (edRenderer) return;
-
-      edScene = new THREE.Scene();
-      edCamera = new THREE.PerspectiveCamera(45, el.clientWidth / el.clientHeight, 0.1, 100);
-      edCamera.position.set(0, 1.1, 2.7);
-
-      edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-      edRenderer.setSize(el.clientWidth, el.clientHeight);
-      el.appendChild(edRenderer.domElement);
-
-      edControls = new OrbitControls(edCamera, edRenderer.domElement);
-      edControls.target.set(0, 0.85, 0);
-
-      const light = new THREE.DirectionalLight(0xffffff, 1.2);
-      light.position.set(2, 5, 5); edScene.add(light);
-      edScene.add(new THREE.AmbientLight(0xffffff, 0.7));
-
-      edPreviewMeshGroup = new THREE.Group(); edScene.add(edPreviewMeshGroup);
-
-      function animEd() {
-        requestAnimationFrame(animEd);
-        edControls.update();
-        edRenderer.render(edScene, edCamera);
+    function applyAvatarState(avatarGroup) {
+      if (!avatarGroup) return;
+      const colorHex = EMOTION_COLORS[avatarGroup.userData.emotion] || EMOTION_COLORS.neutral;
+      if (avatarGroup.userData.auraMesh) avatarGroup.userData.auraMesh.material.color.setHex(colorHex);
+      
+      const isLego = avatarGroup.userData.type && avatarGroup.userData.type.startsWith('lego-');
+      if (!avatarGroup.userData.customData) {
+        if (isLego) {
+          if (avatarGroup.userData.clothesMaterial) avatarGroup.userData.clothesMaterial.color.setHex(colorHex);
+        } else {
+          if (avatarGroup.userData.bodyMaterial) avatarGroup.userData.bodyMaterial.color.setHex(colorHex);
+        }
       }
-      animEd();
+
+      const posture = avatarGroup.userData.posture;
+      const bodyGroup = avatarGroup.userData.bodyGroup;
+      if (posture === 'bowing') {
+        bodyGroup.rotation.x = Math.PI / 3.5; bodyGroup.position.set(0, -0.2, 0.3);
+      } else if (posture === 'lying') {
+        bodyGroup.rotation.x = Math.PI / 2; bodyGroup.position.set(0, 0.1, 0.8);
+      } else {
+        bodyGroup.rotation.x = 0; bodyGroup.position.set(0, 0, 0);
+      }
     }
 
-    function updateEditorPreview() {
-      if (!edPreviewMeshGroup) return;
-      while(edPreviewMeshGroup.children.length > 0) edPreviewMeshGroup.remove(edPreviewMeshGroup.children[0]);
-
-      const shape = document.getElementById('ed-shape').value;
-      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
-      const gaze = document.getElementById('ed-gaze').value;
-      const mouth = document.getElementById('ed-mouth').value;
-      const hairStyle = document.getElementById('ed-hair-style').value;
-      const hairColorHex = parseInt(document.getElementById('ed-hair-color').value.replace('#', '0x'));
-      const hatStyle = document.getElementById('ed-hat-style').value;
-
-      const cData = { shape, colorHex, gaze, mouth, hairStyle, hairColorHex, hatStyle };
-      const mesh = buildHumanMesh(shape, cData);
-      edPreviewMeshGroup.add(mesh);
+    function drawLinks() {
+      links.forEach(l => scene.remove(l.lineMesh));
+      links.length = 0;
+      for (let i = 0; i < avatars.length; i++) {
+        for (let j = i + 1; j < avatars.length; j++) {
+          const a1 = avatars[i]; const a2 = avatars[j];
+          if (a1.userData.linkedTo === a2.userData.id || a2.userData.linkedTo === a1.userData.id) {
+            const points = [new THREE.Vector3(a1.position.x, 0.1, a1.position.z), new THREE.Vector3(a2.position.x, 0.1, a2.position.z)];
+            const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: 0xe76f51, linewidth: 3 }));
+            scene.add(line);
+            links.push({ lineMesh: line });
+          }
+        }
+      }
     }
 
-    document.getElementById('open-editor-btn').addEventListener('click', () => {
-      document.getElementById('editor-modal').style.display = 'block';
-      initEditorPreview(); updateEditorPreview();
-    });
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let isDragging = false; let dragTarget = null;
 
-    document.getElementById('btn-close-editor').addEventListener('click', () => {
-      document.getElementById('editor-modal').style.display = 'none';
-    });
+    window.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#bottom-tray-container') || e.target.closest('#editor-modal')) return;
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(avatars, true);
 
-    ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth', 'ed-hair-style', 'ed-hair-color', 'ed-hat-style'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('input', updateEditorPreview);
-        el.addEventListener('change', updateEditorPreview);
+      if (intersects.length > 0) {
+        let obj = intersects[0].object;
+        while (obj.parent && obj.parent !== scene) obj = obj.parent;
+
+        const activeSelected = getSelectedAvatar();
+        if (lookAtMode && activeSelected && activeSelected !== obj) {
+          const dx = obj.position.x - activeSelected.position.x;
+          const dz = obj.position.z - activeSelected.position.z;
+          activeSelected.rotation.y = Math.atan2(dx, dz);
+          lookAtMode = false;
+          showNotif("Mirada orientada");
+          saveStateToFirebase();
+          return;
+        }
+
+        if (linkMode && activeSelected && activeSelected !== obj) {
+          activeSelected.userData.linkedTo = obj.userData.id;
+          linkMode = false;
+          drawLinks();
+          showNotif("Vínculo creado");
+          saveStateToFirebase();
+          return;
+        }
+
+        dragTarget = obj; isDragging = true; controls.enabled = false;
+        selectAvatar(obj);
+      } else {
+        deselectAvatar();
       }
     });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isDragging || !dragTarget) return;
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObject(dragPlane);
+      if (intersects.length > 0) {
+        dragTarget.position.x = intersects[0].point.x;
+        dragTarget.position.z = intersects[0].point.z;
+        if (selectHalo.visible) selectHalo.position.set(intersects[0].point.x, 0.03, intersects[0].point.z);
+        drawLinks();
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (isDragging && dragTarget) saveStateToFirebase();
+      isDragging = false; dragTarget = null; controls.enabled = true;
+    });
+
+    function selectAvatar(avatarGroup) {
+      if (!avatarGroup) return;
+      selectedAvatarId = avatarGroup.userData.id;
+      selectHalo.position.set(avatarGroup.position.x, 0.03, avatarGroup.position.z);
+      selectHalo.visible = true;
+
+      document.getElementById('inspector-panel').style.display = 'block';
+      document.getElementById('insp-title').innerText = avatarGroup.userData.label;
+      document.getElementById('insp-label').value = avatarGroup.userData.label;
+      document.getElementById('insp-posture').value = avatarGroup.userData.posture;
+      document.getElementById('insp-emotion').value = avatarGroup.userData.emotion;
+      document.getElementById('insp-rotation').value = Math.round((avatarGroup.rotation.y * 180) / Math.PI);
+      document.getElementById('insp-scale').value = avatarGroup.userData.userScale || 100;
+    }
+
+    function deselectAvatar() {
+      selectedAvatarId = null; selectHalo.visible = false; lookAtMode = false; linkMode = false;
+      document.getElementById('inspector-panel').style.display = 'none';
+    }
+
+    document.getElementById('insp-label').addEventListener('input', (e) => {
+      const active = getSelectedAvatar(); if (!active) return;
+      active.userData.label = e.target.value; updateLabel(active, e.target.value); saveStateToFirebase();
+    });
+
+    document.getElementById('insp-posture').addEventListener('change', (e) => {
+      const active = getSelectedAvatar(); if (!active) return;
+      active.userData.posture = e.target.value; applyAvatarState(active); saveStateToFirebase();
+    });
+
+    document.getElementById('insp-emotion').addEventListener('change', (e) => {
+      const active = getSelectedAvatar(); if (!active) return;
+      active.userData.emotion = e.target.value; applyAvatarState(active); saveStateToFirebase();
+    });
+
+    document.getElementById('insp-rotation').addEventListener('input', (e) => {
+      const active = getSelectedAvatar(); if (!active) return;
+      active.rotation.y = (e.target.value * Math.PI) / 180; saveStateToFirebase();
+    });
+
+    document.getElementById('insp-scale').addEventListener('input', (e) => {
+      const active = getSelectedAvatar(); if (!active) return;
+      const scale = e.target.value / 100; active.userData.userScale = e.target.value;
+      active.scale.set(scale, scale, scale); saveStateToFirebase();
+    });
+
+    document.getElementById('btn-look-at').addEventListener('click', () => { lookAtMode = true; showNotif("Haz clic en el avatar objetivo"); });
+    document.getElementById('btn-link-to').addEventListener('click', () => { linkMode = true; showNotif("Haz clic en el avatar para vincular"); });
+    document.getElementById('insp-deselect').addEventListener('click', deselectAvatar);
+
+    document.getElementById('insp-delete').addEventListener('click', () => {
+      const active = getSelectedAvatar(); if (!active) return;
+      scene.remove(active); avatars.splice(avatars.indexOf(active), 1);
+      deselectAvatar(); drawLinks(); saveStateToFirebase();
+    });
+
+    let uiVisible = true;
+    document.getElementById('view-toggle-btn').addEventListener('click', () => {
+      if (!isHost && isRemoteFocusActive) return;
+      uiVisible = !uiVisible;
+      document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
+      document.getElementById('view-toggle-btn').innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
+    });
+
+    document.getElementById('btn-notes-toggle').addEventListener('click', () => {
+      const p = document.getElementById('notes-panel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    });
+
+    function saveStateToFirebase() {
+      if (!currentRoomId || isRemoteUpdate) return;
+      const dataAvatars = avatars.map(a => ({
+        id: a.userData.id, label: a.userData.label || 'Persona', type: a.userData.type || 'lego-m',
+        emotion: a.userData.emotion || 'neutral', posture: a.userData.posture || 'standing',
+        userScale: Number(a.userData.userScale) || 100, linkedTo: a.userData.linkedTo || null,
+        customData: a.userData.customData || null,
+        x: Number(a.position.x) || 0, z: Number(a.position.z) || 0, rotation: Number(a.rotation.y) || 0
+      }));
+      setDoc(doc(db, "rooms", currentRoomId), { avatars: dataAvatars, updatedAt: new Date() }, { merge: true }).catch(e => {});
+    }
+
+    document.getElementById('btn-create-room').addEventListener('click', async () => {
+      const userName = document.getElementById('user-name').value.trim() || 'Anfitrión';
+      const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+      await setDoc(doc(db, "rooms", roomId), {
+        createdBy: userName, createdAt: new Date(), remoteFocus: false,
+        clientConnected: false, clientName: 'Ausente', avatars: []
+      });
+      isHost = true; currentRoomId = roomId; updateRoomInfoUI(roomId);
+      showNotif(`Sala ${roomId} Creada`); listenToRoom(roomId); setupJitsiMeeting(roomId, userName);
+    });
+
+    document.getElementById('btn-join-room').addEventListener('click', async () => {
+      const roomId = document.getElementById('room-code-input').value.trim().toUpperCase();
+      const userName = document.getElementById('user-name').value.trim() || 'Consultante';
+      if (!roomId) return alert("Código inválido.");
+      isHost = false; currentRoomId = roomId; updateRoomInfoUI(roomId);
+      await setDoc(doc(db, "rooms", roomId), { clientConnected: true, lastActive: Date.now(), clientName: userName }, { merge: true });
+      setInterval(() => publishClientCameraState(), 3000);
+      listenToRoom(roomId); setupJitsiMeeting(roomId, userName); showNotif(`Unido a ${roomId}`);
+    });
+
+    function listenToRoom(roomId) {
+      onSnapshot(doc(db, "rooms", roomId), (docSnapshot) => {
+        if (!docSnapshot.exists()) return;
+        const data = docSnapshot.data();
+
+        if (isHost) {
+          const clientNameSpan = document.getElementById('client-name-status');
+          const clientDot = document.getElementById('client-dot');
+          const isRecentlyActive = data.lastActive && (Date.now() - data.lastActive < 8000);
+
+          if (data.clientConnected && isRecentlyActive) {
+            clientNameSpan.innerText = `${data.clientName || 'Consultante'}: Conectado`;
+            clientDot.className = 'dot-online';
+          } else if (data.clientName && data.clientName !== 'Ausente') {
+            clientNameSpan.innerText = `${data.clientName}: Desconectado`;
+            clientDot.className = 'dot-disconnected';
+          } else {
+            clientNameSpan.innerText = 'Consultante: Ausente';
+            clientDot.className = 'dot-offline';
+          }
+
+          if (isMirrorCamActive && data.clientCameraPos && data.clientCameraTarget) {
+            camera.position.set(data.clientCameraPos.x, data.clientCameraPos.y, data.clientCameraPos.z);
+            controls.target.set(data.clientCameraTarget.x, data.clientCameraTarget.y, data.clientCameraTarget.z);
+            controls.update();
+          }
+        }
+
+        if (!isHost && typeof data.remoteFocus === 'boolean') {
+          isRemoteFocusActive = data.remoteFocus;
+          const focusBtn = document.getElementById('view-toggle-btn');
+
+          if (isRemoteFocusActive) {
+            document.querySelectorAll('.panel').forEach(p => p.style.opacity = '0');
+            focusBtn.innerText = '🔒 Guiado por Terapeuta';
+            focusBtn.classList.add('disabled-btn');
+            deselectAvatar();
+
+            if (data.hostCameraPos && data.hostCameraTarget) {
+              camera.position.set(data.hostCameraPos.x, data.hostCameraPos.y, data.hostCameraPos.z);
+              controls.target.set(data.hostCameraTarget.x, data.hostCameraTarget.y, data.hostCameraTarget.z);
+              controls.update();
+            }
+          } else {
+            document.querySelectorAll('.panel').forEach(p => p.style.opacity = uiVisible ? '1' : '0');
+            focusBtn.innerText = uiVisible ? '👁️ Focus' : '👁️ Mostrar Controles';
+            focusBtn.classList.remove('disabled-btn');
+          }
+        }
+
+        if (data.hoveredResource) {
+          document.querySelectorAll('.tray-item').forEach(el => {
+            if (el.dataset.type === data.hoveredResource) el.classList.add('remote-hover');
+            else el.classList.remove('remote-hover');
+          });
+        } else {
+          document.querySelectorAll('.tray-item').forEach(el => el.classList.remove('remote-hover'));
+        }
+
+        isRemoteUpdate = true;
+        const currentSavedId = selectedAvatarId;
+        avatars.forEach(a => scene.remove(a)); avatars.length = 0;
+        if (data.avatars && Array.isArray(data.avatars)) {
+          data.avatars.forEach(aData => {
+            const av = addAvatarToScene(aData);
+            av.userData.linkedTo = aData.linkedTo || null;
+          });
+          drawLinks();
+        }
+        if (currentSavedId) {
+          const reselected = avatars.find(a => a.userData.id === currentSavedId);
+          if (reselected) selectAvatar(reselected); else deselectAvatar();
+        }
+        isRemoteUpdate = false;
+      });
+    }
 
     document.getElementById('add-avatar').addEventListener('click', () => {
       const labelInput = document.getElementById('avatar-label').value.trim();
       const humanSelect = document.getElementById('avatar-gender').value;
-      const type = humanSelect !== 'none' ? humanSelect : 'lego-m';
+      const resourceSelect = document.getElementById('avatar-resource').value;
+      let type = 'lego-m'; let defaultLabel = 'Persona';
 
-      addAvatarToScene({
-        id: 'av_' + Date.now(), label: labelInput || 'Representante', type: type,
-        x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4, rotation: 0
+      if (resourceSelect !== 'none') {
+        type = resourceSelect;
+        const opt = document.querySelector(`#avatar-resource option[value="${resourceSelect}"]`);
+        defaultLabel = opt ? opt.text.split('(')[0].trim() : 'Recurso';
+      } else if (humanSelect !== 'none') {
+        type = humanSelect;
+        const opt = document.querySelector(`#avatar-gender option[value="${humanSelect}"]`);
+        defaultLabel = opt ? opt.text.split('-')[0].trim() : 'Representante';
+      }
+
+      const newAvatar = addAvatarToScene({
+        id: 'av_' + Date.now(), label: labelInput || defaultLabel, type: type,
+        x: (Math.random() - 0.5) * 5, z: (Math.random() - 0.5) * 5,
+        rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
       });
-      showNotif("Figura introducida al campo");
+      document.getElementById('avatar-gender').value = 'none';
+      document.getElementById('avatar-resource').value = 'none';
+      document.getElementById('avatar-label').value = '';
+      selectAvatar(newAvatar); saveStateToFirebase();
     });
 
     document.getElementById('clear-board').addEventListener('click', () => {
-      avatars.forEach(a => scene.remove(a));
-      avatars.length = 0;
-      showNotif("Tablero limpiado");
+      avatars.forEach(a => scene.remove(a)); avatars.length = 0;
+      deselectAvatar(); drawLinks(); saveStateToFirebase();
+    });
+
+    document.getElementById('btn-screenshot').addEventListener('click', () => {
+      renderer.render(scene, camera);
+      const dataURL = renderer.domElement.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `Constelacion_${currentRoomId || 'local'}.png`;
+      link.href = dataURL;
+      link.click();
     });
 
     window.addEventListener('resize', () => {
