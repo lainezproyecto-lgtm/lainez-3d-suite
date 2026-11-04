@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.8.1 Fix</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -42,13 +42,8 @@
       font-size: 0.65rem; color: #e9c46a; font-weight: bold; text-transform: uppercase;
       letter-spacing: 0.5px; margin-bottom: 2px; text-align: center;
     }
-    .carousel-wrapper {
-      display: flex; align-items: center; position: relative; width: 100%;
-    }
-    .carousel-track {
-      display: flex; gap: 6px; overflow-x: hidden; scroll-behavior: smooth;
-      width: 100%; padding: 4px 2px;
-    }
+    .carousel-wrapper { display: flex; align-items: center; position: relative; width: 100%; }
+    .carousel-track { display: flex; gap: 6px; overflow-x: hidden; scroll-behavior: smooth; width: 100%; padding: 4px 2px; }
     .carousel-arrow {
       background: rgba(45, 36, 32, 0.9); border: 1px solid rgba(212, 163, 115, 0.5);
       color: #ffd166; width: 24px; height: 46px; border-radius: 6px;
@@ -156,7 +151,7 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.7</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.8.1 Fix</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
@@ -186,7 +181,7 @@
 
   <div id="editor-modal">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>🎨 Studio Interactivo de Avatares 3D (v3.7)</h2>
+      <h2>🎨 Studio Interactivo de Avatares 3D (v3.8)</h2>
       <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 3px 10px;">✕ Cerrar</button>
     </div>
     <div class="editor-layout">
@@ -205,8 +200,8 @@
           <label>Modelo 3D de Origen:</label>
           <select id="ed-shape">
             <optgroup label="Bloques de Madera Sistémicos">
-              <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
               <option value="wood-box">Bloque Rectangular de Madera</option>
+              <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
             </optgroup>
             <optgroup label="Minifiguras Clásicas">
               <option value="lego-m">Minifigura - Hombre Adulto</option>
@@ -344,6 +339,7 @@
         </div>
 
         <button id="btn-save-custom-avatar" class="btn-secondary" style="margin-top: 10px; padding: 10px; font-size: 0.9rem;">💾 Añadir a "Avatares Personalizados"</button>
+        <button id="btn-update-selected-avatar" class="btn-warning" style="margin-top: 4px; padding: 10px; font-size: 0.9rem; display: none;">✏️ Aplicar Cambios al Avatar Seleccionado</button>
       </div>
     </div>
   </div>
@@ -464,6 +460,7 @@
 
   <div id="inspector-panel" class="panel">
     <h2>Propiedades <span id="insp-title" class="badge"></span></h2>
+    <button id="btn-edit-selected-in-studio" class="btn-warning" style="margin-bottom: 8px; font-weight: bold;">🎨 Editar en Studio de Avatares</button>
     <div class="input-group">
       <label>Etiqueta / Nombre:</label>
       <input type="text" id="insp-label">
@@ -526,7 +523,7 @@
       <button id="btn-close-history" class="btn-danger" style="width: auto; padding: 2px 8px;">✕ Cerrar</button>
     </div>
     <div id="history-list-container">
-      <p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">Cargando lista de salas...</p>
+      <p style="font-size: 0.8rem; color: #8d99ae; text-align: center;">Cargando salas...</p>
     </div>
   </div>
 
@@ -564,29 +561,29 @@
     let jitsiRoomUrl = '';
 
     const SYSTEMIC_RESOURCES = [
-      { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-cyl' },
-      { type: 'symptom', label: 'Hacer Terapia', icon: '🩺', symbol: '🩺', color: 0xb5838d, shape: 'wood-cyl' },
+      { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-box' },
+      { type: 'symptom', label: 'Hacer Terapia', icon: '🩺', symbol: '🩺', color: 0xb5838d, shape: 'wood-box' },
       { type: 'secret', label: 'Lo No Dicho', icon: '✉️', symbol: 'P', color: 0x6b705c, shape: 'wood-box' },
-      { type: 'mascota', label: 'Mascota', icon: '🐾', symbol: '🐾', color: 0xddb892, shape: 'wood-cyl' },
+      { type: 'mascota', label: 'Mascota', icon: '🐾', symbol: '🐾', color: 0xddb892, shape: 'wood-box' },
       { type: 'adicciones', label: 'Adicciones', icon: '🍾', symbol: '🍶', color: 0x9a031e, shape: 'wood-box' },
       { type: 'muerte', label: 'Duelo / Muerte', icon: '✝️', symbol: '✝', color: 0x3d348b, shape: 'wood-box' },
-      { type: 'pensador', label: 'El Pensador', icon: '🧠', symbol: '🧠', color: 0x457b9d, shape: 'wood-cyl' },
-      { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157, shape: 'wood-cyl' },
-      { type: 'desire', label: 'Anhelo / Meta', icon: '🌟', symbol: '▲', color: 0xe9c46a, shape: 'wood-cyl' },
+      { type: 'pensador', label: 'El Pensador', icon: '🧠', symbol: '🧠', color: 0x457b9d, shape: 'wood-box' },
+      { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157, shape: 'wood-box' },
+      { type: 'desire', label: 'Anhelo / Meta', icon: '🌟', symbol: '▲', color: 0xe9c46a, shape: 'wood-box' },
       { type: 'material', label: 'Lo Material', icon: '💰', symbol: '$', color: 0xd4a373, shape: 'wood-box' },
       { type: 'aborto', label: 'Aborto', icon: '💔', symbol: '✖', color: 0x800f2f, shape: 'wood-box' },
-      { type: 'pasado', label: 'Pasado', icon: '⏳', symbol: '◂', color: 0x6c757d, shape: 'wood-cyl' },
-      { type: 'presente', label: 'Presente', icon: '📍', symbol: '●', color: 0x2a9d8f, shape: 'wood-cyl' },
-      { type: 'futuro', label: 'Futuro', icon: '🚀', symbol: '▸', color: 0x457b9d, shape: 'wood-cyl' },
-      { type: 'espiritualidad', label: 'Espiritualidad', icon: '🕊️', symbol: '✨', color: 0xe9c46a, shape: 'wood-cyl' },
+      { type: 'pasado', label: 'Pasado', icon: '⏳', symbol: '◂', color: 0x6c757d, shape: 'wood-box' },
+      { type: 'presente', label: 'Presente', icon: '📍', symbol: '●', color: 0x2a9d8f, shape: 'wood-box' },
+      { type: 'futuro', label: 'Futuro', icon: '🚀', symbol: '▸', color: 0x457b9d, shape: 'wood-box' },
+      { type: 'espiritualidad', label: 'Espiritualidad', icon: '🕊️', symbol: '✨', color: 0xe9c46a, shape: 'wood-box' },
       { type: 'infertilidad', label: 'Infertilidad', icon: '🌱', symbol: '∅', color: 0xa8dede, shape: 'wood-box' },
-      { type: 'peterpan', label: 'Peter Pan', icon: '🎈', symbol: '👦', color: 0xf4a261, shape: 'wood-cyl' },
+      { type: 'peterpan', label: 'Peter Pan', icon: '🎈', symbol: '👦', color: 0xf4a261, shape: 'wood-box' },
       { type: 'creencias-m', label: 'Creencias Masc.', icon: '👔', symbol: '♂', color: 0x1d3557, shape: 'wood-box' },
       { type: 'creencias-f', label: 'Creencias Fem.', icon: '👗', symbol: '♀', color: 0xe63946, shape: 'wood-box' },
       { type: 'enfermedad-m', label: 'Enfermedad Masc.', icon: '🩹', symbol: '♂', color: 0x9a031e, shape: 'wood-box' },
       { type: 'enfermedad-f', label: 'Enfermedad Fem.', icon: '🩹', symbol: '♀', color: 0x9a031e, shape: 'wood-box' },
-      { type: 'vida-m', label: 'Vida Masculino', icon: '☀️', symbol: '♂', color: 0xffb703, shape: 'wood-cyl' },
-      { type: 'vida-f', label: 'Vida Femenino', icon: '☀️', symbol: '♀', color: 0xffb703, shape: 'wood-cyl' }
+      { type: 'vida-m', label: 'Vida Masculino', icon: '☀️', symbol: '♂', color: 0xffb703, shape: 'wood-box' },
+      { type: 'vida-f', label: 'Vida Femenino', icon: '☀️', symbol: '♀', color: 0xffb703, shape: 'wood-box' }
     ];
 
     const CUSTOM_AVATARS = [
@@ -609,7 +606,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.7)"))
+      .then(() => showNotif("Conectado a Backend (v3.8.1 Fix)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -759,9 +756,7 @@
       const symbol = symbolSel === 'custom' ? document.getElementById('ed-symbol-custom').value : symbolSel;
       const icon = document.getElementById('ed-icon-select').value;
 
-      return {
-        shape, colorHex, gaze, mouth, hairStyle, hairColorHex, hatStyle, symbol, icon
-      };
+      return { shape, colorHex, gaze, mouth, hairStyle, hairColorHex, hatStyle, symbol, icon };
     }
 
     function updateEditorPreview() {
@@ -773,10 +768,75 @@
       edPreviewMeshGroup.add(mesh);
     }
 
+    function loadAvatarIntoEditor(avatarGroup) {
+      if (!avatarGroup) return;
+      const cData = avatarGroup.userData.customData || {};
+      const type = avatarGroup.userData.type || 'wood-box';
+      const label = avatarGroup.userData.label || 'Avatar';
+
+      const sysRes = SYSTEMIC_RESOURCES.find(r => r.type === type);
+
+      const shape = cData.shape || (type.startsWith('wood-') ? type : (sysRes ? 'wood-box' : type));
+      const colorHex = cData.colorHex || (sysRes ? sysRes.color : 0xddb892);
+      const gaze = cData.gaze || 'front';
+      const mouth = cData.mouth || 'neutral';
+      const hairStyle = cData.hairStyle || 'none';
+      const hairColorHex = cData.hairColorHex || 0x3d2314;
+      const hatStyle = cData.hatStyle || 'none';
+      const symbol = cData.symbol || (sysRes ? sysRes.symbol : '★');
+      const icon = cData.icon || (sysRes ? sysRes.icon : '🎨');
+
+      document.getElementById('ed-label').value = label;
+      document.getElementById('ed-shape').value = shape;
+      document.getElementById('ed-color').value = '#' + colorHex.toString(16).padStart(6, '0');
+      document.getElementById('ed-gaze').value = gaze;
+      document.getElementById('ed-mouth').value = mouth;
+      document.getElementById('ed-hair-style').value = hairStyle;
+      document.getElementById('ed-hair-color').value = '#' + hairColorHex.toString(16).padStart(6, '0');
+      document.getElementById('ed-hat-style').value = hatStyle;
+
+      const symSelect = document.getElementById('ed-symbol-select');
+      let foundOpt = false;
+      for (let opt of symSelect.options) {
+        if (opt.value === symbol) {
+          symSelect.value = symbol;
+          foundOpt = true;
+          break;
+        }
+      }
+      if (!foundOpt) {
+        symSelect.value = 'custom';
+        document.getElementById('ed-symbol-custom').value = symbol;
+        document.getElementById('ed-symbol-custom').style.display = 'block';
+      } else {
+        document.getElementById('ed-symbol-custom').style.display = 'none';
+      }
+
+      document.getElementById('ed-icon-select').value = icon;
+    }
+
     document.getElementById('open-editor-btn').addEventListener('click', () => {
+      const active = getSelectedAvatar();
+      if (active) {
+        loadAvatarIntoEditor(active);
+        document.getElementById('btn-update-selected-avatar').style.display = 'block';
+      } else {
+        document.getElementById('btn-update-selected-avatar').style.display = 'none';
+      }
       document.getElementById('editor-modal').style.display = 'block';
       initEditorPreview();
       updateEditorPreview();
+    });
+
+    document.getElementById('btn-edit-selected-in-studio').addEventListener('click', () => {
+      const active = getSelectedAvatar();
+      if (active) {
+        loadAvatarIntoEditor(active);
+        document.getElementById('btn-update-selected-avatar').style.display = 'block';
+        document.getElementById('editor-modal').style.display = 'block';
+        initEditorPreview();
+        updateEditorPreview();
+      }
     });
 
     document.getElementById('btn-close-editor').addEventListener('click', () => {
@@ -854,6 +914,37 @@
       });
       selectAvatar(newAv);
       saveStateToFirebase();
+    });
+
+    document.getElementById('btn-update-selected-avatar').addEventListener('click', () => {
+      const active = getSelectedAvatar();
+      if (!active) return;
+
+      const cData = getEditorStateData();
+      const newLabel = document.getElementById('ed-label').value.trim() || active.userData.label || 'Avatar';
+
+      active.userData.customData = cData;
+      active.userData.label = newLabel;
+
+      while (active.children.length > 0) { active.remove(active.children[0]); }
+      const freshGroup = buildHumanMesh(cData.shape, cData);
+      while (freshGroup.children.length > 0) { active.add(freshGroup.children[0]); }
+
+      active.userData.bodyGroup = freshGroup.userData.bodyGroup;
+      active.userData.bodyMaterial = freshGroup.userData.bodyMaterial;
+      active.userData.clothesMaterial = freshGroup.userData.clothesMaterial;
+      active.userData.auraMesh = freshGroup.userData.auraMesh;
+      active.userData.labelCanvas = freshGroup.userData.labelCanvas;
+      active.userData.labelTexture = freshGroup.userData.labelTexture;
+      active.userData.labelSprite = freshGroup.userData.labelSprite;
+
+      updateLabel(active, newLabel);
+      applyAvatarState(active);
+      selectAvatar(active);
+      saveStateToFirebase();
+
+      document.getElementById('editor-modal').style.display = 'none';
+      showNotif(`¡Avatar "${newLabel}" actualizado correctamente!`);
     });
 
     function setupJitsiMeeting(roomId, userName) {
@@ -1412,17 +1503,30 @@
       return hairGroup;
     }
 
-    function buildHumanMesh(type = 'lego-m', customData = null) {
+    function buildHumanMesh(type = 'wood-box', customData = null) {
       const group = new THREE.Group();
+      let systemicResource = SYSTEMIC_RESOURCES.find(r => r.type === type);
+      let customResource = CUSTOM_AVATARS.find(r => r.type === type);
+
+      if (systemicResource && !customData) {
+        customData = {
+          shape: 'wood-box',
+          colorHex: systemicResource.color,
+          gaze: 'front',
+          mouth: 'neutral',
+          hairStyle: 'none',
+          hairColorHex: 0x3d2314,
+          hatStyle: 'none',
+          symbol: systemicResource.symbol,
+          icon: systemicResource.icon
+        };
+      }
+
       let isLego = type.startsWith('lego-');
-      let isWood = type.startsWith('wood-');
+      let isWood = type.startsWith('wood-') || (systemicResource && !customData) || (customData && customData.shape && customData.shape.startsWith('wood-'));
       let isChild = type.includes('child');
       let isFemale = type.includes('-f') || type === 'lego-f' || type === 'lego-child-f';
       let isVariant2 = type.endsWith('2');
-
-      let systemicResource = SYSTEMIC_RESOURCES.find(r => r.type === type);
-      let customResource = CUSTOM_AVATARS.find(r => r.type === type);
-      let isAbstract = !!systemicResource && !customData;
 
       if (customResource && customResource.customData) customData = customResource.customData;
 
@@ -1441,14 +1545,23 @@
       const gaze = customData ? customData.gaze : 'front';
       const mouthType = customData ? customData.mouth : 'neutral';
 
-      if (isWood || (customData && customData.shape && customData.shape.startsWith('wood-'))) {
-        const shapeType = customData ? customData.shape : type;
+      if (isWood) {
+        const shapeType = customData ? customData.shape : 'wood-box';
         const woodColor = customData ? customData.colorHex : (systemicResource ? systemicResource.color : 0xddb892);
         const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
         const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
 
-        const zPos = shapeType === 'wood-box' ? 0.195 : 0.375;
-        if (shapeType === 'wood-box') {
+        const zPos = shapeType === 'wood-cyl' ? 0.375 : 0.195;
+        if (shapeType === 'wood-cyl') {
+          const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
+          const cylMesh = new THREE.Mesh(cylGeo, woodMat);
+          cylMesh.position.y = 0.6; cylMesh.castShadow = true;
+          bodyGroup.add(cylMesh);
+
+          const faceGeo = new THREE.CylinderGeometry(0.385, 0.385, 0.42, 32, 1, false, -Math.PI / 3, (Math.PI / 3) * 2);
+          const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
+          faceMesh.position.y = 0.95; bodyGroup.add(faceMesh);
+        } else {
           const boxGeo = new THREE.BoxGeometry(0.75, 1.2, 0.35);
           const boxMesh = new THREE.Mesh(boxGeo, woodMat);
           boxMesh.position.y = 0.6; boxMesh.castShadow = true;
@@ -1458,15 +1571,6 @@
           const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
           faceMesh.position.set(0, 0.95, 0.18);
           bodyGroup.add(faceMesh);
-        } else {
-          const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
-          const cylMesh = new THREE.Mesh(cylGeo, woodMat);
-          cylMesh.position.y = 0.6; cylMesh.castShadow = true;
-          bodyGroup.add(cylMesh);
-
-          const faceGeo = new THREE.CylinderGeometry(0.385, 0.385, 0.42, 32, 1, false, -Math.PI / 3, (Math.PI / 3) * 2);
-          const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
-          faceMesh.position.y = 0.95; bodyGroup.add(faceMesh);
         }
 
         const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, true, 0.92, zPos, 1, 1);
@@ -1671,7 +1775,7 @@
     }
 
     function addAvatarToScene(data) {
-      const avatarGroup = buildHumanMesh(data.type || 'lego-m', data.customData || null);
+      const avatarGroup = buildHumanMesh(data.type || 'wood-box', data.customData || null);
       avatarGroup.position.set(data.x || 0, 0, data.z || 0);
       avatarGroup.rotation.y = data.rotation || 0;
       const userScale = (data.userScale || 100) / 100;
@@ -1866,7 +1970,7 @@
     function saveStateToFirebase() {
       if (!currentRoomId || isRemoteUpdate) return;
       const dataAvatars = avatars.map(a => ({
-        id: a.userData.id, label: a.userData.label || 'Persona', type: a.userData.type || 'lego-m',
+        id: a.userData.id, label: a.userData.label || 'Persona', type: a.userData.type || 'wood-box',
         emotion: a.userData.emotion || 'neutral', posture: a.userData.posture || 'standing',
         userScale: Number(a.userData.userScale) || 100, linkedTo: a.userData.linkedTo || null,
         customData: a.userData.customData || null,
@@ -1977,7 +2081,7 @@
       const labelInput = document.getElementById('avatar-label').value.trim();
       const humanSelect = document.getElementById('avatar-gender').value;
       const resourceSelect = document.getElementById('avatar-resource').value;
-      let type = 'lego-m'; let defaultLabel = 'Persona';
+      let type = 'wood-box'; let defaultLabel = 'Persona';
 
       if (resourceSelect !== 'none') {
         type = resourceSelect;
