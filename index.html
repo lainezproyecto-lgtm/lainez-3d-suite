@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.6</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.6.1</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -27,7 +27,7 @@
     #inspector-panel { bottom: 190px; left: 20px; width: 330px; display: none; }
     #notes-panel { bottom: 190px; right: 20px; width: 340px; display: none; }
     
-    /* ESTRUCTURA DE DOBLE BANDEJA Y CARROUSELES CON FLECHAS (v3.6) */
+    /* ESTRUCTURA DE DOBLE BANDEJA Y CARROUSELES CON FLECHAS */
     #bottom-tray-container {
       position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
       z-index: 90; display: flex; flex-direction: column; gap: 6px; width: 92vw; max-width: 900px;
@@ -141,22 +141,28 @@
     .dot-disconnected { height: 8px; width: 8px; background-color: #e63946; border-radius: 50%; display: inline-block; }
     .history-item { background: rgba(39, 33, 30, 0.8); border: 1px solid rgba(212, 163, 115, 0.2); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- MAPA DE IMPORTACIÓN ESTÁNDAR PARA NAVEGADORES (IMPORTMAP) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.6</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.6.1</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
     <button id="open-video-btn" class="top-btn" style="display: none; background: #457b9d; color: #fff;">📹 Abrir Videollamada (Jitsi)</button>
   </div>
 
-  <!-- CONTENEDOR DE DOBLE CARROUSEL CON NAVEGACIÓN POR FLECHAS (v3.6) -->
   <div id="bottom-tray-container">
-    <!-- CARRUSEL 1: RECURSOS -->
     <div class="carousel-section">
       <div class="carousel-header-title">🌿 Recursos y Elementos Sistémicos</div>
       <div class="carousel-wrapper">
@@ -165,7 +171,6 @@
         <button class="carousel-arrow" id="arrow-next-resources">▶</button>
       </div>
     </div>
-    <!-- CARRUSEL 2: AVATARES PERSONALIZADOS -->
     <div class="carousel-section">
       <div class="carousel-header-title">🎭 Avatares Personalizados</div>
       <div class="carousel-wrapper">
@@ -178,7 +183,6 @@
 
   <div id="notification">Notificación</div>
 
-  <!-- MODAL EDITOR VISUAL DE AVATARES -->
   <div id="editor-modal">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h2>🎨 Studio Interactivo de Avatares 3D</h2>
@@ -503,6 +507,8 @@
   </div>
 
   <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDocs, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -533,7 +539,6 @@
     let baseNotesText = '';
     let jitsiRoomUrl = '';
 
-    // RECURSOS BASE SISTÉMICOS (CARRUSEL 1)
     const SYSTEMIC_RESOURCES = [
       { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-cyl' },
       { type: 'symptom', label: 'Hacer Terapia', icon: '🩺', symbol: '🩺', color: 0xb5838d, shape: 'wood-cyl' },
@@ -560,7 +565,6 @@
       { type: 'vida-f', label: 'Vida Femenino', icon: '☀️', symbol: '♀', color: 0xffb703, shape: 'wood-cyl' }
     ];
 
-    // AVATARES PERSONALIZADOS CREADOS (CARRUSEL 2)
     const CUSTOM_AVATARS = [
       {
         type: 'cust_default_1', label: 'Consultante Principal', icon: '🎭', symbol: '★', color: 0x2a9d8f, shape: 'lego-m',
@@ -581,7 +585,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.6)"))
+      .then(() => showNotif("Conectado a Backend (v3.6.1)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -591,7 +595,6 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    // RENDERIZADO Y LÓGICA DE DOBLE CARROUSEL CON FLECHAS (v3.6)
     function renderCarousels() {
       const trackResources = document.getElementById('track-resources');
       const trackCustom = document.getElementById('track-custom');
@@ -635,7 +638,6 @@
       return item;
     }
 
-    // EVENTOS DE FLECHAS EN CADA CARRUSEL
     document.getElementById('arrow-prev-resources').addEventListener('click', () => {
       document.getElementById('track-resources').scrollBy({ left: -220, behavior: 'smooth' });
     });
@@ -685,7 +687,6 @@
       saveStateToFirebase();
     }
 
-    // MOTOR VISTA PREVIA EDITOR 3D (v3.6 - REPARACIÓN SECCIONES 2 Y 3)
     let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
     function initEditorPreview() {
       const container = document.getElementById('editor-preview-container');
@@ -699,7 +700,7 @@
       edRenderer.setSize(container.clientWidth, container.clientHeight);
       container.appendChild(edRenderer.domElement);
 
-      edControls = new THREE.OrbitControls(edCamera, edRenderer.domElement);
+      edControls = new OrbitControls(edCamera, edRenderer.domElement);
       edControls.enableDamping = true;
       edControls.target.set(0, 0.85, 0);
       edControls.autoRotate = false;
@@ -772,7 +773,6 @@
       updateEditorPreview();
     });
 
-    // LISTENERS REPARADOS EN SECCIONES 2 Y 3
     ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth', 'ed-hair-style', 'ed-hair-color', 'ed-symbol-custom', 'ed-icon-select'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -1102,7 +1102,6 @@
       }
     });
 
-    // MOTOR ESCENA THREE.JS
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
 
@@ -1115,7 +1114,7 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
