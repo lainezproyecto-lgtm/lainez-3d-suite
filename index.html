@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.6.2</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -79,17 +79,19 @@
     /* MODAL EDITOR VISUAL DE AVATARES */
     #editor-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      z-index: 250; width: 94%; max-width: 840px; display: none;
+      z-index: 250; width: 94%; max-width: 860px; display: none;
       background: rgba(24, 20, 18, 0.97); border: 1px solid rgba(212, 163, 115, 0.5);
       border-radius: 16px; padding: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.85);
       backdrop-filter: blur(16px); max-height: 90vh; overflow-y: auto;
     }
     .editor-layout { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
     #editor-preview-container {
-      flex: 1 1 320px; height: 380px; background: radial-gradient(circle, #3a2e28 0%, #15100e 100%);
+      flex: 1 1 320px; height: 420px; background: radial-gradient(circle, #3a2e28 0%, #15100e 100%);
       border-radius: 12px; border: 1px solid rgba(212, 163, 115, 0.3); position: relative; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 8px;
     }
-    .editor-controls-column { flex: 1 1 360px; display: flex; flex-direction: column; gap: 8px; }
+    #editor-preview-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+    .editor-controls-column { flex: 1 1 380px; display: flex; flex-direction: column; gap: 8px; }
     .editor-section-title { font-size: 0.76rem; color: #e9c46a; font-weight: bold; text-transform: uppercase; margin-top: 4px; border-bottom: 1px solid rgba(212,163,115,0.2); padding-bottom: 2px; }
 
     #history-modal {
@@ -156,7 +158,7 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.6.2</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.7</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
@@ -186,11 +188,14 @@
 
   <div id="editor-modal">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>🎨 Studio Interactivo de Avatares 3D</h2>
+      <h2>🎨 Studio Interactivo de Avatares 3D (v3.7)</h2>
       <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 3px 10px;">✕ Cerrar</button>
     </div>
     <div class="editor-layout">
-      <div id="editor-preview-container"></div>
+      <div id="editor-preview-container">
+        <div id="editor-preview-canvas"></div>
+        <button id="btn-export-avatar-card" class="btn-info" style="z-index: 10; width: 90%; font-size: 0.78rem; padding: 6px;">📸 Exportar Avatar (Recuerdo)</button>
+      </div>
       <div class="editor-controls-column">
         
         <div class="editor-section-title">1. Identidad & Forma Base</div>
@@ -201,11 +206,20 @@
         <div class="input-group">
           <label>Modelo 3D de Origen:</label>
           <select id="ed-shape">
-            <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
-            <option value="wood-box">Bloque Rectangular de Madera</option>
-            <option value="lego-m">Minifigura Clásica Humanoides</option>
-            <option value="adult-m">Figura Anatómica Hombre</option>
-            <option value="adult-f">Figura Anatómica Mujer</option>
+            <optgroup label="Bloques de Madera Sistémicos">
+              <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
+              <option value="wood-box">Bloque Rectangular de Madera</option>
+            </optgroup>
+            <optgroup label="Minifiguras Clásicas">
+              <option value="lego-m">Minifigura - Hombre Adulto</option>
+              <option value="lego-f">Minifigura - Mujer Adulta</option>
+              <option value="lego-child-m">Minifigura - Niño</option>
+              <option value="lego-child-f">Minifigura - Niña</option>
+            </optgroup>
+            <optgroup label="Figuras Anatómicas Humanas">
+              <option value="adult-m">Figura Anatómica Hombre</option>
+              <option value="adult-f">Figura Anatómica Mujer</option>
+            </optgroup>
           </select>
         </div>
         <div class="input-group">
@@ -239,7 +253,7 @@
           </div>
         </div>
 
-        <div class="editor-section-title">3. Cabello & Estilo</div>
+        <div class="editor-section-title">3. Cabello & Accesorios</div>
         <div style="display: flex; gap: 8px;">
           <div class="input-group" style="flex: 1;">
             <label>Estilo de Cabello:</label>
@@ -257,6 +271,17 @@
             <label>Color de Pelo:</label>
             <input type="color" id="ed-hair-color" value="#3d2314" style="height: 36px; cursor: pointer;">
           </div>
+        </div>
+
+        <div class="input-group">
+          <label>Accesorio de Cabeza / Sombrero:</label>
+          <select id="ed-hat-style">
+            <option value="none">Sin Accesorio</option>
+            <option value="crown">👑 Corona / Ancestro / Rey</option>
+            <option value="cap">🧢 Gorra Deportiva</option>
+            <option value="top-hat">🎩 Sombrero de Copa</option>
+            <option value="headband">🎀 Vincha / Tocado</option>
+          </select>
         </div>
 
         <div class="editor-section-title">4. Símbolo e Ícono del Carrusel</div>
@@ -372,10 +397,10 @@
       <select id="avatar-gender">
         <option value="none">-- Seleccionar Figura Humana --</option>
         <optgroup label="Minifiguras Clásicas">
-          <option value="lego-m">Minifigura Clásica - Hombre / Niño</option>
-          <option value="lego-f">Minifigura Clásica - Mujer / Niña</option>
-          <option value="lego-elder">Minifigura Clásica - Anciano / Ancestral</option>
-          <option value="lego-special">Minifigura Clásica - Especial / Fantasía</option>
+          <option value="lego-m">Minifigura Clásica - Hombre Adulto</option>
+          <option value="lego-f">Minifigura Clásica - Mujer Adulta</option>
+          <option value="lego-child-m">Minifigura Clásica - Niño</option>
+          <option value="lego-child-f">Minifigura Clásica - Niña</option>
         </optgroup>
         <optgroup label="Hombres Adultos (Anatómicos)">
           <option value="adult-m">Hombre Adulto (Modelo A - Estándar)</option>
@@ -569,7 +594,7 @@
     const CUSTOM_AVATARS = [
       {
         type: 'cust_default_1', label: 'Consultante Principal', icon: '🎭', symbol: '★', color: 0x2a9d8f, shape: 'lego-m',
-        customData: { shape: 'lego-m', colorHex: 0x2a9d8f, gaze: 'front', mouth: 'happy', hairStyle: 'short', hairColorHex: 0x3d2314, symbol: '★', icon: '🎭' }
+        customData: { shape: 'lego-m', colorHex: 0x2a9d8f, gaze: 'front', mouth: 'happy', hairStyle: 'short', hairColorHex: 0x3d2314, hatStyle: 'none', symbol: '★', icon: '🎭' }
       }
     ];
 
@@ -586,7 +611,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.6.2)"))
+      .then(() => showNotif("Conectado a Backend (v3.7)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -690,14 +715,14 @@
 
     let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
     function initEditorPreview() {
-      const container = document.getElementById('editor-preview-container');
+      const container = document.getElementById('editor-preview-canvas');
       if (edRenderer) return;
 
       edScene = new THREE.Scene();
       edCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-      edCamera.position.set(0, 1.15, 2.9);
+      edCamera.position.set(0, 1.1, 2.7);
 
-      edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
       edRenderer.setSize(container.clientWidth, container.clientHeight);
       container.appendChild(edRenderer.domElement);
 
@@ -708,7 +733,7 @@
 
       const ambLight = new THREE.AmbientLight(0xffffff, 0.95);
       edScene.add(ambLight);
-      const dLight = new THREE.DirectionalLight(0xffe8d6, 1.1);
+      const dLight = new THREE.DirectionalLight(0xffe8d6, 1.15);
       dLight.position.set(2, 6, 5);
       edScene.add(dLight);
 
@@ -730,13 +755,14 @@
       const mouth = document.getElementById('ed-mouth').value;
       const hairStyle = document.getElementById('ed-hair-style').value;
       const hairColorHex = parseInt(document.getElementById('ed-hair-color').value.replace('#', '0x'));
+      const hatStyle = document.getElementById('ed-hat-style').value;
 
       const symbolSel = document.getElementById('ed-symbol-select').value;
       const symbol = symbolSel === 'custom' ? document.getElementById('ed-symbol-custom').value : symbolSel;
       const icon = document.getElementById('ed-icon-select').value;
 
       return {
-        shape, colorHex, gaze, mouth, hairStyle, hairColorHex, symbol, icon
+        shape, colorHex, gaze, mouth, hairStyle, hairColorHex, hatStyle, symbol, icon
       };
     }
 
@@ -764,12 +790,58 @@
       updateEditorPreview();
     });
 
-    ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth', 'ed-hair-style', 'ed-hair-color', 'ed-symbol-custom', 'ed-icon-select'].forEach(id => {
+    ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth', 'ed-hair-style', 'ed-hair-color', 'ed-hat-style', 'ed-symbol-custom', 'ed-icon-select'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
         el.addEventListener('input', updateEditorPreview);
         el.addEventListener('change', updateEditorPreview);
       }
+    });
+
+    /* EXPORTAR RECUERDO DEL AVATAR COMO TARJETA/POSTAL DIGITAL */
+    document.getElementById('btn-export-avatar-card').addEventListener('click', () => {
+      if (!edRenderer) return;
+      edRenderer.render(edScene, edCamera);
+      const avatarImage = edRenderer.domElement.toDataURL('image/png');
+      const labelName = document.getElementById('ed-label').value.trim() || 'Avatar Sistémico';
+
+      const cardCanvas = document.createElement('canvas');
+      cardCanvas.width = 600; cardCanvas.height = 750;
+      const ctx = cardCanvas.getContext('2d');
+
+      // Fondo Elegante
+      const grad = ctx.createLinearGradient(0, 0, 0, 750);
+      grad.addColorStop(0, '#2b211d'); grad.addColorStop(1, '#120e0d');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, 600, 750);
+
+      // Marco dorado
+      ctx.strokeStyle = 'rgba(212, 163, 115, 0.8)';
+      ctx.lineWidth = 12; ctx.strokeRect(16, 16, 568, 718);
+
+      // Cargar Render 3D
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 50, 60, 500, 500);
+
+        // Título / Etiqueta
+        ctx.fillStyle = '#e9c46a'; ctx.font = 'Bold 36px "Segoe UI", sans-serif';
+        ctx.textAlign = 'center'; ctx.fillText(labelName, 300, 610);
+
+        // Subtítulo
+        ctx.fillStyle = '#ddb892'; ctx.font = '20px "Segoe UI", sans-serif';
+        ctx.fillText('Recuerdo de Sesión - Constelaciones 3D Pro', 300, 650);
+
+        // Marca de agua
+        ctx.fillStyle = 'rgba(212, 163, 115, 0.5)'; ctx.font = '15px sans-serif';
+        ctx.fillText('Lainez 3D Suite', 300, 690);
+
+        const link = document.createElement('a');
+        link.download = `Recuerdo_Avatar_${labelName.replace(/\s+/g, '_')}.png`;
+        link.href = cardCanvas.toDataURL('image/png');
+        link.click();
+        showNotif("📸 ¡Recuerdo de Avatar exportado con éxito!");
+      };
+      img.src = avatarImage;
     });
 
     document.getElementById('btn-save-custom-avatar').addEventListener('click', () => {
@@ -1151,14 +1223,113 @@
       anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
     };
 
-    /* SISTEMA DE CABELLO PROPORCIONADO Y ESTILIZADO */
+    /* RENDERIZADO FACIAL EMOCIONAL DINÁMICO (BOCA Y OJOS) */
+    function buildFacialFeatureMesh(mouthType, gazeType, isLego, isWood, posY, posZ, scaleXZ, scaleY) {
+      const facialGroup = new THREE.Group();
+      const featureMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+
+      let gazeX = 0, gazeY = 0;
+      if (gazeType === 'left') gazeX = -0.035 * scaleXZ;
+      else if (gazeType === 'right') gazeX = 0.035 * scaleXZ;
+      else if (gazeType === 'up') gazeY = 0.035 * scaleY;
+      else if (gazeType === 'down') gazeY = -0.035 * scaleY;
+
+      // Ojos
+      const eyeY = posY + 0.12 * scaleY;
+      const eyeSpacing = 0.10 * scaleXZ;
+      if (gazeType === 'closed') {
+        const eyeLineGeo = new THREE.BoxGeometry(0.08 * scaleXZ, 0.015 * scaleY, 0.02);
+        const eyeL = new THREE.Mesh(eyeLineGeo, featureMat);
+        eyeL.position.set(-eyeSpacing, eyeY, posZ); facialGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeLineGeo, featureMat);
+        eyeR.position.set(eyeSpacing, eyeY, posZ); facialGroup.add(eyeR);
+      } else {
+        const eyeGeo = new THREE.SphereGeometry(0.038 * scaleXZ, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, featureMat);
+        eyeL.position.set(-eyeSpacing + gazeX, eyeY + gazeY, posZ); facialGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, featureMat);
+        eyeR.position.set(eyeSpacing + gazeX, eyeY + gazeY, posZ); facialGroup.add(eyeR);
+      }
+
+      // Boca Emocional
+      const mouthY = posY - 0.02 * scaleY;
+      if (mouthType === 'happy' || mouthType === 'laughing') {
+        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY, posZ); mouth.rotation.x = Math.PI; facialGroup.add(mouth);
+      } else if (mouthType === 'sad') {
+        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY - 0.03 * scaleY, posZ); facialGroup.add(mouth);
+      } else if (mouthType === 'angry') {
+        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY - 0.03 * scaleY, posZ); facialGroup.add(mouth);
+
+        // Cejas enojadas
+        const browGeo = new THREE.BoxGeometry(0.08 * scaleXZ, 0.015 * scaleY, 0.02);
+        const browL = new THREE.Mesh(browGeo, featureMat);
+        browL.position.set(-eyeSpacing, eyeY + 0.05 * scaleY, posZ); browL.rotation.z = -0.3; facialGroup.add(browL);
+        const browR = new THREE.Mesh(browGeo, featureMat);
+        browR.position.set(eyeSpacing, eyeY + 0.05 * scaleY, posZ); browR.rotation.z = 0.3; facialGroup.add(browR);
+      } else if (mouthType === 'surprised') {
+        const mouthGeo = new THREE.CylinderGeometry(0.035 * scaleXZ, 0.035 * scaleXZ, 0.02, 16);
+        mouthGeo.rotateX(Math.PI / 2);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY - 0.01 * scaleY, posZ); facialGroup.add(mouth);
+      } else {
+        // Neutral
+        const mouthGeo = new THREE.BoxGeometry(0.09 * scaleXZ, 0.015 * scaleY, 0.02);
+        const mouth = new THREE.Mesh(mouthGeo, featureMat);
+        mouth.position.set(0, mouthY - 0.01 * scaleY, posZ); facialGroup.add(mouth);
+      }
+
+      return facialGroup;
+    }
+
+    /* ACCESORIOS DE CABEZA */
+    function buildHatMesh(hatStyle, headY, scaleXZ, scaleY) {
+      if (!hatStyle || hatStyle === 'none') return null;
+      const hatGroup = new THREE.Group();
+
+      if (hatStyle === 'crown') {
+        const crownMat = new THREE.MeshStandardMaterial({ color: 0xffd166, metalness: 0.6, roughness: 0.2 });
+        const crownGeo = new THREE.CylinderGeometry(0.26 * scaleXZ, 0.22 * scaleXZ, 0.22 * scaleY, 8);
+        const crown = new THREE.Mesh(crownGeo, crownMat);
+        crown.position.set(0, headY + 0.22 * scaleY, 0); hatGroup.add(crown);
+      } else if (hatStyle === 'cap') {
+        const capMat = new THREE.MeshStandardMaterial({ color: 0x1d3557, roughness: 0.4 });
+        const capGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
+        const cap = new THREE.Mesh(capGeo, capMat);
+        cap.position.set(0, headY + 0.02 * scaleY, 0); hatGroup.add(cap);
+        const visorGeo = new THREE.BoxGeometry(0.28 * scaleXZ, 0.02, 0.18 * scaleXZ);
+        const visor = new THREE.Mesh(visorGeo, capMat);
+        visor.position.set(0, headY + 0.01 * scaleY, 0.22 * scaleXZ); hatGroup.add(visor);
+      } else if (hatStyle === 'top-hat') {
+        const hatMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3 });
+        const baseGeo = new THREE.CylinderGeometry(0.38 * scaleXZ, 0.38 * scaleXZ, 0.03, 24);
+        const base = new THREE.Mesh(baseGeo, hatMat);
+        base.position.set(0, headY + 0.15 * scaleY, 0); hatGroup.add(base);
+        const topGeo = new THREE.CylinderGeometry(0.24 * scaleXZ, 0.24 * scaleXZ, 0.35 * scaleY, 24);
+        const top = new THREE.Mesh(topGeo, hatMat);
+        top.position.set(0, headY + 0.32 * scaleY, 0); hatGroup.add(top);
+      } else if (hatStyle === 'headband') {
+        const bandMat = new THREE.MeshStandardMaterial({ color: 0xe63946, roughness: 0.3 });
+        const bandGeo = new THREE.TorusGeometry(0.275 * scaleXZ, 0.025 * scaleXZ, 8, 24);
+        bandGeo.rotateX(Math.PI / 2);
+        const band = new THREE.Mesh(bandGeo, bandMat);
+        band.position.set(0, headY + 0.06 * scaleY, 0); hatGroup.add(band);
+      }
+
+      return hatGroup;
+    }
+
     function buildHairMesh(style, hairColorHex, scaleXZ, scaleY, isLego, isWood) {
       if (!style || style === 'none') return null;
       const hairGroup = new THREE.Group();
       const hairMat = new THREE.MeshStandardMaterial({ color: hairColorHex || 0x3d2314, roughness: 0.6 });
 
       if (isWood) {
-        // Cabello ajustado a bloques cilíndricos/rectangulares
         const headY = 1.15;
         if (style === 'short' || style === 'toupee') {
           const capGeo = new THREE.BoxGeometry(0.76, 0.14, 0.38);
@@ -1177,42 +1348,40 @@
           af.position.set(0, headY + 0.08, 0); hairGroup.add(af);
         }
       } else if (isLego) {
-        // Cabello ajustado para minifiguras estilo Lego
-        const headY = 1.46;
+        const headY = 1.46 * scaleY;
         if (style === 'short') {
-          const capGeo = new THREE.SphereGeometry(0.24, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
+          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
           const cap = new THREE.Mesh(capGeo, hairMat);
           cap.position.set(0, headY, 0); hairGroup.add(cap);
         } else if (style === 'long') {
-          const capGeo = new THREE.SphereGeometry(0.24, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
+          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
           const cap = new THREE.Mesh(capGeo, hairMat);
           cap.position.set(0, headY, 0); hairGroup.add(cap);
-          const sideGeo = new THREE.BoxGeometry(0.48, 0.3, 0.12);
+          const sideGeo = new THREE.BoxGeometry(0.48 * scaleXZ, 0.3 * scaleY, 0.12 * scaleXZ);
           const side = new THREE.Mesh(sideGeo, hairMat);
-          side.position.set(0, headY - 0.15, -0.15); hairGroup.add(side);
+          side.position.set(0, headY - 0.15 * scaleY, -0.15 * scaleXZ); hairGroup.add(side);
         } else if (style === 'ponytail') {
-          const capGeo = new THREE.SphereGeometry(0.24, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
+          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
           const cap = new THREE.Mesh(capGeo, hairMat);
           cap.position.set(0, headY, 0); hairGroup.add(cap);
-          const tailGeo = new THREE.CylinderGeometry(0.05, 0.09, 0.35, 12);
+          const tailGeo = new THREE.CylinderGeometry(0.05 * scaleXZ, 0.09 * scaleXZ, 0.35 * scaleY, 12);
           const tail = new THREE.Mesh(tailGeo, hairMat);
-          tail.position.set(0, headY - 0.05, -0.2); tail.rotation.x = 0.3; hairGroup.add(tail);
+          tail.position.set(0, headY - 0.05 * scaleY, -0.2 * scaleXZ); tail.rotation.x = 0.3; hairGroup.add(tail);
         } else if (style === 'curly') {
-          const afGeo = new THREE.SphereGeometry(0.27, 14, 14);
+          const afGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 14, 14);
           const af = new THREE.Mesh(afGeo, hairMat);
-          af.position.set(0, headY + 0.04, 0); hairGroup.add(af);
+          af.position.set(0, headY + 0.04 * scaleY, 0); hairGroup.add(af);
         } else if (style === 'toupee') {
-          const topGeo = new THREE.BoxGeometry(0.22, 0.12, 0.25);
+          const topGeo = new THREE.BoxGeometry(0.22 * scaleXZ, 0.12 * scaleY, 0.25 * scaleXZ);
           const top = new THREE.Mesh(topGeo, hairMat);
-          top.position.set(0, headY + 0.06, 0.02); hairGroup.add(top);
+          top.position.set(0, headY + 0.06 * scaleY, 0.02 * scaleXZ); hairGroup.add(top);
         } else if (style === 'elder') {
           const hairMatWhite = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.8 });
-          const capGeo = new THREE.SphereGeometry(0.25, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.5);
+          const capGeo = new THREE.SphereGeometry(0.25 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.5);
           const cap = new THREE.Mesh(capGeo, hairMatWhite);
           cap.position.set(0, headY, 0); hairGroup.add(cap);
         }
       } else {
-        // Cabello ajustado a figuras anatómicas (Hombre/Mujer/Niños)
         const headY = 1.68 * scaleY;
         const rad = 0.275 * scaleXZ;
         if (style === 'short') {
@@ -1257,7 +1426,7 @@
       let isLego = type.startsWith('lego-');
       let isWood = type.startsWith('wood-');
       let isChild = type.includes('child');
-      let isFemale = type.includes('-f') || type === 'lego-f';
+      let isFemale = type.includes('-f') || type === 'lego-f' || type === 'lego-child-f';
       let isVariant2 = type.endsWith('2');
 
       let systemicResource = SYSTEMIC_RESOURCES.find(r => r.type === type);
@@ -1266,8 +1435,8 @@
 
       if (customResource && customResource.customData) customData = customResource.customData;
 
-      let scaleY = isChild ? (isVariant2 ? 0.75 : 0.60) : (isVariant2 ? 1.08 : 1.0);
-      let scaleXZ = isChild ? (isVariant2 ? 0.80 : 0.70) : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
+      let scaleY = isChild ? 0.65 : (isVariant2 ? 1.08 : 1.0);
+      let scaleXZ = isChild ? 0.75 : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
       let baseBodyColor = isFemale ? (isVariant2 ? 0xe0a98b : 0xddb892) : (isVariant2 ? 0xc89665 : 0xd4a373);
 
       if (customData && customData.colorHex) baseBodyColor = customData.colorHex;
@@ -1278,12 +1447,16 @@
       let bodyGroup = new THREE.Group();
       group.add(bodyGroup);
 
+      const gaze = customData ? customData.gaze : 'front';
+      const mouthType = customData ? customData.mouth : 'neutral';
+
       if (isWood || (customData && customData.shape && customData.shape.startsWith('wood-'))) {
         const shapeType = customData ? customData.shape : type;
         const woodColor = customData ? customData.colorHex : (systemicResource ? systemicResource.color : 0xddb892);
         const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
         const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
 
+        const zPos = shapeType === 'wood-box' ? 0.19 : 0.37;
         if (shapeType === 'wood-box') {
           const boxGeo = new THREE.BoxGeometry(0.75, 1.2, 0.35);
           const boxMesh = new THREE.Mesh(boxGeo, woodMat);
@@ -1305,50 +1478,9 @@
           faceMesh.position.y = 0.95; bodyGroup.add(faceMesh);
         }
 
-        // Expresión facial y ojos en bloques de madera
-        const gaze = customData ? customData.gaze : 'front';
-        let gazeX = 0, gazeY = 0;
-        if (gaze === 'left') gazeX = -0.04;
-        else if (gaze === 'right') gazeX = 0.04;
-        else if (gaze === 'up') gazeY = 0.04;
-        else if (gaze === 'down') gazeY = -0.04;
-
-        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        const zPos = shapeType === 'wood-box' ? 0.19 : 0.37;
-        if (gaze === 'closed') {
-          const eyeLineGeo = new THREE.BoxGeometry(0.08, 0.015, 0.02);
-          const eyeL = new THREE.Mesh(eyeLineGeo, eyeMat);
-          eyeL.position.set(-0.12, 1.0, zPos); bodyGroup.add(eyeL);
-          const eyeR = new THREE.Mesh(eyeLineGeo, eyeMat);
-          eyeR.position.set(0.12, 1.0, zPos); bodyGroup.add(eyeR);
-        } else {
-          const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
-          const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-          eyeL.position.set(-0.12 + gazeX, 1.0 + gazeY, zPos); bodyGroup.add(eyeL);
-          const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-          eyeR.position.set(0.12 + gazeX, 1.0 + gazeY, zPos); bodyGroup.add(eyeR);
-        }
-
-        const mouthType = customData ? customData.mouth : 'neutral';
-        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        if (mouthType === 'happy' || mouthType === 'laughing') {
-          const mouthGeo = new THREE.TorusGeometry(0.05, 0.012, 8, 16, Math.PI);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, 0.88, zPos); mouth.rotation.x = Math.PI; bodyGroup.add(mouth);
-        } else if (mouthType === 'sad' || mouthType === 'angry') {
-          const mouthGeo = new THREE.TorusGeometry(0.05, 0.012, 8, 16, Math.PI);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, 0.85, zPos); bodyGroup.add(mouth);
-        } else if (mouthType === 'surprised') {
-          const mouthGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.02, 16);
-          mouthGeo.rotateX(Math.PI / 2);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, 0.87, zPos); bodyGroup.add(mouth);
-        } else {
-          const mouthGeo = new THREE.BoxGeometry(0.09, 0.015, 0.02);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, 0.87, zPos); bodyGroup.add(mouth);
-        }
+        // Rostro Expresivo
+        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, true, 0.92, zPos, 1, 1);
+        bodyGroup.add(faceFeatures);
 
         // Símbolo Grabado Frontal
         const symbolStr = customData ? customData.symbol : (systemicResource ? systemicResource.symbol : '?');
@@ -1369,100 +1501,69 @@
           const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, 1, 1, false, true);
           if (hair) bodyGroup.add(hair);
         }
+        if (customData && customData.hatStyle) {
+          const hat = buildHatMesh(customData.hatStyle, 1.15, 1, 1);
+          if (hat) bodyGroup.add(hat);
+        }
 
       } else if (isLego) {
         const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
-        const headGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.38, 24);
+        const headGeo = new THREE.CylinderGeometry(0.24 * scaleXZ, 0.24 * scaleXZ, 0.38 * scaleY, 24);
         const headMesh = new THREE.Mesh(headGeo, yellowSkinMat);
-        headMesh.position.y = 1.28; headMesh.castShadow = true;
+        headMesh.position.y = 1.28 * scaleY; headMesh.castShadow = true;
         bodyGroup.add(headMesh);
 
-        const studGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 16);
+        const studGeo = new THREE.CylinderGeometry(0.12 * scaleXZ, 0.12 * scaleXZ, 0.08 * scaleY, 16);
         const studMesh = new THREE.Mesh(studGeo, yellowSkinMat);
-        studMesh.position.y = 1.51; studMesh.castShadow = true;
+        studMesh.position.y = 1.51 * scaleY; studMesh.castShadow = true;
         bodyGroup.add(studMesh);
 
-        const gaze = customData ? customData.gaze : 'front';
-        let gazeX = 0, gazeY = 0;
-        if (gaze === 'left') gazeX = -0.04;
-        else if (gaze === 'right') gazeX = 0.04;
-        else if (gaze === 'up') gazeY = 0.04;
-        else if (gaze === 'down') gazeY = -0.04;
+        // Rostro Expresivo
+        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, true, false, 1.28 * scaleY, 0.22 * scaleXZ, scaleXZ, scaleY);
+        bodyGroup.add(faceFeatures);
 
-        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        if (gaze === 'closed') {
-          const eyeLineGeo = new THREE.BoxGeometry(0.08, 0.015, 0.02);
-          const eyeL = new THREE.Mesh(eyeLineGeo, eyeMat);
-          eyeL.position.set(-0.09, 1.32, 0.22); bodyGroup.add(eyeL);
-          const eyeR = new THREE.Mesh(eyeLineGeo, eyeMat);
-          eyeR.position.set(0.09, 1.32, 0.22); bodyGroup.add(eyeR);
-        } else {
-          const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
-          const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-          eyeL.position.set(-0.09 + gazeX, 1.32 + gazeY, 0.22); bodyGroup.add(eyeL);
-          const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-          eyeR.position.set(0.09 + gazeX, 1.32 + gazeY, 0.22); bodyGroup.add(eyeR);
-        }
-
-        const mouthType = customData ? customData.mouth : 'neutral';
-        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        if (mouthType === 'happy' || mouthType === 'laughing') {
-          const mouthGeo = new THREE.TorusGeometry(0.05, 0.012, 8, 16, Math.PI);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, 1.22, 0.22); mouth.rotation.x = Math.PI; bodyGroup.add(mouth);
-        } else if (mouthType === 'sad' || mouthType === 'angry') {
-          const mouthGeo = new THREE.TorusGeometry(0.05, 0.012, 8, 16, Math.PI);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, 1.18, 0.22); bodyGroup.add(mouth);
-        } else if (mouthType === 'surprised') {
-          const mouthGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.02, 16);
-          mouthGeo.rotateX(Math.PI / 2);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, 1.20, 0.23); bodyGroup.add(mouth);
-        } else {
-          const mouthGeo = new THREE.BoxGeometry(0.09, 0.015, 0.02);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, 1.20, 0.23); bodyGroup.add(mouth);
-        }
-
-        const torsoGeo = new THREE.CylinderGeometry(0.3, 0.42, 0.55, 4);
+        const torsoGeo = new THREE.CylinderGeometry(0.3 * scaleXZ, 0.42 * scaleXZ, 0.55 * scaleY, 4);
         torsoGeo.rotateY(Math.PI / 4);
         const torsoMesh = new THREE.Mesh(torsoGeo, clothesMat);
-        torsoMesh.position.y = 0.82; torsoMesh.castShadow = true;
+        torsoMesh.position.y = 0.82 * scaleY; torsoMesh.castShadow = true;
         bodyGroup.add(torsoMesh);
 
-        const hipGeo = new THREE.BoxGeometry(0.44, 0.12, 0.26);
+        const hipGeo = new THREE.BoxGeometry(0.44 * scaleXZ, 0.12 * scaleY, 0.26 * scaleXZ);
         const hipMesh = new THREE.Mesh(hipGeo, clothesMat);
-        hipMesh.position.y = 0.48; hipMesh.castShadow = true;
+        hipMesh.position.y = 0.48 * scaleY; hipMesh.castShadow = true;
         bodyGroup.add(hipMesh);
 
-        const legGeo = new THREE.BoxGeometry(0.19, 0.42, 0.24);
+        const legGeo = new THREE.BoxGeometry(0.19 * scaleXZ, 0.42 * scaleY, 0.24 * scaleXZ);
         const legL = new THREE.Mesh(legGeo, clothesMat);
-        legL.position.set(-0.11, 0.21, 0); legL.castShadow = true;
+        legL.position.set(-0.11 * scaleXZ, 0.21 * scaleY, 0); legL.castShadow = true;
         bodyGroup.add(legL);
         const legR = new THREE.Mesh(legGeo, clothesMat);
-        legR.position.set(0.11, 0.21, 0); legR.castShadow = true;
+        legR.position.set(0.11 * scaleXZ, 0.21 * scaleY, 0); legR.castShadow = true;
         bodyGroup.add(legR);
 
-        const armGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.4, 12);
+        const armGeo = new THREE.CylinderGeometry(0.06 * scaleXZ, 0.06 * scaleXZ, 0.4 * scaleY, 12);
         const armL = new THREE.Mesh(armGeo, clothesMat);
-        armL.position.set(-0.27, 0.82, 0); armL.rotation.z = 0.35; armL.castShadow = true;
+        armL.position.set(-0.27 * scaleXZ, 0.82 * scaleY, 0); armL.rotation.z = 0.35; armL.castShadow = true;
         bodyGroup.add(armL);
         const armR = new THREE.Mesh(armGeo, clothesMat);
-        armR.position.set(0.27, 0.82, 0); armR.rotation.z = -0.35; armR.castShadow = true;
+        armR.position.set(0.27 * scaleXZ, 0.82 * scaleY, 0); armR.rotation.z = -0.35; armR.castShadow = true;
         bodyGroup.add(armR);
 
-        const handGeo = new THREE.TorusGeometry(0.05, 0.02, 8, 16, Math.PI * 1.5);
+        const handGeo = new THREE.TorusGeometry(0.05 * scaleXZ, 0.02 * scaleXZ, 8, 16, Math.PI * 1.5);
         const handL = new THREE.Mesh(handGeo, yellowSkinMat);
-        handL.position.set(-0.33, 0.62, 0.05); handL.rotation.x = Math.PI / 2;
+        handL.position.set(-0.33 * scaleXZ, 0.62 * scaleY, 0.05 * scaleXZ); handL.rotation.x = Math.PI / 2;
         bodyGroup.add(handL);
         const handR = new THREE.Mesh(handGeo, yellowSkinMat);
-        handR.position.set(0.33, 0.62, 0.05); handR.rotation.x = Math.PI / 2;
+        handR.position.set(0.33 * scaleXZ, 0.62 * scaleY, 0.05 * scaleXZ); handR.rotation.x = Math.PI / 2;
         bodyGroup.add(handR);
 
         if (customData && customData.hairStyle) {
-          const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, 1, 1, true, false);
+          const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, scaleXZ, scaleY, true, false);
           if (hair) bodyGroup.add(hair);
+        }
+        if (customData && customData.hatStyle) {
+          const hat = buildHatMesh(customData.hatStyle, 1.48 * scaleY, scaleXZ, scaleY);
+          if (hat) bodyGroup.add(hat);
         }
 
       } else {
@@ -1471,48 +1572,9 @@
         head.position.y = (1.65 * scaleY); head.castShadow = true;
         bodyGroup.add(head);
 
-        const gaze = customData ? customData.gaze : 'front';
-        let gazeX = 0, gazeY = 0;
-        if (gaze === 'left') gazeX = -0.03 * scaleXZ;
-        else if (gaze === 'right') gazeX = 0.03 * scaleXZ;
-        else if (gaze === 'up') gazeY = 0.03 * scaleY;
-        else if (gaze === 'down') gazeY = -0.03 * scaleY;
-
-        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        if (gaze === 'closed') {
-          const eyeLineGeo = new THREE.BoxGeometry(0.1 * scaleXZ, 0.018 * scaleY, 0.02);
-          const eyeL = new THREE.Mesh(eyeLineGeo, eyeMat);
-          eyeL.position.set(-0.10 * scaleXZ, head.position.y + 0.03 * scaleY, 0.22 * scaleXZ); bodyGroup.add(eyeL);
-          const eyeR = new THREE.Mesh(eyeLineGeo, eyeMat);
-          eyeR.position.set(0.10 * scaleXZ, head.position.y + 0.03 * scaleY, 0.22 * scaleXZ); bodyGroup.add(eyeR);
-        } else {
-          const eyeGeo = new THREE.SphereGeometry(0.045 * scaleXZ, 16, 16);
-          const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-          eyeL.position.set((-0.10 * scaleXZ) + gazeX, head.position.y + 0.03 * scaleY + gazeY, 0.23 * scaleXZ); bodyGroup.add(eyeL);
-          const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-          eyeR.position.set((0.10 * scaleXZ) + gazeX, head.position.y + 0.03 * scaleY + gazeY, 0.23 * scaleXZ); bodyGroup.add(eyeR);
-        }
-
-        const mouthType = customData ? customData.mouth : 'neutral';
-        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x4a2810 });
-        if (mouthType === 'happy' || mouthType === 'laughing') {
-          const mouthGeo = new THREE.TorusGeometry(0.06 * scaleXZ, 0.015 * scaleY, 8, 16, Math.PI);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, head.position.y - 0.08 * scaleY, 0.24 * scaleXZ); mouth.rotation.x = Math.PI; bodyGroup.add(mouth);
-        } else if (mouthType === 'sad' || mouthType === 'angry') {
-          const mouthGeo = new THREE.TorusGeometry(0.06 * scaleXZ, 0.015 * scaleY, 8, 16, Math.PI);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, head.position.y - 0.11 * scaleY, 0.24 * scaleXZ); bodyGroup.add(mouth);
-        } else if (mouthType === 'surprised') {
-          const mouthGeo = new THREE.CylinderGeometry(0.04 * scaleXZ, 0.04 * scaleXZ, 0.03, 16);
-          mouthGeo.rotateX(Math.PI / 2);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, head.position.y - 0.09 * scaleY, 0.25 * scaleXZ); bodyGroup.add(mouth);
-        } else {
-          const mouthGeo = new THREE.BoxGeometry(0.11 * scaleXZ, 0.025 * scaleY, 0.03 * scaleXZ);
-          const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-          mouth.position.set(0, head.position.y - 0.09 * scaleY, 0.25 * scaleXZ); bodyGroup.add(mouth);
-        }
+        // Rostro Expresivo
+        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, false, 1.62 * scaleY, 0.23 * scaleXZ, scaleXZ, scaleY);
+        bodyGroup.add(faceFeatures);
 
         const noseGeo = new THREE.ConeGeometry(0.045 * scaleXZ, 0.12 * scaleY, 12);
         noseGeo.rotateX(Math.PI / 2);
@@ -1555,6 +1617,10 @@
           const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, scaleXZ, scaleY, false, false);
           if (hair) bodyGroup.add(hair);
         }
+        if (customData && customData.hatStyle) {
+          const hat = buildHatMesh(customData.hatStyle, 1.68 * scaleY, scaleXZ, scaleY);
+          if (hat) bodyGroup.add(hat);
+        }
       }
 
       const auraGeo = new THREE.RingGeometry(0.55 * scaleXZ, 0.75 * scaleXZ, 32);
@@ -1568,7 +1634,7 @@
       const texture = new THREE.CanvasTexture(canvas);
       const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false });
       const sprite = new THREE.Sprite(spriteMat);
-      sprite.position.y = isWood ? 1.6 : (isLego ? 1.8 : 2.4 * scaleY);
+      sprite.position.y = isWood ? 1.6 : (isLego ? 1.8 * scaleY : 2.4 * scaleY);
       group.add(sprite);
 
       group.userData = {
