@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.3</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.4</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -52,7 +52,7 @@
     .tray-icon { font-size: 1.5rem; margin-bottom: 2px; }
     .tray-label { font-size: 0.62rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
 
-    /* MODAL EDITOR VISUAL DE AVATARES (v3.3) */
+    /* MODAL EDITOR VISUAL DE AVATARES */
     #editor-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       z-index: 250; width: 92%; max-width: 720px; display: none;
@@ -124,11 +124,10 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.3</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.4</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
-    <button id="open-editor-btn" class="top-btn" style="background: #2a9d8f; color: #fff;">🎨 Editor de Avatares</button>
     <button id="open-video-btn" class="top-btn" style="display: none; background: #457b9d; color: #fff;">📹 Abrir Videollamada (Jitsi)</button>
   </div>
 
@@ -136,7 +135,7 @@
 
   <div id="notification">Notificación</div>
 
-  <!-- MODAL EDITOR VISUAL CON VISTA PREVIA 3D (v3.3) -->
+  <!-- MODAL EDITOR VISUAL CON VISTA PREVIA 3D -->
   <div id="editor-modal">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h2>🎨 Editor de Avatares y Recursos 3D</h2>
@@ -150,7 +149,7 @@
           <input type="text" id="ed-label" value="Nuevo Recurso">
         </div>
         <div class="input-group">
-          <label>Forma Geometrica Base:</label>
+          <label>Forma Geométrica Base:</label>
           <select id="ed-shape">
             <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
             <option value="wood-box">Bloque Rectangular de Madera</option>
@@ -163,12 +162,12 @@
           <input type="color" id="ed-color" value="#ddb892" style="height: 38px; cursor: pointer;">
         </div>
         <div class="input-group">
-          <label>Símbolo Frontal / Dibujo:</label>
-          <input type="text" id="ed-symbol" value="♥" placeholder="Ej. ♥, 🐾, ?, P, ✝">
+          <label>Símbolo Frontal / Dibujo (Grabado):</label>
+          <input type="text" id="ed-symbol" value="★" placeholder="Ej. ★, 🐾, ?, P, ✝">
         </div>
         <div class="input-group">
           <label>Icono para el Carrusel Inferior:</label>
-          <input type="text" id="ed-icon" value="🎨" placeholder="Ej. ❤️, 🧠, 🌿">
+          <input type="text" id="ed-icon" value="🌟" placeholder="Ej. ❤️, 🧠, 🌿">
         </div>
         <button id="btn-save-custom-avatar" class="btn-secondary" style="margin-top: 10px; padding: 10px;">💾 Guardar Avatar en la Bandeja</button>
       </div>
@@ -210,6 +209,8 @@
 
   <div id="controls-panel" class="panel">
     <h2>Añadir Elemento al Campo</h2>
+    <button id="open-editor-btn" class="btn-warning" style="margin-bottom: 12px; padding: 9px; font-weight: bold;">🎨 Abrir Editor de Avatares</button>
+
     <div class="input-group">
       <label>Nombre / Etiqueta:</label>
       <input type="text" id="avatar-label" placeholder="Ej. Madre, Abuelo, Anhelo">
@@ -246,7 +247,7 @@
       <label>2. Recursos y Elementos Sistémicos:</label>
       <select id="avatar-resource">
         <option value="none">-- Seleccionar Elemento Sistémico --</option>
-        <option value="symptom">El Síntoma / La Enfermedad (?)</option>
+        <option value="symptom">Hacer Terapia / El Síntoma (🩺)</option>
         <option value="secret">Secretos Familiares / Lo No Dicho (P)</option>
         <option value="pareja">La Pareja (Corazón ♥)</option>
         <option value="mascota">La Mascota (Huella 🐾)</option>
@@ -254,14 +255,28 @@
         <option value="muerte">La Muerte / Duelo (Cruz ✝)</option>
         <option value="pensador">El Pensador (Cerebro 🧠)</option>
         <option value="resource">Recurso / Fuerza Ancestral (Planta 🌱)</option>
-        <option value="desire">Anhelo / Meta (▲)</option>
-        <option value="material">Lo Material / Dinero (L)</option>
+        <option value="desire">Anhelo / Meta (🌟)</option>
+        <option value="material">Lo Material / Dinero ($)</option>
         <option value="negador">El Negador (No)</option>
         <option value="charlatan">El Charlatán (Boca 💬)</option>
         <option value="maltrato">Maltrato / Abuso (Mano ✋)</option>
         <option value="energia">Energía / Fuerza (Onda 〰)</option>
         <option value="locura">La Locura (Carita 🌀)</option>
         <option value="desarraigo">Desarraigo (Ancla ⚓)</option>
+        <!-- NUEVOS ELEMENTOS SISTÉMICOS AGREGADOS -->
+        <option value="aborto">Aborto (💔)</option>
+        <option value="pasado">Pasado (⏳)</option>
+        <option value="presente">Presente (📍)</option>
+        <option value="futuro">Futuro (🚀)</option>
+        <option value="espiritualidad">Espiritualidad (🕊️)</option>
+        <option value="infertilidad">Infertilidad (🌱)</option>
+        <option value="peterpan">Peter Pan (🎈)</option>
+        <option value="creencias-m">Creencias Masculino (👔)</option>
+        <option value="creencias-f">Creencias Femenino (👗)</option>
+        <option value="enfermedad-m">Enfermedad Masculino (🩹)</option>
+        <option value="enfermedad-f">Enfermedad Femenino (🩹)</option>
+        <option value="vida-m">Vida Masculino (☀️)</option>
+        <option value="vida-f">Vida Femenino (☀️)</option>
       </select>
     </div>
 
@@ -373,17 +388,32 @@
     let baseNotesText = '';
     let jitsiRoomUrl = '';
 
+    // LISTA EXPANDIDA DE RECURSOS Y ELEMENTOS SISTÉMICOS CON ÍCONOS ACTUALIZADOS
     const WOODCRAFT_RESOURCES = [
       { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-cyl' },
-      { type: 'symptom', label: 'El Síntoma', icon: '❓', symbol: '¿?', color: 0xb5838d, shape: 'wood-cyl' },
+      { type: 'symptom', label: 'Hacer Terapia', icon: '🩺', symbol: '🩺', color: 0xb5838d, shape: 'wood-cyl' },
       { type: 'secret', label: 'Lo No Dicho', icon: '✉️', symbol: 'P', color: 0x6b705c, shape: 'wood-box' },
       { type: 'mascota', label: 'Mascota', icon: '🐾', symbol: '🐾', color: 0xddb892, shape: 'wood-cyl' },
       { type: 'adicciones', label: 'Adicciones', icon: '🍾', symbol: '🍶', color: 0x9a031e, shape: 'wood-box' },
       { type: 'muerte', label: 'Duelo / Muerte', icon: '✝️', symbol: '✝', color: 0x3d348b, shape: 'wood-box' },
       { type: 'pensador', label: 'El Pensador', icon: '🧠', symbol: '🧠', color: 0x457b9d, shape: 'wood-cyl' },
       { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157, shape: 'wood-cyl' },
-      { type: 'desire', label: 'Anhelo / Meta', icon: '🎯', symbol: '▲', color: 0xe9c46a, shape: 'wood-cyl' },
-      { type: 'material', label: 'Lo Material', icon: '💼', symbol: 'L', color: 0xd4a373, shape: 'wood-box' }
+      { type: 'desire', label: 'Anhelo / Meta', icon: '🌟', symbol: '▲', color: 0xe9c46a, shape: 'wood-cyl' },
+      { type: 'material', label: 'Lo Material', icon: '💰', symbol: '$', color: 0xd4a373, shape: 'wood-box' },
+      // NUEVOS RECURSOS SOLICITADOS
+      { type: 'aborto', label: 'Aborto', icon: '💔', symbol: '✖', color: 0x800f2f, shape: 'wood-box' },
+      { type: 'pasado', label: 'Pasado', icon: '⏳', symbol: '◂', color: 0x6c757d, shape: 'wood-cyl' },
+      { type: 'presente', label: 'Presente', icon: '📍', symbol: '●', color: 0x2a9d8f, shape: 'wood-cyl' },
+      { type: 'futuro', label: 'Futuro', icon: '🚀', symbol: '▸', color: 0x457b9d, shape: 'wood-cyl' },
+      { type: 'espiritualidad', label: 'Espiritualidad', icon: '🕊️', symbol: '✨', color: 0xe9c46a, shape: 'wood-cyl' },
+      { type: 'infertilidad', label: 'Infertilidad', icon: '🌱', symbol: '∅', color: 0xa8dede, shape: 'wood-box' },
+      { type: 'peterpan', label: 'Peter Pan', icon: '🎈', symbol: '👦', color: 0xf4a261, shape: 'wood-cyl' },
+      { type: 'creencias-m', label: 'Creencias Masc.', icon: '👔', symbol: '♂', color: 0x1d3557, shape: 'wood-box' },
+      { type: 'creencias-f', label: 'Creencias Fem.', icon: '👗', symbol: '♀', color: 0xe63946, shape: 'wood-box' },
+      { type: 'enfermedad-m', label: 'Enfermedad Masc.', icon: '🩹', symbol: '♂', color: 0x9a031e, shape: 'wood-box' },
+      { type: 'enfermedad-f', label: 'Enfermedad Fem.', icon: '🩹', symbol: '♀', color: 0x9a031e, shape: 'wood-box' },
+      { type: 'vida-m', label: 'Vida Masculino', icon: '☀️', symbol: '♂', color: 0xffb703, shape: 'wood-cyl' },
+      { type: 'vida-f', label: 'Vida Femenino', icon: '☀️', symbol: '♀', color: 0xffb703, shape: 'wood-cyl' }
     ];
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -399,7 +429,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.3)"))
+      .then(() => showNotif("Conectado a Backend (v3.4)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -469,7 +499,7 @@
       saveStateToFirebase();
     }
 
-    // MOTOR VISTA PREVIA EDITOR 3D (v3.3)
+    // MOTOR VISTA PREVIA EDITOR 3D (v3.4 - CORREGIDO RENDER HUMANO / MINIFIGURA)
     let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
     function initEditorPreview() {
       const container = document.getElementById('editor-preview-container');
@@ -477,7 +507,7 @@
 
       edScene = new THREE.Scene();
       edCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-      edCamera.position.set(0, 1.8, 3.2);
+      edCamera.position.set(0, 1.2, 3.2);
 
       edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       edRenderer.setSize(container.clientWidth, container.clientHeight);
@@ -488,7 +518,7 @@
       edControls.autoRotate = true;
       edControls.autoRotateSpeed = 2.0;
 
-      const ambLight = new THREE.AmbientLight(0xffffff, 0.8);
+      const ambLight = new THREE.AmbientLight(0xffffff, 0.85);
       edScene.add(ambLight);
       const dLight = new THREE.DirectionalLight(0xffe8d6, 1.0);
       dLight.position.set(5, 10, 7);
@@ -511,10 +541,27 @@
 
       const shape = document.getElementById('ed-shape').value;
       const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
-      const symbol = document.getElementById('ed-symbol').value || '♥';
+      const symbol = document.getElementById('ed-symbol').value || '★';
 
       const tempRes = { type: 'temp_ed', label: 'Preview', symbol: symbol, color: colorHex, shape: shape };
-      const mesh = buildWoodcraftOrHuman(tempRes, shape);
+      const mesh = buildHumanMesh(shape);
+      
+      // Ajuste dinámico si es madera
+      if (shape.startsWith('wood-')) {
+        while(mesh.children.length > 0) mesh.remove(mesh.children[0]);
+        const woodMesh = buildWoodcraftOrHuman(tempRes, shape);
+        mesh.add(woodMesh);
+      } else {
+        // Para figuras humanas se aplica el color seleccionado al traje/cuerpo
+        mesh.traverse(child => {
+          if (child.isMesh && child.material) {
+            if (shape.startsWith('lego-') && child.material !== mesh.userData.bodyMaterial) {
+              child.material.color.setHex(colorHex);
+            }
+          }
+        });
+      }
+
       edPreviewMeshGroup.add(mesh);
     }
 
@@ -533,10 +580,10 @@
     });
 
     document.getElementById('btn-save-custom-avatar').addEventListener('click', () => {
-      const label = document.getElementById('ed-label').value.trim() || 'Recurso Custom';
+      const label = document.getElementById('ed-label').value.trim() || 'Recurso Personalizado';
       const shape = document.getElementById('ed-shape').value;
       const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
-      const symbol = document.getElementById('ed-symbol').value || '♥';
+      const symbol = document.getElementById('ed-symbol').value || '★';
       const icon = document.getElementById('ed-icon').value || '🎨';
       const customId = 'cust_' + Date.now();
 
@@ -548,7 +595,6 @@
       document.getElementById('editor-modal').style.display = 'none';
       showNotif(`¡Avatar "${label}" guardado en la bandeja!`);
 
-      // Añadir directo al campo
       const newAv = addAvatarToScene({
         id: 'av_' + Date.now(), label: label, type: customId,
         x: 0, z: 0, rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
@@ -916,7 +962,6 @@
       anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
     };
 
-    // FUNCIÓN AUXILIAR DE RENDER DE MADERA (CILÍNDRICO O RECTANGULAR v3.3)
     function buildWoodcraftOrHuman(resData, shapeOverride) {
       const bodyGroup = new THREE.Group();
       const shapeType = shapeOverride || (resData ? resData.shape : 'wood-cyl');
@@ -925,7 +970,6 @@
       const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
 
       if (shapeType === 'wood-box') {
-        // Bloque Rectangular de Madera (Forma del video)
         const boxGeo = new THREE.BoxGeometry(0.75, 1.2, 0.35);
         const boxMesh = new THREE.Mesh(boxGeo, woodMat);
         boxMesh.position.y = 0.6; boxMesh.castShadow = true;
@@ -957,7 +1001,6 @@
         bodyGroup.add(symbolPlane);
 
       } else {
-        // Bloque Cilíndrico de Madera (Estándar v3.0)
         const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
         const cylMesh = new THREE.Mesh(cylGeo, woodMat);
         cylMesh.position.y = 0.6; cylMesh.castShadow = true;
