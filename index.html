@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.4</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -24,75 +24,48 @@
     }
     #sync-panel { top: 20px; left: 20px; width: 280px; }
     #controls-panel { top: 20px; right: 20px; width: 330px; }
-    #inspector-panel { bottom: 120px; left: 20px; width: 330px; display: none; }
-    #notes-panel { bottom: 120px; right: 20px; width: 340px; display: none; }
+    #inspector-panel { bottom: 110px; left: 20px; width: 330px; display: none; }
+    #notes-panel { bottom: 110px; right: 20px; width: 340px; display: none; }
     
-    /* ESTRUCTURA DE BANDEJA INFERIOR EN UNA SOLA LÍNEA HORIZONTAL */
-    #bottom-tray-container {
-      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-      z-index: 90; display: flex; flex-direction: row; gap: 12px; width: 96vw; max-width: 1200px;
-      justify-content: center;
+    /* CARROUSEL / BANDEJA DE RECURSOS WOODCRAFT INFERIOR */
+    #resource-tray {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      z-index: 90; display: flex; gap: 8px; padding: 8px 14px;
+      background: rgba(20, 16, 14, 0.94); border: 1px solid rgba(212, 163, 115, 0.4);
+      border-radius: 16px; backdrop-filter: blur(10px); max-width: 90vw;
+      overflow-x: auto; scrollbar-width: thin; box-shadow: 0 8px 28px rgba(0,0,0,0.7);
     }
-    .carousel-section {
-      flex: 1; min-width: 0;
-      background: rgba(20, 16, 14, 0.94); border: 1px solid rgba(212, 163, 115, 0.35);
-      border-radius: 12px; padding: 4px 8px 6px 8px; backdrop-filter: blur(10px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.7); display: flex; flex-direction: column;
-    }
-    .carousel-header-title {
-      font-size: 0.65rem; color: #e9c46a; font-weight: bold; text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 2px; text-align: center;
-    }
-    .carousel-wrapper {
-      display: flex; align-items: center; position: relative; width: 100%;
-    }
-    .carousel-track {
-      display: flex; gap: 6px; overflow-x: hidden; scroll-behavior: smooth;
-      width: 100%; padding: 4px 2px;
-    }
-    .carousel-arrow {
-      background: rgba(45, 36, 32, 0.9); border: 1px solid rgba(212, 163, 115, 0.5);
-      color: #ffd166; width: 24px; height: 46px; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 0.85rem; z-index: 2; flex-shrink: 0;
-      transition: all 0.2s ease;
-    }
-    .carousel-arrow:hover { background: rgba(212, 163, 115, 0.4); color: #fff; }
-
     .tray-item {
-      flex: 0 0 auto; width: 58px; height: 62px; background: rgba(45, 36, 32, 0.8);
-      border: 1px solid rgba(212, 163, 115, 0.25); border-radius: 8px;
+      flex: 0 0 auto; width: 68px; height: 76px; background: rgba(45, 36, 32, 0.8);
+      border: 1px solid rgba(212, 163, 115, 0.25); border-radius: 10px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.2s ease; position: relative; padding: 2px;
+      cursor: pointer; transition: all 0.2s ease; position: relative; padding: 4px;
     }
     .tray-item:hover, .tray-item.remote-hover {
       background: rgba(212, 163, 115, 0.35); border-color: #ffd166;
-      transform: translateY(-3px); box-shadow: 0 0 10px rgba(255, 209, 102, 0.6);
+      transform: translateY(-4px); box-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
     }
     .tray-item.remote-hover::after {
-      content: '👁️ Mirando'; position: absolute; top: -16px; background: #e76f51;
-      color: white; font-size: 0.55rem; padding: 1px 3px; border-radius: 4px; white-space: nowrap;
+      content: '👁️ Mirando'; position: absolute; top: -18px; background: #e76f51;
+      color: white; font-size: 0.58rem; padding: 1px 4px; border-radius: 4px; white-space: nowrap;
     }
-    .tray-icon { font-size: 1.2rem; margin-bottom: 2px; }
-    .tray-label { font-size: 0.55rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
+    .tray-icon { font-size: 1.5rem; margin-bottom: 2px; }
+    .tray-label { font-size: 0.62rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
 
     /* MODAL EDITOR VISUAL DE AVATARES */
     #editor-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      z-index: 250; width: 94%; max-width: 860px; display: none;
-      background: rgba(24, 20, 18, 0.97); border: 1px solid rgba(212, 163, 115, 0.5);
+      z-index: 250; width: 92%; max-width: 720px; display: none;
+      background: rgba(24, 20, 18, 0.96); border: 1px solid rgba(212, 163, 115, 0.5);
       border-radius: 16px; padding: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.85);
-      backdrop-filter: blur(16px); max-height: 90vh; overflow-y: auto;
+      backdrop-filter: blur(16px);
     }
     .editor-layout { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
     #editor-preview-container {
-      flex: 1 1 320px; height: 420px; background: radial-gradient(circle, #3a2e28 0%, #15100e 100%);
-      border-radius: 12px; border: 1px solid rgba(212, 163, 115, 0.3); position: relative; overflow: hidden;
-      display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 8px;
+      flex: 1 1 280px; height: 300px; background: radial-gradient(circle, #342a25 0%, #1a1412 100%);
+      border-radius: 12px; border: 1px solid rgba(212, 163, 115, 0.2); position: relative; overflow: hidden;
     }
-    #editor-preview-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
-    .editor-controls-column { flex: 1 1 380px; display: flex; flex-direction: column; gap: 8px; }
-    .editor-section-title { font-size: 0.76rem; color: #e9c46a; font-weight: bold; text-transform: uppercase; margin-top: 4px; border-bottom: 1px solid rgba(212,163,115,0.2); padding-bottom: 2px; }
+    .editor-controls-column { flex: 1 1 320px; display: flex; flex-direction: column; gap: 8px; }
 
     #history-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -116,9 +89,9 @@
       letter-spacing: 0.5px; pointer-events: none;
     }
 
-    h2, h3 { color: #e6ccb2; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
-    .input-group { margin-bottom: 6px; }
-    label { display: block; font-size: 0.73rem; color: #ddb892; margin-bottom: 2px; }
+    h2, h3 { color: #e6ccb2; margin-bottom: 10px; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
+    .input-group { margin-bottom: 8px; }
+    label { display: block; font-size: 0.75rem; color: #ddb892; margin-bottom: 3px; }
     input, select, button, textarea {
       width: 100%; padding: 7px 9px; border-radius: 6px; border: 1px solid #7f5539;
       background: #27211e; color: #f5efe6; font-size: 0.82rem; outline: none;
@@ -145,207 +118,58 @@
     .dot-disconnected { height: 8px; width: 8px; background-color: #e63946; border-radius: 50%; display: inline-block; }
     .history-item { background: rgba(39, 33, 30, 0.8); border: 1px solid rgba(212, 163, 115, 0.2); border-radius: 8px; padding: 10px; margin-bottom: 8px; }
   </style>
-
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/"
-      }
-    }
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.7</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.4</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
     <button id="open-video-btn" class="top-btn" style="display: none; background: #457b9d; color: #fff;">📹 Abrir Videollamada (Jitsi)</button>
   </div>
 
-  <div id="bottom-tray-container">
-    <div class="carousel-section">
-      <div class="carousel-header-title">🌿 Recursos y Elementos Sistémicos</div>
-      <div class="carousel-wrapper">
-        <button class="carousel-arrow" id="arrow-prev-resources">◀</button>
-        <div class="carousel-track" id="track-resources"></div>
-        <button class="carousel-arrow" id="arrow-next-resources">▶</button>
-      </div>
-    </div>
-    <div class="carousel-section">
-      <div class="carousel-header-title">🎭 Avatares Personalizados</div>
-      <div class="carousel-wrapper">
-        <button class="carousel-arrow" id="arrow-prev-custom">◀</button>
-        <div class="carousel-track" id="track-custom"></div>
-        <button class="carousel-arrow" id="arrow-next-custom">▶</button>
-      </div>
-    </div>
-  </div>
+  <div id="resource-tray"></div>
 
   <div id="notification">Notificación</div>
 
+  <!-- MODAL EDITOR VISUAL CON VISTA PREVIA 3D -->
   <div id="editor-modal">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>🎨 Studio Interactivo de Avatares 3D (v3.7)</h2>
+      <h2>🎨 Editor de Avatares y Recursos 3D</h2>
       <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 3px 10px;">✕ Cerrar</button>
     </div>
     <div class="editor-layout">
-      <div id="editor-preview-container">
-        <div id="editor-preview-canvas"></div>
-        <button id="btn-export-avatar-card" class="btn-info" style="z-index: 10; width: 90%; font-size: 0.78rem; padding: 6px;">📸 Exportar Avatar (Recuerdo)</button>
-      </div>
+      <div id="editor-preview-container"></div>
       <div class="editor-controls-column">
-        
-        <div class="editor-section-title">1. Identidad & Forma Base</div>
         <div class="input-group">
           <label>Nombre del Avatar / Recurso:</label>
-          <input type="text" id="ed-label" value="Mi Avatar Personalizado">
+          <input type="text" id="ed-label" value="Nuevo Recurso">
         </div>
         <div class="input-group">
-          <label>Modelo 3D de Origen:</label>
+          <label>Forma Geométrica Base:</label>
           <select id="ed-shape">
-            <optgroup label="Bloques de Madera Sistémicos">
-              <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
-              <option value="wood-box">Bloque Rectangular de Madera</option>
-            </optgroup>
-            <optgroup label="Minifiguras Clásicas">
-              <option value="lego-m">Minifigura - Hombre Adulto</option>
-              <option value="lego-f">Minifigura - Mujer Adulta</option>
-              <option value="lego-child-m">Minifigura - Niño</option>
-              <option value="lego-child-f">Minifigura - Niña</option>
-            </optgroup>
-            <optgroup label="Figuras Anatómicas Humanas">
-              <option value="adult-m">Figura Anatómica Hombre</option>
-              <option value="adult-f">Figura Anatómica Mujer</option>
-            </optgroup>
+            <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
+            <option value="wood-box">Bloque Rectangular de Madera</option>
+            <option value="lego-m">Minifigura Clásica Humanoides</option>
+            <option value="adult-m">Figura Anatómica Adulto</option>
           </select>
         </div>
         <div class="input-group">
-          <label>Color Principal (Cuerpo / Vestimenta / Madera):</label>
-          <input type="color" id="ed-color" value="#ddb892" style="height: 36px; cursor: pointer;">
+          <label>Color del Bloque / Vestimenta:</label>
+          <input type="color" id="ed-color" value="#ddb892" style="height: 38px; cursor: pointer;">
         </div>
-
-        <div class="editor-section-title">2. Expresión Facial & Mirada</div>
-        <div style="display: flex; gap: 8px;">
-          <div class="input-group" style="flex: 1;">
-            <label>Dirección de la Mirada:</label>
-            <select id="ed-gaze">
-              <option value="front">👁️ Al Frente (Directa)</option>
-              <option value="left">👈 Mirada Izquierda</option>
-              <option value="right">👉 Mirada Derecha</option>
-              <option value="up">👆 Mirada Arriba / Cielo</option>
-              <option value="down">👇 Mirada Abajo / Suelo</option>
-              <option value="closed">🙈 Ojos Cerrados (Duelo)</option>
-            </select>
-          </div>
-          <div class="input-group" style="flex: 1;">
-            <label>Boca / Emoción Facial:</label>
-            <select id="ed-mouth">
-              <option value="neutral">😐 Neutral / Seria</option>
-              <option value="happy">🙂 Feliz / Sonriente</option>
-              <option value="laughing">😄 Risueña / Alegre</option>
-              <option value="surprised">😮 Sorprendida</option>
-              <option value="sad">🙁 Triste / Afligida</option>
-              <option value="angry">😠 Enfadada / Enojada</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="editor-section-title">3. Cabello & Accesorios</div>
-        <div style="display: flex; gap: 8px;">
-          <div class="input-group" style="flex: 1;">
-            <label>Estilo de Cabello:</label>
-            <select id="ed-hair-style">
-              <option value="none">Sin Pelo / Calvo</option>
-              <option value="short">Corto Estándar</option>
-              <option value="long">Lacio Largo</option>
-              <option value="curly">Rizado / Afro</option>
-              <option value="ponytail">Coleta / Pony</option>
-              <option value="toupee">Tupé / Copete</option>
-              <option value="elder">Ancestral / Anciano</option>
-            </select>
-          </div>
-          <div class="input-group" style="flex: 1;">
-            <label>Color de Pelo:</label>
-            <input type="color" id="ed-hair-color" value="#3d2314" style="height: 36px; cursor: pointer;">
-          </div>
-        </div>
-
         <div class="input-group">
-          <label>Accesorio de Cabeza / Sombrero:</label>
-          <select id="ed-hat-style">
-            <option value="none">Sin Accesorio</option>
-            <option value="crown">👑 Corona / Ancestro / Rey</option>
-            <option value="cap">🧢 Gorra Deportiva</option>
-            <option value="top-hat">🎩 Sombrero de Copa</option>
-            <option value="headband">🎀 Vincha / Tocado</option>
-          </select>
+          <label>Símbolo Frontal / Dibujo (Grabado):</label>
+          <input type="text" id="ed-symbol" value="★" placeholder="Ej. ★, 🐾, ?, P, ✝">
         </div>
-
-        <div class="editor-section-title">4. Símbolo e Ícono del Carrusel</div>
-        <div style="display: flex; gap: 8px;">
-          <div class="input-group" style="flex: 1;">
-            <label>Símbolo Frontal Grabado:</label>
-            <select id="ed-symbol-select">
-              <option value="♥">♥ Corazón</option>
-              <option value="🩺">🩺 Terapia / Salud</option>
-              <option value="🐾">🐾 Mascota</option>
-              <option value="✝">✝ Cruz / Duelo</option>
-              <option value="🧠">🧠 Pensador</option>
-              <option value="🌱">🌱 Fuerza Ancestral</option>
-              <option value="🌟">🌟 Anhelo / Meta</option>
-              <option value="$">$ Lo Material</option>
-              <option value="💔">💔 Aborto / Herida</option>
-              <option value="⏳">⏳ Pasado</option>
-              <option value="📍">📍 Presente</option>
-              <option value="🚀">🚀 Futuro</option>
-              <option value="🕊️">🕊️ Espiritualidad</option>
-              <option value="🎈">🎈 Peter Pan</option>
-              <option value="👔">👔 Masculino</option>
-              <option value="👗">👗 Femenino</option>
-              <option value="🩹">🩹 Enfermedad</option>
-              <option value="☀️">☀️ Vida</option>
-              <option value="👁️">👁️ Conciencia</option>
-              <option value="👑">👑 Ancestro / Rey</option>
-              <option value="🛡️">🛡️ Protección</option>
-              <option value="⚖️">⚖️ Justicia</option>
-              <option value="custom">✏️ Texto Personalizado...</option>
-            </select>
-            <input type="text" id="ed-symbol-custom" value="★" style="display:none; margin-top:3px;" placeholder="Escribe tu símbolo">
-          </div>
-          <div class="input-group" style="flex: 1;">
-            <label>Ícono para la Bandeja Inferior:</label>
-            <select id="ed-icon-select">
-              <option value="🎨">🎨 Paleta</option>
-              <option value="❤️">❤️ Corazón Rojo</option>
-              <option value="🩺">🩺 Estetoscopio</option>
-              <option value="🐾">🐾 Huella</option>
-              <option value="🍾">🍾 Botella</option>
-              <option value="✝️">✝️ Cruz</option>
-              <option value="🧠">🧠 Cerebro</option>
-              <option value="🌿">🌿 Rama / Hoja</option>
-              <option value="🌟">🌟 Estrella Bright</option>
-              <option value="💰">💰 Bolsa Dinero</option>
-              <option value="💔">💔 Corazón Roto</option>
-              <option value="⏳">⏳ Reloj Arena</option>
-              <option value="📍">📍 Pin Mapa</option>
-              <option value="🚀">🚀 Cohete</option>
-              <option value="🕊️">🕊️ Paloma</option>
-              <option value="🎈">🎈 Globo</option>
-              <option value="👔">👔 Camisa</option>
-              <option value="👗">👗 Vestido</option>
-              <option value="🩹">🩹 Tira Curativa</option>
-              <option value="☀️">☀️ Sol</option>
-              <option value="👁️">👁️ Ojo</option>
-              <option value="👑">👑 Corona</option>
-              <option value="🛡️">🛡️ Escudo</option>
-            </select>
-          </div>
+        <div class="input-group">
+          <label>Icono para el Carrusel Inferior:</label>
+          <input type="text" id="ed-icon" value="🌟" placeholder="Ej. ❤️, 🧠, 🌿">
         </div>
-
-        <button id="btn-save-custom-avatar" class="btn-secondary" style="margin-top: 10px; padding: 10px; font-size: 0.9rem;">💾 Añadir a "Avatares Personalizados"</button>
+        <button id="btn-save-custom-avatar" class="btn-secondary" style="margin-top: 10px; padding: 10px;">💾 Guardar Avatar en la Bandeja</button>
       </div>
     </div>
   </div>
@@ -385,7 +209,7 @@
 
   <div id="controls-panel" class="panel">
     <h2>Añadir Elemento al Campo</h2>
-    <button id="open-editor-btn" class="btn-warning" style="margin-bottom: 12px; padding: 9px; font-weight: bold;">🎨 Abrir Studio de Avatares</button>
+    <button id="open-editor-btn" class="btn-warning" style="margin-bottom: 12px; padding: 9px; font-weight: bold;">🎨 Abrir Editor de Avatares</button>
 
     <div class="input-group">
       <label>Nombre / Etiqueta:</label>
@@ -397,10 +221,10 @@
       <select id="avatar-gender">
         <option value="none">-- Seleccionar Figura Humana --</option>
         <optgroup label="Minifiguras Clásicas">
-          <option value="lego-m">Minifigura Clásica - Hombre Adulto</option>
-          <option value="lego-f">Minifigura Clásica - Mujer Adulta</option>
-          <option value="lego-child-m">Minifigura Clásica - Niño</option>
-          <option value="lego-child-f">Minifigura Clásica - Niña</option>
+          <option value="lego-m">Minifigura Clásica - Hombre / Niño</option>
+          <option value="lego-f">Minifigura Clásica - Mujer / Niña</option>
+          <option value="lego-elder">Minifigura Clásica - Anciano / Ancestral</option>
+          <option value="lego-special">Minifigura Clásica - Especial / Fantasía</option>
         </optgroup>
         <optgroup label="Hombres Adultos (Anatómicos)">
           <option value="adult-m">Hombre Adulto (Modelo A - Estándar)</option>
@@ -439,6 +263,7 @@
         <option value="energia">Energía / Fuerza (Onda 〰)</option>
         <option value="locura">La Locura (Carita 🌀)</option>
         <option value="desarraigo">Desarraigo (Ancla ⚓)</option>
+        <!-- NUEVOS ELEMENTOS SISTÉMICOS AGREGADOS -->
         <option value="aborto">Aborto (💔)</option>
         <option value="pasado">Pasado (⏳)</option>
         <option value="presente">Presente (📍)</option>
@@ -533,8 +358,6 @@
   </div>
 
   <script type="module">
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDocs, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -565,7 +388,8 @@
     let baseNotesText = '';
     let jitsiRoomUrl = '';
 
-    const SYSTEMIC_RESOURCES = [
+    // LISTA EXPANDIDA DE RECURSOS Y ELEMENTOS SISTÉMICOS CON ÍCONOS ACTUALIZADOS
+    const WOODCRAFT_RESOURCES = [
       { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-cyl' },
       { type: 'symptom', label: 'Hacer Terapia', icon: '🩺', symbol: '🩺', color: 0xb5838d, shape: 'wood-cyl' },
       { type: 'secret', label: 'Lo No Dicho', icon: '✉️', symbol: 'P', color: 0x6b705c, shape: 'wood-box' },
@@ -576,6 +400,7 @@
       { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157, shape: 'wood-cyl' },
       { type: 'desire', label: 'Anhelo / Meta', icon: '🌟', symbol: '▲', color: 0xe9c46a, shape: 'wood-cyl' },
       { type: 'material', label: 'Lo Material', icon: '💰', symbol: '$', color: 0xd4a373, shape: 'wood-box' },
+      // NUEVOS RECURSOS SOLICITADOS
       { type: 'aborto', label: 'Aborto', icon: '💔', symbol: '✖', color: 0x800f2f, shape: 'wood-box' },
       { type: 'pasado', label: 'Pasado', icon: '⏳', symbol: '◂', color: 0x6c757d, shape: 'wood-cyl' },
       { type: 'presente', label: 'Presente', icon: '📍', symbol: '●', color: 0x2a9d8f, shape: 'wood-cyl' },
@@ -591,13 +416,6 @@
       { type: 'vida-f', label: 'Vida Femenino', icon: '☀️', symbol: '♀', color: 0xffb703, shape: 'wood-cyl' }
     ];
 
-    const CUSTOM_AVATARS = [
-      {
-        type: 'cust_default_1', label: 'Consultante Principal', icon: '🎭', symbol: '★', color: 0x2a9d8f, shape: 'lego-m',
-        customData: { shape: 'lego-m', colorHex: 0x2a9d8f, gaze: 'front', mouth: 'happy', hairStyle: 'short', hairColorHex: 0x3d2314, hatStyle: 'none', symbol: '★', icon: '🎭' }
-      }
-    ];
-
     const urlParams = new URLSearchParams(window.location.search);
     const urlRoom = urlParams.get('room');
     const urlRole = urlParams.get('role');
@@ -611,7 +429,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.7)"))
+      .then(() => showNotif("Conectado a Backend (v3.4)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -621,64 +439,37 @@
       setTimeout(() => { notif.style.display = 'none'; }, 2800);
     }
 
-    function renderCarousels() {
-      const trackResources = document.getElementById('track-resources');
-      const trackCustom = document.getElementById('track-custom');
+    const resourceTray = document.getElementById('resource-tray');
+    function renderTrayItems() {
+      resourceTray.innerHTML = '';
+      WOODCRAFT_RESOURCES.forEach(res => {
+        const item = document.createElement('div');
+        item.className = 'tray-item';
+        item.dataset.type = res.type;
+        item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
 
-      trackResources.innerHTML = '';
-      SYSTEMIC_RESOURCES.forEach(res => {
-        trackResources.appendChild(createTrayCard(res));
-      });
+        item.addEventListener('mouseenter', () => broadcastHoverState(res.type, true));
+        item.addEventListener('mouseleave', () => broadcastHoverState(res.type, false));
 
-      trackCustom.innerHTML = '';
-      CUSTOM_AVATARS.forEach(res => {
-        trackCustom.appendChild(createTrayCard(res));
+        item.addEventListener('click', () => {
+          const active = getSelectedAvatar();
+          if (active) {
+            replaceAvatarType(active, res.type, res.label);
+            showNotif(`Figura modificada a: ${res.label}`);
+          } else {
+            const newAv = addAvatarToScene({
+              id: 'av_' + Date.now(), label: res.label, type: res.type,
+              x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
+              rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
+            });
+            selectAvatar(newAv); saveStateToFirebase();
+            showNotif(`Añadido: ${res.label}`);
+          }
+        });
+        resourceTray.appendChild(item);
       });
     }
-
-    function createTrayCard(res) {
-      const item = document.createElement('div');
-      item.className = 'tray-item';
-      item.dataset.type = res.type;
-      item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
-
-      item.addEventListener('mouseenter', () => broadcastHoverState(res.type, true));
-      item.addEventListener('mouseleave', () => broadcastHoverState(res.type, false));
-
-      item.addEventListener('click', () => {
-        const active = getSelectedAvatar();
-        if (active) {
-          replaceAvatarType(active, res.type, res.label);
-          showNotif(`Figura modificada a: ${res.label}`);
-        } else {
-          const newAv = addAvatarToScene({
-            id: 'av_' + Date.now(), label: res.label, type: res.type,
-            x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
-            rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100,
-            customData: res.customData || null
-          });
-          selectAvatar(newAv); saveStateToFirebase();
-          showNotif(`Añadido: ${res.label}`);
-        }
-      });
-      return item;
-    }
-
-    document.getElementById('arrow-prev-resources').addEventListener('click', () => {
-      document.getElementById('track-resources').scrollBy({ left: -180, behavior: 'smooth' });
-    });
-    document.getElementById('arrow-next-resources').addEventListener('click', () => {
-      document.getElementById('track-resources').scrollBy({ left: 180, behavior: 'smooth' });
-    });
-
-    document.getElementById('arrow-prev-custom').addEventListener('click', () => {
-      document.getElementById('track-custom').scrollBy({ left: -180, behavior: 'smooth' });
-    });
-    document.getElementById('arrow-next-custom').addEventListener('click', () => {
-      document.getElementById('track-custom').scrollBy({ left: 180, behavior: 'smooth' });
-    });
-
-    renderCarousels();
+    renderTrayItems();
 
     function broadcastHoverState(type, isHovered) {
       if (!currentRoomId) return;
@@ -690,12 +481,8 @@
       avatarGroup.userData.type = newType;
       avatarGroup.userData.label = newLabel;
 
-      let customData = null;
-      const foundCustom = CUSTOM_AVATARS.find(c => c.type === newType);
-      if (foundCustom) customData = foundCustom.customData;
-
       while(avatarGroup.children.length > 0){ avatarGroup.remove(avatarGroup.children[0]); }
-      const freshGroup = buildHumanMesh(newType, customData);
+      const freshGroup = buildHumanMesh(newType);
       while(freshGroup.children.length > 0){ avatarGroup.add(freshGroup.children[0]); }
 
       avatarGroup.userData.bodyGroup = freshGroup.userData.bodyGroup;
@@ -705,7 +492,6 @@
       avatarGroup.userData.labelCanvas = freshGroup.userData.labelCanvas;
       avatarGroup.userData.labelTexture = freshGroup.userData.labelTexture;
       avatarGroup.userData.labelSprite = freshGroup.userData.labelSprite;
-      avatarGroup.userData.customData = customData;
 
       updateLabel(avatarGroup, newLabel);
       applyAvatarState(avatarGroup);
@@ -713,28 +499,29 @@
       saveStateToFirebase();
     }
 
+    // MOTOR VISTA PREVIA EDITOR 3D (v3.4 - CORREGIDO RENDER HUMANO / MINIFIGURA)
     let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
     function initEditorPreview() {
-      const container = document.getElementById('editor-preview-canvas');
+      const container = document.getElementById('editor-preview-container');
       if (edRenderer) return;
 
       edScene = new THREE.Scene();
       edCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-      edCamera.position.set(0, 1.1, 2.7);
+      edCamera.position.set(0, 1.2, 3.2);
 
-      edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+      edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       edRenderer.setSize(container.clientWidth, container.clientHeight);
       container.appendChild(edRenderer.domElement);
 
-      edControls = new OrbitControls(edCamera, edRenderer.domElement);
+      edControls = new THREE.OrbitControls(edCamera, edRenderer.domElement);
       edControls.enableDamping = true;
-      edControls.target.set(0, 0.85, 0);
-      edControls.autoRotate = false;
+      edControls.autoRotate = true;
+      edControls.autoRotateSpeed = 2.0;
 
-      const ambLight = new THREE.AmbientLight(0xffffff, 0.95);
+      const ambLight = new THREE.AmbientLight(0xffffff, 0.85);
       edScene.add(ambLight);
-      const dLight = new THREE.DirectionalLight(0xffe8d6, 1.15);
-      dLight.position.set(2, 6, 5);
+      const dLight = new THREE.DirectionalLight(0xffe8d6, 1.0);
+      dLight.position.set(5, 10, 7);
       edScene.add(dLight);
 
       edPreviewMeshGroup = new THREE.Group();
@@ -748,30 +535,33 @@
       animEd();
     }
 
-    function getEditorStateData() {
-      const shape = document.getElementById('ed-shape').value;
-      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
-      const gaze = document.getElementById('ed-gaze').value;
-      const mouth = document.getElementById('ed-mouth').value;
-      const hairStyle = document.getElementById('ed-hair-style').value;
-      const hairColorHex = parseInt(document.getElementById('ed-hair-color').value.replace('#', '0x'));
-      const hatStyle = document.getElementById('ed-hat-style').value;
-
-      const symbolSel = document.getElementById('ed-symbol-select').value;
-      const symbol = symbolSel === 'custom' ? document.getElementById('ed-symbol-custom').value : symbolSel;
-      const icon = document.getElementById('ed-icon-select').value;
-
-      return {
-        shape, colorHex, gaze, mouth, hairStyle, hairColorHex, hatStyle, symbol, icon
-      };
-    }
-
     function updateEditorPreview() {
       if (!edPreviewMeshGroup) return;
       while(edPreviewMeshGroup.children.length > 0) edPreviewMeshGroup.remove(edPreviewMeshGroup.children[0]);
 
-      const cData = getEditorStateData();
-      const mesh = buildHumanMesh(cData.shape, cData);
+      const shape = document.getElementById('ed-shape').value;
+      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
+      const symbol = document.getElementById('ed-symbol').value || '★';
+
+      const tempRes = { type: 'temp_ed', label: 'Preview', symbol: symbol, color: colorHex, shape: shape };
+      const mesh = buildHumanMesh(shape);
+      
+      // Ajuste dinámico si es madera
+      if (shape.startsWith('wood-')) {
+        while(mesh.children.length > 0) mesh.remove(mesh.children[0]);
+        const woodMesh = buildWoodcraftOrHuman(tempRes, shape);
+        mesh.add(woodMesh);
+      } else {
+        // Para figuras humanas se aplica el color seleccionado al traje/cuerpo
+        mesh.traverse(child => {
+          if (child.isMesh && child.material) {
+            if (shape.startsWith('lego-') && child.material !== mesh.userData.bodyMaterial) {
+              child.material.color.setHex(colorHex);
+            }
+          }
+        });
+      }
+
       edPreviewMeshGroup.add(mesh);
     }
 
@@ -785,81 +575,29 @@
       document.getElementById('editor-modal').style.display = 'none';
     });
 
-    document.getElementById('ed-symbol-select').addEventListener('change', (e) => {
-      document.getElementById('ed-symbol-custom').style.display = e.target.value === 'custom' ? 'block' : 'none';
-      updateEditorPreview();
-    });
-
-    ['ed-shape', 'ed-color', 'ed-gaze', 'ed-mouth', 'ed-hair-style', 'ed-hair-color', 'ed-hat-style', 'ed-symbol-custom', 'ed-icon-select'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('input', updateEditorPreview);
-        el.addEventListener('change', updateEditorPreview);
-      }
-    });
-
-    /* EXPORTAR RECUERDO DEL AVATAR COMO TARJETA/POSTAL DIGITAL */
-    document.getElementById('btn-export-avatar-card').addEventListener('click', () => {
-      if (!edRenderer) return;
-      edRenderer.render(edScene, edCamera);
-      const avatarImage = edRenderer.domElement.toDataURL('image/png');
-      const labelName = document.getElementById('ed-label').value.trim() || 'Avatar Sistémico';
-
-      const cardCanvas = document.createElement('canvas');
-      cardCanvas.width = 600; cardCanvas.height = 750;
-      const ctx = cardCanvas.getContext('2d');
-
-      // Fondo Elegante
-      const grad = ctx.createLinearGradient(0, 0, 0, 750);
-      grad.addColorStop(0, '#2b211d'); grad.addColorStop(1, '#120e0d');
-      ctx.fillStyle = grad; ctx.fillRect(0, 0, 600, 750);
-
-      // Marco dorado
-      ctx.strokeStyle = 'rgba(212, 163, 115, 0.8)';
-      ctx.lineWidth = 12; ctx.strokeRect(16, 16, 568, 718);
-
-      // Cargar Render 3D
-      const img = new Image();
-      img.onload = () => {
-        ctx.drawImage(img, 50, 60, 500, 500);
-
-        // Título / Etiqueta
-        ctx.fillStyle = '#e9c46a'; ctx.font = 'Bold 36px "Segoe UI", sans-serif';
-        ctx.textAlign = 'center'; ctx.fillText(labelName, 300, 610);
-
-        // Subtítulo
-        ctx.fillStyle = '#ddb892'; ctx.font = '20px "Segoe UI", sans-serif';
-        ctx.fillText('Recuerdo de Sesión - Constelaciones 3D Pro', 300, 650);
-
-        // Marca de agua
-        ctx.fillStyle = 'rgba(212, 163, 115, 0.5)'; ctx.font = '15px sans-serif';
-        ctx.fillText('Lainez 3D Suite', 300, 690);
-
-        const link = document.createElement('a');
-        link.download = `Recuerdo_Avatar_${labelName.replace(/\s+/g, '_')}.png`;
-        link.href = cardCanvas.toDataURL('image/png');
-        link.click();
-        showNotif("📸 ¡Recuerdo de Avatar exportado con éxito!");
-      };
-      img.src = avatarImage;
+    ['ed-shape', 'ed-color', 'ed-symbol'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateEditorPreview);
     });
 
     document.getElementById('btn-save-custom-avatar').addEventListener('click', () => {
-      const cData = getEditorStateData();
-      const label = document.getElementById('ed-label').value.trim() || 'Avatar Custom';
+      const label = document.getElementById('ed-label').value.trim() || 'Recurso Personalizado';
+      const shape = document.getElementById('ed-shape').value;
+      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
+      const symbol = document.getElementById('ed-symbol').value || '★';
+      const icon = document.getElementById('ed-icon').value || '🎨';
       const customId = 'cust_' + Date.now();
 
-      CUSTOM_AVATARS.push({
-        type: customId, label: label, icon: cData.icon, symbol: cData.symbol, color: cData.colorHex, shape: cData.shape, customData: cData
+      WOODCRAFT_RESOURCES.push({
+        type: customId, label: label, icon: icon, symbol: symbol, color: colorHex, shape: shape
       });
 
-      renderCarousels();
+      renderTrayItems();
       document.getElementById('editor-modal').style.display = 'none';
-      showNotif(`¡Avatar "${label}" guardado en Avatares Personalizados!`);
+      showNotif(`¡Avatar "${label}" guardado en la bandeja!`);
 
       const newAv = addAvatarToScene({
         id: 'av_' + Date.now(), label: label, type: customId,
-        x: 0, z: 0, rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100, customData: cData
+        x: 0, z: 0, rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
       });
       selectAvatar(newAv);
       saveStateToFirebase();
@@ -1165,6 +903,7 @@
       }
     });
 
+    // MOTOR ESCENA THREE.JS
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
 
@@ -1177,7 +916,7 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     container.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
@@ -1223,363 +962,189 @@
       anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
     };
 
-    /* RENDERIZADO FACIAL EMOCIONAL DINÁMICO (BOCA Y OJOS) */
-    function buildFacialFeatureMesh(mouthType, gazeType, isLego, isWood, posY, posZ, scaleXZ, scaleY) {
-      const facialGroup = new THREE.Group();
-      const featureMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+    function buildWoodcraftOrHuman(resData, shapeOverride) {
+      const bodyGroup = new THREE.Group();
+      const shapeType = shapeOverride || (resData ? resData.shape : 'wood-cyl');
+      const woodColor = resData ? resData.color : 0xddb892;
+      const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
+      const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
 
-      let gazeX = 0, gazeY = 0;
-      if (gazeType === 'left') gazeX = -0.035 * scaleXZ;
-      else if (gazeType === 'right') gazeX = 0.035 * scaleXZ;
-      else if (gazeType === 'up') gazeY = 0.035 * scaleY;
-      else if (gazeType === 'down') gazeY = -0.035 * scaleY;
+      if (shapeType === 'wood-box') {
+        const boxGeo = new THREE.BoxGeometry(0.75, 1.2, 0.35);
+        const boxMesh = new THREE.Mesh(boxGeo, woodMat);
+        boxMesh.position.y = 0.6; boxMesh.castShadow = true;
+        bodyGroup.add(boxMesh);
 
-      // Ojos
-      const eyeY = posY + 0.12 * scaleY;
-      const eyeSpacing = 0.10 * scaleXZ;
-      if (gazeType === 'closed') {
-        const eyeLineGeo = new THREE.BoxGeometry(0.08 * scaleXZ, 0.015 * scaleY, 0.02);
-        const eyeL = new THREE.Mesh(eyeLineGeo, featureMat);
-        eyeL.position.set(-eyeSpacing, eyeY, posZ); facialGroup.add(eyeL);
-        const eyeR = new THREE.Mesh(eyeLineGeo, featureMat);
-        eyeR.position.set(eyeSpacing, eyeY, posZ); facialGroup.add(eyeR);
-      } else {
-        const eyeGeo = new THREE.SphereGeometry(0.038 * scaleXZ, 12, 12);
-        const eyeL = new THREE.Mesh(eyeGeo, featureMat);
-        eyeL.position.set(-eyeSpacing + gazeX, eyeY + gazeY, posZ); facialGroup.add(eyeL);
-        const eyeR = new THREE.Mesh(eyeGeo, featureMat);
-        eyeR.position.set(eyeSpacing + gazeX, eyeY + gazeY, posZ); facialGroup.add(eyeR);
-      }
+        const faceGeo = new THREE.PlaneGeometry(0.72, 0.42);
+        const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
+        faceMesh.position.set(0, 0.95, 0.18);
+        bodyGroup.add(faceMesh);
 
-      // Boca Emocional
-      const mouthY = posY - 0.02 * scaleY;
-      if (mouthType === 'happy' || mouthType === 'laughing') {
-        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
-        const mouth = new THREE.Mesh(mouthGeo, featureMat);
-        mouth.position.set(0, mouthY, posZ); mouth.rotation.x = Math.PI; facialGroup.add(mouth);
-      } else if (mouthType === 'sad') {
-        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
-        const mouth = new THREE.Mesh(mouthGeo, featureMat);
-        mouth.position.set(0, mouthY - 0.03 * scaleY, posZ); facialGroup.add(mouth);
-      } else if (mouthType === 'angry') {
-        const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
-        const mouth = new THREE.Mesh(mouthGeo, featureMat);
-        mouth.position.set(0, mouthY - 0.03 * scaleY, posZ); facialGroup.add(mouth);
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.16, 0.98, 0.19); bodyGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.16, 0.98, 0.19); bodyGroup.add(eyeR);
 
-        // Cejas enojadas
-        const browGeo = new THREE.BoxGeometry(0.08 * scaleXZ, 0.015 * scaleY, 0.02);
-        const browL = new THREE.Mesh(browGeo, featureMat);
-        browL.position.set(-eyeSpacing, eyeY + 0.05 * scaleY, posZ); browL.rotation.z = -0.3; facialGroup.add(browL);
-        const browR = new THREE.Mesh(browGeo, featureMat);
-        browR.position.set(eyeSpacing, eyeY + 0.05 * scaleY, posZ); browR.rotation.z = 0.3; facialGroup.add(browR);
-      } else if (mouthType === 'surprised') {
-        const mouthGeo = new THREE.CylinderGeometry(0.035 * scaleXZ, 0.035 * scaleXZ, 0.02, 16);
-        mouthGeo.rotateX(Math.PI / 2);
-        const mouth = new THREE.Mesh(mouthGeo, featureMat);
-        mouth.position.set(0, mouthY - 0.01 * scaleY, posZ); facialGroup.add(mouth);
-      } else {
-        // Neutral
-        const mouthGeo = new THREE.BoxGeometry(0.09 * scaleXZ, 0.015 * scaleY, 0.02);
-        const mouth = new THREE.Mesh(mouthGeo, featureMat);
-        mouth.position.set(0, mouthY - 0.01 * scaleY, posZ); facialGroup.add(mouth);
-      }
-
-      return facialGroup;
-    }
-
-    /* ACCESORIOS DE CABEZA */
-    function buildHatMesh(hatStyle, headY, scaleXZ, scaleY) {
-      if (!hatStyle || hatStyle === 'none') return null;
-      const hatGroup = new THREE.Group();
-
-      if (hatStyle === 'crown') {
-        const crownMat = new THREE.MeshStandardMaterial({ color: 0xffd166, metalness: 0.6, roughness: 0.2 });
-        const crownGeo = new THREE.CylinderGeometry(0.26 * scaleXZ, 0.22 * scaleXZ, 0.22 * scaleY, 8);
-        const crown = new THREE.Mesh(crownGeo, crownMat);
-        crown.position.set(0, headY + 0.22 * scaleY, 0); hatGroup.add(crown);
-      } else if (hatStyle === 'cap') {
-        const capMat = new THREE.MeshStandardMaterial({ color: 0x1d3557, roughness: 0.4 });
-        const capGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
-        const cap = new THREE.Mesh(capGeo, capMat);
-        cap.position.set(0, headY + 0.02 * scaleY, 0); hatGroup.add(cap);
-        const visorGeo = new THREE.BoxGeometry(0.28 * scaleXZ, 0.02, 0.18 * scaleXZ);
-        const visor = new THREE.Mesh(visorGeo, capMat);
-        visor.position.set(0, headY + 0.01 * scaleY, 0.22 * scaleXZ); hatGroup.add(visor);
-      } else if (hatStyle === 'top-hat') {
-        const hatMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3 });
-        const baseGeo = new THREE.CylinderGeometry(0.38 * scaleXZ, 0.38 * scaleXZ, 0.03, 24);
-        const base = new THREE.Mesh(baseGeo, hatMat);
-        base.position.set(0, headY + 0.15 * scaleY, 0); hatGroup.add(base);
-        const topGeo = new THREE.CylinderGeometry(0.24 * scaleXZ, 0.24 * scaleXZ, 0.35 * scaleY, 24);
-        const top = new THREE.Mesh(topGeo, hatMat);
-        top.position.set(0, headY + 0.32 * scaleY, 0); hatGroup.add(top);
-      } else if (hatStyle === 'headband') {
-        const bandMat = new THREE.MeshStandardMaterial({ color: 0xe63946, roughness: 0.3 });
-        const bandGeo = new THREE.TorusGeometry(0.275 * scaleXZ, 0.025 * scaleXZ, 8, 24);
-        bandGeo.rotateX(Math.PI / 2);
-        const band = new THREE.Mesh(bandGeo, bandMat);
-        band.position.set(0, headY + 0.06 * scaleY, 0); hatGroup.add(band);
-      }
-
-      return hatGroup;
-    }
-
-    function buildHairMesh(style, hairColorHex, scaleXZ, scaleY, isLego, isWood) {
-      if (!style || style === 'none') return null;
-      const hairGroup = new THREE.Group();
-      const hairMat = new THREE.MeshStandardMaterial({ color: hairColorHex || 0x3d2314, roughness: 0.6 });
-
-      if (isWood) {
-        const headY = 1.15;
-        if (style === 'short' || style === 'toupee') {
-          const capGeo = new THREE.BoxGeometry(0.76, 0.14, 0.38);
-          const cap = new THREE.Mesh(capGeo, hairMat);
-          cap.position.set(0, headY + 0.05, 0); hairGroup.add(cap);
-        } else if (style === 'long' || style === 'ponytail') {
-          const capGeo = new THREE.BoxGeometry(0.76, 0.14, 0.38);
-          const cap = new THREE.Mesh(capGeo, hairMat);
-          cap.position.set(0, headY + 0.05, 0); hairGroup.add(cap);
-          const tailGeo = new THREE.CylinderGeometry(0.06, 0.1, 0.45, 12);
-          const tail = new THREE.Mesh(tailGeo, hairMat);
-          tail.position.set(0, headY - 0.15, -0.22); tail.rotation.x = 0.2; hairGroup.add(tail);
-        } else if (style === 'curly' || style === 'elder') {
-          const afGeo = new THREE.BoxGeometry(0.8, 0.22, 0.42);
-          const af = new THREE.Mesh(afGeo, hairMat);
-          af.position.set(0, headY + 0.08, 0); hairGroup.add(af);
-        }
-      } else if (isLego) {
-        const headY = 1.46 * scaleY;
-        if (style === 'short') {
-          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
-          const cap = new THREE.Mesh(capGeo, hairMat);
-          cap.position.set(0, headY, 0); hairGroup.add(cap);
-        } else if (style === 'long') {
-          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
-          const cap = new THREE.Mesh(capGeo, hairMat);
-          cap.position.set(0, headY, 0); hairGroup.add(cap);
-          const sideGeo = new THREE.BoxGeometry(0.48 * scaleXZ, 0.3 * scaleY, 0.12 * scaleXZ);
-          const side = new THREE.Mesh(sideGeo, hairMat);
-          side.position.set(0, headY - 0.15 * scaleY, -0.15 * scaleXZ); hairGroup.add(side);
-        } else if (style === 'ponytail') {
-          const capGeo = new THREE.SphereGeometry(0.24 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.3);
-          const cap = new THREE.Mesh(capGeo, hairMat);
-          cap.position.set(0, headY, 0); hairGroup.add(cap);
-          const tailGeo = new THREE.CylinderGeometry(0.05 * scaleXZ, 0.09 * scaleXZ, 0.35 * scaleY, 12);
-          const tail = new THREE.Mesh(tailGeo, hairMat);
-          tail.position.set(0, headY - 0.05 * scaleY, -0.2 * scaleXZ); tail.rotation.x = 0.3; hairGroup.add(tail);
-        } else if (style === 'curly') {
-          const afGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 14, 14);
-          const af = new THREE.Mesh(afGeo, hairMat);
-          af.position.set(0, headY + 0.04 * scaleY, 0); hairGroup.add(af);
-        } else if (style === 'toupee') {
-          const topGeo = new THREE.BoxGeometry(0.22 * scaleXZ, 0.12 * scaleY, 0.25 * scaleXZ);
-          const top = new THREE.Mesh(topGeo, hairMat);
-          top.position.set(0, headY + 0.06 * scaleY, 0.02 * scaleXZ); hairGroup.add(top);
-        } else if (style === 'elder') {
-          const hairMatWhite = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.8 });
-          const capGeo = new THREE.SphereGeometry(0.25 * scaleXZ, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2.5);
-          const cap = new THREE.Mesh(capGeo, hairMatWhite);
-          cap.position.set(0, headY, 0); hairGroup.add(cap);
-        }
-      } else {
-        const headY = 1.68 * scaleY;
-        const rad = 0.275 * scaleXZ;
-        if (style === 'short') {
-          const hairGeo = new THREE.SphereGeometry(rad, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4);
-          const hair = new THREE.Mesh(hairGeo, hairMat);
-          hair.position.set(0, headY + 0.015 * scaleY, -0.01 * scaleXZ); hairGroup.add(hair);
-        } else if (style === 'long') {
-          const capGeo = new THREE.SphereGeometry(rad, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4);
-          const cap = new THREE.Mesh(capGeo, hairMat);
-          cap.position.set(0, headY + 0.015 * scaleY, -0.01 * scaleXZ); hairGroup.add(cap);
-          const strandGeo = new THREE.BoxGeometry(0.52 * scaleXZ, 0.45 * scaleY, 0.15 * scaleXZ);
-          const strand = new THREE.Mesh(strandGeo, hairMat);
-          strand.position.set(0, headY - 0.2 * scaleY, -0.16 * scaleXZ); hairGroup.add(strand);
-        } else if (style === 'curly') {
-          const afGeo = new THREE.SphereGeometry(rad * 1.08, 16, 16);
-          const af = new THREE.Mesh(afGeo, hairMat);
-          af.position.set(0, headY + 0.03 * scaleY, 0); hairGroup.add(af);
-        } else if (style === 'ponytail') {
-          const capGeo = new THREE.SphereGeometry(rad, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4);
-          const cap = new THREE.Mesh(capGeo, hairMat);
-          cap.position.set(0, headY + 0.015 * scaleY, -0.01 * scaleXZ); hairGroup.add(cap);
-          const tailGeo = new THREE.CylinderGeometry(0.05 * scaleXZ, 0.09 * scaleXZ, 0.4 * scaleY, 12);
-          const tail = new THREE.Mesh(tailGeo, hairMat);
-          tail.position.set(0, headY - 0.05 * scaleY, -0.25 * scaleXZ); tail.rotation.x = 0.35; hairGroup.add(tail);
-        } else if (style === 'toupee') {
-          const topGeo = new THREE.BoxGeometry(0.24 * scaleXZ, 0.12 * scaleY, 0.28 * scaleXZ);
-          const top = new THREE.Mesh(topGeo, hairMat);
-          top.position.set(0, headY + 0.16 * scaleY, 0.03 * scaleXZ); hairGroup.add(top);
-        } else if (style === 'elder') {
-          const hairMatWhite = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.8 });
-          const capGeo = new THREE.SphereGeometry(rad, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2.4);
-          const cap = new THREE.Mesh(capGeo, hairMatWhite);
-          cap.position.set(0, headY + 0.015 * scaleY, -0.01 * scaleXZ); hairGroup.add(cap);
-        }
-      }
-
-      return hairGroup;
-    }
-
-    function buildHumanMesh(type = 'lego-m', customData = null) {
-      const group = new THREE.Group();
-      let isLego = type.startsWith('lego-');
-      let isWood = type.startsWith('wood-');
-      let isChild = type.includes('child');
-      let isFemale = type.includes('-f') || type === 'lego-f' || type === 'lego-child-f';
-      let isVariant2 = type.endsWith('2');
-
-      let systemicResource = SYSTEMIC_RESOURCES.find(r => r.type === type);
-      let customResource = CUSTOM_AVATARS.find(r => r.type === type);
-      let isAbstract = !!systemicResource && !customData;
-
-      if (customResource && customResource.customData) customData = customResource.customData;
-
-      let scaleY = isChild ? 0.65 : (isVariant2 ? 1.08 : 1.0);
-      let scaleXZ = isChild ? 0.75 : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
-      let baseBodyColor = isFemale ? (isVariant2 ? 0xe0a98b : 0xddb892) : (isVariant2 ? 0xc89665 : 0xd4a373);
-
-      if (customData && customData.colorHex) baseBodyColor = customData.colorHex;
-
-      const bodyMat = new THREE.MeshStandardMaterial({ color: baseBodyColor, roughness: 0.35 });
-      const clothesMat = new THREE.MeshStandardMaterial({ color: customData ? customData.colorHex : EMOTION_COLORS.neutral, roughness: 0.2 });
-
-      let bodyGroup = new THREE.Group();
-      group.add(bodyGroup);
-
-      const gaze = customData ? customData.gaze : 'front';
-      const mouthType = customData ? customData.mouth : 'neutral';
-
-      if (isWood || (customData && customData.shape && customData.shape.startsWith('wood-'))) {
-        const shapeType = customData ? customData.shape : type;
-        const woodColor = customData ? customData.colorHex : (systemicResource ? systemicResource.color : 0xddb892);
-        const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
-        const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
-
-        const zPos = shapeType === 'wood-box' ? 0.19 : 0.37;
-        if (shapeType === 'wood-box') {
-          const boxGeo = new THREE.BoxGeometry(0.75, 1.2, 0.35);
-          const boxMesh = new THREE.Mesh(boxGeo, woodMat);
-          boxMesh.position.y = 0.6; boxMesh.castShadow = true;
-          bodyGroup.add(boxMesh);
-
-          const faceGeo = new THREE.PlaneGeometry(0.72, 0.42);
-          const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
-          faceMesh.position.set(0, 0.95, 0.18);
-          bodyGroup.add(faceMesh);
-        } else {
-          const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
-          const cylMesh = new THREE.Mesh(cylGeo, woodMat);
-          cylMesh.position.y = 0.6; cylMesh.castShadow = true;
-          bodyGroup.add(cylMesh);
-
-          const faceGeo = new THREE.CylinderGeometry(0.385, 0.385, 0.42, 32, 1, false, -Math.PI / 3, (Math.PI / 3) * 2);
-          const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
-          faceMesh.position.y = 0.95; bodyGroup.add(faceMesh);
-        }
-
-        // Rostro Expresivo
-        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, true, 0.92, zPos, 1, 1);
-        bodyGroup.add(faceFeatures);
-
-        // Símbolo Grabado Frontal
-        const symbolStr = customData ? customData.symbol : (systemicResource ? systemicResource.symbol : '?');
         const canvas = document.createElement('canvas');
         canvas.width = 128; canvas.height = 128;
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = "#1a1412"; ctx.font = "Bold 75px sans-serif";
         ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(symbolStr, 64, 64);
+        ctx.fillText(resData ? resData.symbol : '?', 64, 64);
 
         const symbolTexture = new THREE.CanvasTexture(canvas);
         const symbolMat = new THREE.MeshBasicMaterial({ map: symbolTexture, transparent: true });
-        const symbolPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.42), symbolMat);
-        symbolPlane.position.set(0, 0.45, zPos);
+        const symbolPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.48), symbolMat);
+        symbolPlane.position.set(0, 0.45, 0.19);
         bodyGroup.add(symbolPlane);
 
-        if (customData && customData.hairStyle) {
-          const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, 1, 1, false, true);
-          if (hair) bodyGroup.add(hair);
-        }
-        if (customData && customData.hatStyle) {
-          const hat = buildHatMesh(customData.hatStyle, 1.15, 1, 1);
-          if (hat) bodyGroup.add(hat);
-        }
+      } else {
+        const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
+        const cylMesh = new THREE.Mesh(cylGeo, woodMat);
+        cylMesh.position.y = 0.6; cylMesh.castShadow = true;
+        bodyGroup.add(cylMesh);
 
+        const faceGeo = new THREE.CylinderGeometry(0.385, 0.385, 0.42, 32, 1, false, -Math.PI / 3, (Math.PI / 3) * 2);
+        const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
+        faceMesh.position.y = 0.95; bodyGroup.add(faceMesh);
+
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.11, 1.0, 0.37); bodyGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.11, 1.0, 0.37); bodyGroup.add(eyeR);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#1a1412"; ctx.font = "Bold 75px sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(resData ? resData.symbol : '?', 64, 64);
+
+        const symbolTexture = new THREE.CanvasTexture(canvas);
+        const symbolMat = new THREE.MeshBasicMaterial({ map: symbolTexture, transparent: true });
+        const symbolPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 0.45), symbolMat);
+        symbolPlane.position.set(0, 0.48, 0.39);
+        bodyGroup.add(symbolPlane);
+      }
+      return bodyGroup;
+    }
+
+    function buildHumanMesh(type = 'lego-m') {
+      const group = new THREE.Group();
+      let isLego = type.startsWith('lego-');
+      let isChild = type.includes('child');
+      let isFemale = type.includes('-f') || type === 'lego-f';
+      let isVariant2 = type.endsWith('2');
+
+      let woodResource = WOODCRAFT_RESOURCES.find(r => r.type === type);
+      let isAbstract = !!woodResource;
+
+      let scaleY = isChild ? (isVariant2 ? 0.75 : 0.60) : (isVariant2 ? 1.08 : 1.0);
+      let scaleXZ = isChild ? (isVariant2 ? 0.80 : 0.70) : (isVariant2 ? (isFemale ? 0.90 : 1.15) : 1.0);
+      let baseBodyColor = isFemale ? (isVariant2 ? 0xe0a98b : 0xddb892) : (isVariant2 ? 0xc89665 : 0xd4a373);
+
+      const bodyMat = new THREE.MeshStandardMaterial({ color: baseBodyColor, roughness: 0.35 });
+      const clothesMat = new THREE.MeshStandardMaterial({ color: EMOTION_COLORS.neutral, roughness: 0.2 });
+
+      let bodyGroup;
+      if (isAbstract) {
+        bodyGroup = buildWoodcraftOrHuman(woodResource);
+        group.add(bodyGroup);
       } else if (isLego) {
+        bodyGroup = new THREE.Group();
+        group.add(bodyGroup);
+
         const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
-        const headGeo = new THREE.CylinderGeometry(0.24 * scaleXZ, 0.24 * scaleXZ, 0.38 * scaleY, 24);
+        const headGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.38, 24);
         const headMesh = new THREE.Mesh(headGeo, yellowSkinMat);
-        headMesh.position.y = 1.28 * scaleY; headMesh.castShadow = true;
+        headMesh.position.y = 1.28; headMesh.castShadow = true;
         bodyGroup.add(headMesh);
 
-        const studGeo = new THREE.CylinderGeometry(0.12 * scaleXZ, 0.12 * scaleXZ, 0.08 * scaleY, 16);
+        const studGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 16);
         const studMesh = new THREE.Mesh(studGeo, yellowSkinMat);
-        studMesh.position.y = 1.51 * scaleY; studMesh.castShadow = true;
+        studMesh.position.y = 1.51; studMesh.castShadow = true;
         bodyGroup.add(studMesh);
 
-        // Rostro Expresivo
-        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, true, false, 1.28 * scaleY, 0.22 * scaleXZ, scaleXZ, scaleY);
-        bodyGroup.add(faceFeatures);
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.09, 1.32, 0.22); bodyGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.09, 1.32, 0.22); bodyGroup.add(eyeR);
 
-        const torsoGeo = new THREE.CylinderGeometry(0.3 * scaleXZ, 0.42 * scaleXZ, 0.55 * scaleY, 4);
+        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const mouthGeo = new THREE.BoxGeometry(0.1, 0.02, 0.02);
+        const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+        mouth.position.set(0, 1.21, 0.23); bodyGroup.add(mouth);
+
+        const torsoGeo = new THREE.CylinderGeometry(0.3, 0.42, 0.55, 4);
         torsoGeo.rotateY(Math.PI / 4);
         const torsoMesh = new THREE.Mesh(torsoGeo, clothesMat);
-        torsoMesh.position.y = 0.82 * scaleY; torsoMesh.castShadow = true;
+        torsoMesh.position.y = 0.82; torsoMesh.castShadow = true;
         bodyGroup.add(torsoMesh);
 
-        const hipGeo = new THREE.BoxGeometry(0.44 * scaleXZ, 0.12 * scaleY, 0.26 * scaleXZ);
+        const hipGeo = new THREE.BoxGeometry(0.44, 0.12, 0.26);
         const hipMesh = new THREE.Mesh(hipGeo, clothesMat);
-        hipMesh.position.y = 0.48 * scaleY; hipMesh.castShadow = true;
+        hipMesh.position.y = 0.48; hipMesh.castShadow = true;
         bodyGroup.add(hipMesh);
 
-        const legGeo = new THREE.BoxGeometry(0.19 * scaleXZ, 0.42 * scaleY, 0.24 * scaleXZ);
+        const legGeo = new THREE.BoxGeometry(0.19, 0.42, 0.24);
         const legL = new THREE.Mesh(legGeo, clothesMat);
-        legL.position.set(-0.11 * scaleXZ, 0.21 * scaleY, 0); legL.castShadow = true;
+        legL.position.set(-0.11, 0.21, 0); legL.castShadow = true;
         bodyGroup.add(legL);
         const legR = new THREE.Mesh(legGeo, clothesMat);
-        legR.position.set(0.11 * scaleXZ, 0.21 * scaleY, 0); legR.castShadow = true;
+        legR.position.set(0.11, 0.21, 0); legR.castShadow = true;
         bodyGroup.add(legR);
 
-        const armGeo = new THREE.CylinderGeometry(0.06 * scaleXZ, 0.06 * scaleXZ, 0.4 * scaleY, 12);
+        const armGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.4, 12);
         const armL = new THREE.Mesh(armGeo, clothesMat);
-        armL.position.set(-0.27 * scaleXZ, 0.82 * scaleY, 0); armL.rotation.z = 0.35; armL.castShadow = true;
+        armL.position.set(-0.27, 0.82, 0); armL.rotation.z = 0.35; armL.castShadow = true;
         bodyGroup.add(armL);
         const armR = new THREE.Mesh(armGeo, clothesMat);
-        armR.position.set(0.27 * scaleXZ, 0.82 * scaleY, 0); armR.rotation.z = -0.35; armR.castShadow = true;
+        armR.position.set(0.27, 0.82, 0); armR.rotation.z = -0.35; armR.castShadow = true;
         bodyGroup.add(armR);
 
-        const handGeo = new THREE.TorusGeometry(0.05 * scaleXZ, 0.02 * scaleXZ, 8, 16, Math.PI * 1.5);
+        const handGeo = new THREE.TorusGeometry(0.05, 0.02, 8, 16, Math.PI * 1.5);
         const handL = new THREE.Mesh(handGeo, yellowSkinMat);
-        handL.position.set(-0.33 * scaleXZ, 0.62 * scaleY, 0.05 * scaleXZ); handL.rotation.x = Math.PI / 2;
+        handL.position.set(-0.33, 0.62, 0.05); handL.rotation.x = Math.PI / 2;
         bodyGroup.add(handL);
         const handR = new THREE.Mesh(handGeo, yellowSkinMat);
-        handR.position.set(0.33 * scaleXZ, 0.62 * scaleY, 0.05 * scaleXZ); handR.rotation.x = Math.PI / 2;
+        handR.position.set(0.33, 0.62, 0.05); handR.rotation.x = Math.PI / 2;
         bodyGroup.add(handR);
 
-        if (customData && customData.hairStyle) {
-          const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, scaleXZ, scaleY, true, false);
-          if (hair) bodyGroup.add(hair);
-        }
-        if (customData && customData.hatStyle) {
-          const hat = buildHatMesh(customData.hatStyle, 1.48 * scaleY, scaleXZ, scaleY);
-          if (hat) bodyGroup.add(hat);
-        }
-
       } else {
+        bodyGroup = new THREE.Group();
+        group.add(bodyGroup);
+
         const headGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24);
         const head = new THREE.Mesh(headGeo, bodyMat);
         head.position.y = (1.65 * scaleY); head.castShadow = true;
         bodyGroup.add(head);
 
-        // Rostro Expresivo
-        const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, false, 1.62 * scaleY, 0.23 * scaleXZ, scaleXZ, scaleY);
-        bodyGroup.add(faceFeatures);
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.065 * scaleXZ, 16, 16);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
+        bodyGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
+        bodyGroup.add(eyeR);
 
-        const noseGeo = new THREE.ConeGeometry(0.045 * scaleXZ, 0.12 * scaleY, 12);
+        const mouthMat = new THREE.MeshBasicMaterial({ color: 0x4a2810 });
+        const mouthGeo = new THREE.BoxGeometry(0.14 * scaleXZ, 0.035 * scaleY, 0.03 * scaleXZ);
+        const mouth = new THREE.Mesh(mouthGeo, mouthMat);
+        mouth.position.set(0, head.position.y - 0.09 * scaleY, 0.25 * scaleXZ);
+        bodyGroup.add(mouth);
+
+        const noseGeo = new THREE.ConeGeometry(0.055 * scaleXZ, 0.15 * scaleY, 12);
         noseGeo.rotateX(Math.PI / 2);
         const nose = new THREE.Mesh(noseGeo, bodyMat);
-        nose.position.set(0, head.position.y - 0.01 * scaleY, 0.27 * scaleXZ); bodyGroup.add(nose);
+        nose.position.set(0, head.position.y - 0.01 * scaleY, 0.27 * scaleXZ);
+        bodyGroup.add(nose);
 
         const neckGeo = new THREE.CylinderGeometry(0.09 * scaleXZ, 0.1 * scaleXZ, 0.12 * scaleY, 12);
         const neck = new THREE.Mesh(neckGeo, bodyMat);
@@ -1612,15 +1177,6 @@
         const armR = new THREE.Mesh(armGeo, bodyMat);
         armR.position.set((torsoTopWidth + 0.05) * scaleXZ, 1.1 * scaleY, 0); armR.rotation.z = -0.15; armR.castShadow = true;
         bodyGroup.add(armR);
-
-        if (customData && customData.hairStyle) {
-          const hair = buildHairMesh(customData.hairStyle, customData.hairColorHex, scaleXZ, scaleY, false, false);
-          if (hair) bodyGroup.add(hair);
-        }
-        if (customData && customData.hatStyle) {
-          const hat = buildHatMesh(customData.hatStyle, 1.68 * scaleY, scaleXZ, scaleY);
-          if (hat) bodyGroup.add(hat);
-        }
       }
 
       const auraGeo = new THREE.RingGeometry(0.55 * scaleXZ, 0.75 * scaleXZ, 32);
@@ -1634,13 +1190,13 @@
       const texture = new THREE.CanvasTexture(canvas);
       const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false });
       const sprite = new THREE.Sprite(spriteMat);
-      sprite.position.y = isWood ? 1.6 : (isLego ? 1.8 * scaleY : 2.4 * scaleY);
+      sprite.position.y = isLego ? 1.8 : (2.4 * scaleY);
       group.add(sprite);
 
       group.userData = {
         bodyGroup, bodyMaterial: bodyMat, clothesMaterial: clothesMat,
         auraMesh: aura, labelCanvas: canvas, labelTexture: texture,
-        labelSprite: sprite, type, scaleY, customData
+        labelSprite: sprite, type, scaleY
       };
 
       return group;
@@ -1673,7 +1229,7 @@
     }
 
     function addAvatarToScene(data) {
-      const avatarGroup = buildHumanMesh(data.type || 'lego-m', data.customData || null);
+      const avatarGroup = buildHumanMesh(data.type || 'lego-m');
       avatarGroup.position.set(data.x || 0, 0, data.z || 0);
       avatarGroup.rotation.y = data.rotation || 0;
       const userScale = (data.userScale || 100) / 100;
@@ -1684,7 +1240,6 @@
       avatarGroup.userData.emotion = data.emotion || 'neutral';
       avatarGroup.userData.posture = data.posture || 'standing';
       avatarGroup.userData.userScale = data.userScale || 100;
-      avatarGroup.userData.customData = data.customData || null;
 
       updateLabel(avatarGroup, data.label);
       applyAvatarState(avatarGroup);
@@ -1699,12 +1254,10 @@
       if (avatarGroup.userData.auraMesh) avatarGroup.userData.auraMesh.material.color.setHex(colorHex);
       
       const isLego = avatarGroup.userData.type && avatarGroup.userData.type.startsWith('lego-');
-      if (!avatarGroup.userData.customData) {
-        if (isLego) {
-          if (avatarGroup.userData.clothesMaterial) avatarGroup.userData.clothesMaterial.color.setHex(colorHex);
-        } else {
-          if (avatarGroup.userData.bodyMaterial) avatarGroup.userData.bodyMaterial.color.setHex(colorHex);
-        }
+      if (isLego) {
+        if (avatarGroup.userData.clothesMaterial) avatarGroup.userData.clothesMaterial.color.setHex(colorHex);
+      } else {
+        if (avatarGroup.userData.bodyMaterial) avatarGroup.userData.bodyMaterial.color.setHex(colorHex);
       }
 
       const posture = avatarGroup.userData.posture;
@@ -1739,7 +1292,7 @@
     let isDragging = false; let dragTarget = null;
 
     window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#bottom-tray-container') || e.target.closest('#editor-modal')) return;
+      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#resource-tray') || e.target.closest('#editor-modal')) return;
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
@@ -1870,7 +1423,6 @@
         id: a.userData.id, label: a.userData.label || 'Persona', type: a.userData.type || 'lego-m',
         emotion: a.userData.emotion || 'neutral', posture: a.userData.posture || 'standing',
         userScale: Number(a.userData.userScale) || 100, linkedTo: a.userData.linkedTo || null,
-        customData: a.userData.customData || null,
         x: Number(a.position.x) || 0, z: Number(a.position.z) || 0, rotation: Number(a.rotation.y) || 0
       }));
       setDoc(doc(db, "rooms", currentRoomId), { avatars: dataAvatars, updatedAt: new Date() }, { merge: true }).catch(e => {});
