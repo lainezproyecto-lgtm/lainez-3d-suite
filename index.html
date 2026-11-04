@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.2</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.3</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -51,6 +51,21 @@
     }
     .tray-icon { font-size: 1.5rem; margin-bottom: 2px; }
     .tray-label { font-size: 0.62rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
+
+    /* MODAL EDITOR VISUAL DE AVATARES (v3.3) */
+    #editor-modal {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 250; width: 92%; max-width: 720px; display: none;
+      background: rgba(24, 20, 18, 0.96); border: 1px solid rgba(212, 163, 115, 0.5);
+      border-radius: 16px; padding: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.85);
+      backdrop-filter: blur(16px);
+    }
+    .editor-layout { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
+    #editor-preview-container {
+      flex: 1 1 280px; height: 300px; background: radial-gradient(circle, #342a25 0%, #1a1412 100%);
+      border-radius: 12px; border: 1px solid rgba(212, 163, 115, 0.2); position: relative; overflow: hidden;
+    }
+    .editor-controls-column { flex: 1 1 320px; display: flex; flex-direction: column; gap: 8px; }
 
     #history-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -109,16 +124,56 @@
 <body>
 
   <div id="canvas-container"></div>
-  <div class="version-tag">Lainez 3D Pro Suite v3.2</div>
+  <div class="version-tag">Lainez 3D Pro Suite v3.3</div>
   
   <div id="top-bar">
     <button id="view-toggle-btn" class="top-btn">👁️ Focus</button>
+    <button id="open-editor-btn" class="top-btn" style="background: #2a9d8f; color: #fff;">🎨 Editor de Avatares</button>
     <button id="open-video-btn" class="top-btn" style="display: none; background: #457b9d; color: #fff;">📹 Abrir Videollamada (Jitsi)</button>
   </div>
 
   <div id="resource-tray"></div>
 
   <div id="notification">Notificación</div>
+
+  <!-- MODAL EDITOR VISUAL CON VISTA PREVIA 3D (v3.3) -->
+  <div id="editor-modal">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h2>🎨 Editor de Avatares y Recursos 3D</h2>
+      <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 3px 10px;">✕ Cerrar</button>
+    </div>
+    <div class="editor-layout">
+      <div id="editor-preview-container"></div>
+      <div class="editor-controls-column">
+        <div class="input-group">
+          <label>Nombre del Avatar / Recurso:</label>
+          <input type="text" id="ed-label" value="Nuevo Recurso">
+        </div>
+        <div class="input-group">
+          <label>Forma Geometrica Base:</label>
+          <select id="ed-shape">
+            <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
+            <option value="wood-box">Bloque Rectangular de Madera</option>
+            <option value="lego-m">Minifigura Clásica Humanoides</option>
+            <option value="adult-m">Figura Anatómica Adulto</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Color del Bloque / Vestimenta:</label>
+          <input type="color" id="ed-color" value="#ddb892" style="height: 38px; cursor: pointer;">
+        </div>
+        <div class="input-group">
+          <label>Símbolo Frontal / Dibujo:</label>
+          <input type="text" id="ed-symbol" value="♥" placeholder="Ej. ♥, 🐾, ?, P, ✝">
+        </div>
+        <div class="input-group">
+          <label>Icono para el Carrusel Inferior:</label>
+          <input type="text" id="ed-icon" value="🎨" placeholder="Ej. ❤️, 🧠, 🌿">
+        </div>
+        <button id="btn-save-custom-avatar" class="btn-secondary" style="margin-top: 10px; padding: 10px;">💾 Guardar Avatar en la Bandeja</button>
+      </div>
+    </div>
+  </div>
 
   <div id="sync-panel" class="panel">
     <h2>Sincronización en Vivo</h2>
@@ -319,22 +374,16 @@
     let jitsiRoomUrl = '';
 
     const WOODCRAFT_RESOURCES = [
-      { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e },
-      { type: 'symptom', label: 'El Síntoma', icon: '❓', symbol: '¿?', color: 0xb5838d },
-      { type: 'secret', label: 'Lo No Dicho', icon: '✉️', symbol: 'P', color: 0x6b705c },
-      { type: 'mascota', label: 'Mascota', icon: '🐾', symbol: '🐾', color: 0xddb892 },
-      { type: 'adicciones', label: 'Adicciones', icon: '🍾', symbol: '🍶', color: 0x9a031e },
-      { type: 'muerte', label: 'Duelo / Muerte', icon: '✝️', symbol: '✝', color: 0x3d348b },
-      { type: 'pensador', label: 'El Pensador', icon: '🧠', symbol: '🧠', color: 0x457b9d },
-      { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157 },
-      { type: 'desire', label: 'Anhelo / Meta', icon: '🎯', symbol: '▲', color: 0xe9c46a },
-      { type: 'material', label: 'Lo Material', icon: '💼', symbol: 'L', color: 0xd4a373 },
-      { type: 'negador', label: 'El Negador', icon: '🚫', symbol: 'No', color: 0x495057 },
-      { type: 'charlatan', label: 'El Charlatán', icon: '💬', symbol: '💬', color: 0xa8dede },
-      { type: 'maltrato', label: 'Maltrato', icon: '✋', symbol: '✋', color: 0x800f2f },
-      { type: 'energia', label: 'Energía', icon: '〰️', symbol: '〰', color: 0xffb703 },
-      { type: 'locura', label: 'La Locura', icon: '🌀', symbol: '🌀', color: 0x7209b7 },
-      { type: 'desarraigo', label: 'Desarraigo', icon: '⚓', symbol: '⚓', color: 0x2b2d42 }
+      { type: 'pareja', label: 'La Pareja', icon: '❤️', symbol: '♥', color: 0xc97a7e, shape: 'wood-cyl' },
+      { type: 'symptom', label: 'El Síntoma', icon: '❓', symbol: '¿?', color: 0xb5838d, shape: 'wood-cyl' },
+      { type: 'secret', label: 'Lo No Dicho', icon: '✉️', symbol: 'P', color: 0x6b705c, shape: 'wood-box' },
+      { type: 'mascota', label: 'Mascota', icon: '🐾', symbol: '🐾', color: 0xddb892, shape: 'wood-cyl' },
+      { type: 'adicciones', label: 'Adicciones', icon: '🍾', symbol: '🍶', color: 0x9a031e, shape: 'wood-box' },
+      { type: 'muerte', label: 'Duelo / Muerte', icon: '✝️', symbol: '✝', color: 0x3d348b, shape: 'wood-box' },
+      { type: 'pensador', label: 'El Pensador', icon: '🧠', symbol: '🧠', color: 0x457b9d, shape: 'wood-cyl' },
+      { type: 'resource', label: 'Fuerza Ancestral', icon: '🌿', symbol: '🌱', color: 0x588157, shape: 'wood-cyl' },
+      { type: 'desire', label: 'Anhelo / Meta', icon: '🎯', symbol: '▲', color: 0xe9c46a, shape: 'wood-cyl' },
+      { type: 'material', label: 'Lo Material', icon: '💼', symbol: 'L', color: 0xd4a373, shape: 'wood-box' }
     ];
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -350,7 +399,7 @@
     }
 
     signInAnonymously(auth)
-      .then(() => showNotif("Conectado a Backend (v3.2)"))
+      .then(() => showNotif("Conectado a Backend (v3.3)"))
       .catch((err) => console.error("Error Auth:", err));
 
     function showNotif(msg) {
@@ -361,32 +410,36 @@
     }
 
     const resourceTray = document.getElementById('resource-tray');
-    WOODCRAFT_RESOURCES.forEach(res => {
-      const item = document.createElement('div');
-      item.className = 'tray-item';
-      item.dataset.type = res.type;
-      item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
+    function renderTrayItems() {
+      resourceTray.innerHTML = '';
+      WOODCRAFT_RESOURCES.forEach(res => {
+        const item = document.createElement('div');
+        item.className = 'tray-item';
+        item.dataset.type = res.type;
+        item.innerHTML = `<div class="tray-icon">${res.icon}</div><div class="tray-label">${res.label}</div>`;
 
-      item.addEventListener('mouseenter', () => broadcastHoverState(res.type, true));
-      item.addEventListener('mouseleave', () => broadcastHoverState(res.type, false));
+        item.addEventListener('mouseenter', () => broadcastHoverState(res.type, true));
+        item.addEventListener('mouseleave', () => broadcastHoverState(res.type, false));
 
-      item.addEventListener('click', () => {
-        const active = getSelectedAvatar();
-        if (active) {
-          replaceAvatarType(active, res.type, res.label);
-          showNotif(`Figura modificada a: ${res.label}`);
-        } else {
-          const newAv = addAvatarToScene({
-            id: 'av_' + Date.now(), label: res.label, type: res.type,
-            x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
-            rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
-          });
-          selectAvatar(newAv); saveStateToFirebase();
-          showNotif(`Añadido: ${res.label}`);
-        }
+        item.addEventListener('click', () => {
+          const active = getSelectedAvatar();
+          if (active) {
+            replaceAvatarType(active, res.type, res.label);
+            showNotif(`Figura modificada a: ${res.label}`);
+          } else {
+            const newAv = addAvatarToScene({
+              id: 'av_' + Date.now(), label: res.label, type: res.type,
+              x: (Math.random() - 0.5) * 4, z: (Math.random() - 0.5) * 4,
+              rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
+            });
+            selectAvatar(newAv); saveStateToFirebase();
+            showNotif(`Añadido: ${res.label}`);
+          }
+        });
+        resourceTray.appendChild(item);
       });
-      resourceTray.appendChild(item);
-    });
+    }
+    renderTrayItems();
 
     function broadcastHoverState(type, isHovered) {
       if (!currentRoomId) return;
@@ -415,6 +468,94 @@
       selectAvatar(avatarGroup);
       saveStateToFirebase();
     }
+
+    // MOTOR VISTA PREVIA EDITOR 3D (v3.3)
+    let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
+    function initEditorPreview() {
+      const container = document.getElementById('editor-preview-container');
+      if (edRenderer) return;
+
+      edScene = new THREE.Scene();
+      edCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+      edCamera.position.set(0, 1.8, 3.2);
+
+      edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      edRenderer.setSize(container.clientWidth, container.clientHeight);
+      container.appendChild(edRenderer.domElement);
+
+      edControls = new THREE.OrbitControls(edCamera, edRenderer.domElement);
+      edControls.enableDamping = true;
+      edControls.autoRotate = true;
+      edControls.autoRotateSpeed = 2.0;
+
+      const ambLight = new THREE.AmbientLight(0xffffff, 0.8);
+      edScene.add(ambLight);
+      const dLight = new THREE.DirectionalLight(0xffe8d6, 1.0);
+      dLight.position.set(5, 10, 7);
+      edScene.add(dLight);
+
+      edPreviewMeshGroup = new THREE.Group();
+      edScene.add(edPreviewMeshGroup);
+
+      function animEd() {
+        requestAnimationFrame(animEd);
+        edControls.update();
+        edRenderer.render(edScene, edCamera);
+      }
+      animEd();
+    }
+
+    function updateEditorPreview() {
+      if (!edPreviewMeshGroup) return;
+      while(edPreviewMeshGroup.children.length > 0) edPreviewMeshGroup.remove(edPreviewMeshGroup.children[0]);
+
+      const shape = document.getElementById('ed-shape').value;
+      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
+      const symbol = document.getElementById('ed-symbol').value || '♥';
+
+      const tempRes = { type: 'temp_ed', label: 'Preview', symbol: symbol, color: colorHex, shape: shape };
+      const mesh = buildWoodcraftOrHuman(tempRes, shape);
+      edPreviewMeshGroup.add(mesh);
+    }
+
+    document.getElementById('open-editor-btn').addEventListener('click', () => {
+      document.getElementById('editor-modal').style.display = 'block';
+      initEditorPreview();
+      updateEditorPreview();
+    });
+
+    document.getElementById('btn-close-editor').addEventListener('click', () => {
+      document.getElementById('editor-modal').style.display = 'none';
+    });
+
+    ['ed-shape', 'ed-color', 'ed-symbol'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateEditorPreview);
+    });
+
+    document.getElementById('btn-save-custom-avatar').addEventListener('click', () => {
+      const label = document.getElementById('ed-label').value.trim() || 'Recurso Custom';
+      const shape = document.getElementById('ed-shape').value;
+      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
+      const symbol = document.getElementById('ed-symbol').value || '♥';
+      const icon = document.getElementById('ed-icon').value || '🎨';
+      const customId = 'cust_' + Date.now();
+
+      WOODCRAFT_RESOURCES.push({
+        type: customId, label: label, icon: icon, symbol: symbol, color: colorHex, shape: shape
+      });
+
+      renderTrayItems();
+      document.getElementById('editor-modal').style.display = 'none';
+      showNotif(`¡Avatar "${label}" guardado en la bandeja!`);
+
+      // Añadir directo al campo
+      const newAv = addAvatarToScene({
+        id: 'av_' + Date.now(), label: label, type: customId,
+        x: 0, z: 0, rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
+      });
+      selectAvatar(newAv);
+      saveStateToFirebase();
+    });
 
     function setupJitsiMeeting(roomId, userName) {
       const cleanRoom = `Lainez3D_${roomId}`;
@@ -458,7 +599,6 @@
       return avatars.find(a => a.userData.id === selectedAvatarId) || null;
     }
 
-    // RESTAURACIÓN COMPLETA DE RECONOCIMIENTO DE VOZ / TRANSCRIPCIÓN (v2.9.1)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       recognition = new SpeechRecognition();
@@ -660,7 +800,6 @@
       showNotif("Resumen generado");
     });
 
-    // RESTAURACIÓN COMPLETA DE CONTROLES MAESTROS EN TIEMPO REAL (v2.9.1)
     document.getElementById('btn-toggle-remote-focus').addEventListener('click', async () => {
       if (!isHost || !currentRoomId) return;
       isRemoteFocusActive = !isRemoteFocusActive;
@@ -777,11 +916,82 @@
       anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
     };
 
+    // FUNCIÓN AUXILIAR DE RENDER DE MADERA (CILÍNDRICO O RECTANGULAR v3.3)
+    function buildWoodcraftOrHuman(resData, shapeOverride) {
+      const bodyGroup = new THREE.Group();
+      const shapeType = shapeOverride || (resData ? resData.shape : 'wood-cyl');
+      const woodColor = resData ? resData.color : 0xddb892;
+      const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
+      const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
+
+      if (shapeType === 'wood-box') {
+        // Bloque Rectangular de Madera (Forma del video)
+        const boxGeo = new THREE.BoxGeometry(0.75, 1.2, 0.35);
+        const boxMesh = new THREE.Mesh(boxGeo, woodMat);
+        boxMesh.position.y = 0.6; boxMesh.castShadow = true;
+        bodyGroup.add(boxMesh);
+
+        const faceGeo = new THREE.PlaneGeometry(0.72, 0.42);
+        const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
+        faceMesh.position.set(0, 0.95, 0.18);
+        bodyGroup.add(faceMesh);
+
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.16, 0.98, 0.19); bodyGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.16, 0.98, 0.19); bodyGroup.add(eyeR);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#1a1412"; ctx.font = "Bold 75px sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(resData ? resData.symbol : '?', 64, 64);
+
+        const symbolTexture = new THREE.CanvasTexture(canvas);
+        const symbolMat = new THREE.MeshBasicMaterial({ map: symbolTexture, transparent: true });
+        const symbolPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.48), symbolMat);
+        symbolPlane.position.set(0, 0.45, 0.19);
+        bodyGroup.add(symbolPlane);
+
+      } else {
+        // Bloque Cilíndrico de Madera (Estándar v3.0)
+        const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
+        const cylMesh = new THREE.Mesh(cylGeo, woodMat);
+        cylMesh.position.y = 0.6; cylMesh.castShadow = true;
+        bodyGroup.add(cylMesh);
+
+        const faceGeo = new THREE.CylinderGeometry(0.385, 0.385, 0.42, 32, 1, false, -Math.PI / 3, (Math.PI / 3) * 2);
+        const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
+        faceMesh.position.y = 0.95; bodyGroup.add(faceMesh);
+
+        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
+        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(-0.11, 1.0, 0.37); bodyGroup.add(eyeL);
+        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeR.position.set(0.11, 1.0, 0.37); bodyGroup.add(eyeR);
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 128; canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#1a1412"; ctx.font = "Bold 75px sans-serif";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText(resData ? resData.symbol : '?', 64, 64);
+
+        const symbolTexture = new THREE.CanvasTexture(canvas);
+        const symbolMat = new THREE.MeshBasicMaterial({ map: symbolTexture, transparent: true });
+        const symbolPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 0.45), symbolMat);
+        symbolPlane.position.set(0, 0.48, 0.39);
+        bodyGroup.add(symbolPlane);
+      }
+      return bodyGroup;
+    }
+
     function buildHumanMesh(type = 'lego-m') {
       const group = new THREE.Group();
-      const bodyGroup = new THREE.Group();
-      group.add(bodyGroup);
-
       let isLego = type.startsWith('lego-');
       let isChild = type.includes('child');
       let isFemale = type.includes('-f') || type === 'lego-f';
@@ -797,47 +1007,15 @@
       const bodyMat = new THREE.MeshStandardMaterial({ color: baseBodyColor, roughness: 0.35 });
       const clothesMat = new THREE.MeshStandardMaterial({ color: EMOTION_COLORS.neutral, roughness: 0.2 });
 
+      let bodyGroup;
       if (isAbstract) {
-        const woodColor = woodResource ? woodResource.color : 0xddb892;
-        const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
-        const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
-
-        const cylGeo = new THREE.CylinderGeometry(0.38, 0.4, 1.2, 32);
-        const cylMesh = new THREE.Mesh(cylGeo, woodMat);
-        cylMesh.position.y = 0.6; cylMesh.castShadow = true;
-        bodyGroup.add(cylMesh);
-
-        const faceGeo = new THREE.CylinderGeometry(0.385, 0.385, 0.42, 32, 1, false, -Math.PI / 3, (Math.PI / 3) * 2);
-        const faceMesh = new THREE.Mesh(faceGeo, faceSkinMat);
-        faceMesh.position.y = 0.95;
-        bodyGroup.add(faceMesh);
-
-        const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
-        const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
-        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-        eyeL.position.set(-0.11, 1.0, 0.37);
-        bodyGroup.add(eyeL);
-        const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-        eyeR.position.set(0.11, 1.0, 0.37);
-        bodyGroup.add(eyeR);
-
-        const canvas = document.createElement('canvas');
-        canvas.width = 128; canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = "#1a1412";
-        ctx.font = "Bold 75px sans-serif";
-        ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        ctx.fillText(woodResource ? woodResource.symbol : '?', 64, 64);
-
-        const symbolTexture = new THREE.CanvasTexture(canvas);
-        const symbolMat = new THREE.MeshBasicMaterial({ map: symbolTexture, transparent: true });
-        const symbolPlane = new THREE.Mesh(new THREE.PlaneGeometry(0.45, 0.45), symbolMat);
-        symbolPlane.position.set(0, 0.48, 0.39);
-        bodyGroup.add(symbolPlane);
-
+        bodyGroup = buildWoodcraftOrHuman(woodResource);
+        group.add(bodyGroup);
       } else if (isLego) {
-        const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
+        bodyGroup = new THREE.Group();
+        group.add(bodyGroup);
 
+        const yellowSkinMat = new THREE.MeshStandardMaterial({ color: 0xffca28, roughness: 0.2 });
         const headGeo = new THREE.CylinderGeometry(0.24, 0.24, 0.38, 24);
         const headMesh = new THREE.Mesh(headGeo, yellowSkinMat);
         headMesh.position.y = 1.28; headMesh.castShadow = true;
@@ -851,18 +1029,14 @@
         const eyeMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
         const eyeGeo = new THREE.SphereGeometry(0.035, 12, 12);
         const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-        eyeL.position.set(-0.09, 1.32, 0.22);
-        bodyGroup.add(eyeL);
-
+        eyeL.position.set(-0.09, 1.32, 0.22); bodyGroup.add(eyeL);
         const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
-        eyeR.position.set(0.09, 1.32, 0.22);
-        bodyGroup.add(eyeR);
+        eyeR.position.set(0.09, 1.32, 0.22); bodyGroup.add(eyeR);
 
         const mouthMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
         const mouthGeo = new THREE.BoxGeometry(0.1, 0.02, 0.02);
         const mouth = new THREE.Mesh(mouthGeo, mouthMat);
-        mouth.position.set(0, 1.21, 0.23);
-        bodyGroup.add(mouth);
+        mouth.position.set(0, 1.21, 0.23); bodyGroup.add(mouth);
 
         const torsoGeo = new THREE.CylinderGeometry(0.3, 0.42, 0.55, 4);
         torsoGeo.rotateY(Math.PI / 4);
@@ -879,7 +1053,6 @@
         const legL = new THREE.Mesh(legGeo, clothesMat);
         legL.position.set(-0.11, 0.21, 0); legL.castShadow = true;
         bodyGroup.add(legL);
-
         const legR = new THREE.Mesh(legGeo, clothesMat);
         legR.position.set(0.11, 0.21, 0); legR.castShadow = true;
         bodyGroup.add(legR);
@@ -888,7 +1061,6 @@
         const armL = new THREE.Mesh(armGeo, clothesMat);
         armL.position.set(-0.27, 0.82, 0); armL.rotation.z = 0.35; armL.castShadow = true;
         bodyGroup.add(armL);
-
         const armR = new THREE.Mesh(armGeo, clothesMat);
         armR.position.set(0.27, 0.82, 0); armR.rotation.z = -0.35; armR.castShadow = true;
         bodyGroup.add(armR);
@@ -897,12 +1069,14 @@
         const handL = new THREE.Mesh(handGeo, yellowSkinMat);
         handL.position.set(-0.33, 0.62, 0.05); handL.rotation.x = Math.PI / 2;
         bodyGroup.add(handL);
-
         const handR = new THREE.Mesh(handGeo, yellowSkinMat);
         handR.position.set(0.33, 0.62, 0.05); handR.rotation.x = Math.PI / 2;
         bodyGroup.add(handR);
 
       } else {
+        bodyGroup = new THREE.Group();
+        group.add(bodyGroup);
+
         const headGeo = new THREE.SphereGeometry(0.27 * scaleXZ, 24, 24);
         const head = new THREE.Mesh(headGeo, bodyMat);
         head.position.y = (1.65 * scaleY); head.castShadow = true;
@@ -913,7 +1087,6 @@
         const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
         eyeL.position.set(-0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
         bodyGroup.add(eyeL);
-
         const eyeR = new THREE.Mesh(eyeGeo, eyeMat);
         eyeR.position.set(0.11 * scaleXZ, head.position.y + 0.04 * scaleY, 0.22 * scaleXZ);
         bodyGroup.add(eyeR);
@@ -932,8 +1105,7 @@
 
         const neckGeo = new THREE.CylinderGeometry(0.09 * scaleXZ, 0.1 * scaleXZ, 0.12 * scaleY, 12);
         const neck = new THREE.Mesh(neckGeo, bodyMat);
-        neck.position.y = (1.48 * scaleY);
-        bodyGroup.add(neck);
+        neck.position.y = (1.48 * scaleY); bodyGroup.add(neck);
 
         const torsoTopWidth = isFemale ? (isVariant2 ? 0.28 : 0.30) : (isVariant2 ? 0.44 : 0.38);
         const torsoBotWidth = isFemale ? (isVariant2 ? 0.24 : 0.22) : (isVariant2 ? 0.30 : 0.26);
@@ -951,7 +1123,6 @@
         const legL = new THREE.Mesh(legGeo, bodyMat);
         legL.position.set(-0.11 * scaleXZ, 0.325 * scaleY, 0); legL.castShadow = true;
         bodyGroup.add(legL);
-
         const legR = new THREE.Mesh(legGeo, bodyMat);
         legR.position.set(0.11 * scaleXZ, 0.325 * scaleY, 0); legR.castShadow = true;
         bodyGroup.add(legR);
@@ -960,7 +1131,6 @@
         const armL = new THREE.Mesh(armGeo, bodyMat);
         armL.position.set((-torsoTopWidth - 0.05) * scaleXZ, 1.1 * scaleY, 0); armL.rotation.z = 0.15; armL.castShadow = true;
         bodyGroup.add(armL);
-
         const armR = new THREE.Mesh(armGeo, bodyMat);
         armR.position.set((torsoTopWidth + 0.05) * scaleXZ, 1.1 * scaleY, 0); armR.rotation.z = -0.15; armR.castShadow = true;
         bodyGroup.add(armR);
@@ -1079,7 +1249,7 @@
     let isDragging = false; let dragTarget = null;
 
     window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#resource-tray')) return;
+      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#resource-tray') || e.target.closest('#editor-modal')) return;
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
@@ -1236,7 +1406,6 @@
       listenToRoom(roomId); setupJitsiMeeting(roomId, userName); showNotif(`Unido a ${roomId}`);
     });
 
-    // LISTENERS COMPLETOS EN TIEMPO REAL RESTAURADOS (v2.9.1)
     function listenToRoom(roomId) {
       onSnapshot(doc(db, "rooms", roomId), (docSnapshot) => {
         if (!docSnapshot.exists()) return;
