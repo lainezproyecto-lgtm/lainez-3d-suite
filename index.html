@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7NE</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.7</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -27,6 +27,7 @@
     #inspector-panel { bottom: 120px; left: 20px; width: 330px; display: none; }
     #notes-panel { bottom: 120px; right: 20px; width: 340px; display: none; }
     
+    /* ESTRUCTURA DE BANDEJA INFERIOR EN UNA SOLA LÍNEA HORIZONTAL */
     #bottom-tray-container {
       position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
       z-index: 90; display: flex; flex-direction: row; gap: 12px; width: 96vw; max-width: 1200px;
@@ -75,6 +76,7 @@
     .tray-icon { font-size: 1.2rem; margin-bottom: 2px; }
     .tray-label { font-size: 0.55rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
 
+    /* MODAL EDITOR VISUAL DE AVATARES */
     #editor-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       z-index: 250; width: 94%; max-width: 860px; display: none;
@@ -534,7 +536,7 @@
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDocs, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -796,6 +798,7 @@
       }
     });
 
+    /* EXPORTAR RECUERDO DEL AVATAR COMO TARJETA/POSTAL DIGITAL */
     document.getElementById('btn-export-avatar-card').addEventListener('click', () => {
       if (!edRenderer) return;
       edRenderer.render(edScene, edCamera);
@@ -806,23 +809,29 @@
       cardCanvas.width = 600; cardCanvas.height = 750;
       const ctx = cardCanvas.getContext('2d');
 
+      // Fondo Elegante
       const grad = ctx.createLinearGradient(0, 0, 0, 750);
       grad.addColorStop(0, '#2b211d'); grad.addColorStop(1, '#120e0d');
       ctx.fillStyle = grad; ctx.fillRect(0, 0, 600, 750);
 
+      // Marco dorado
       ctx.strokeStyle = 'rgba(212, 163, 115, 0.8)';
       ctx.lineWidth = 12; ctx.strokeRect(16, 16, 568, 718);
 
+      // Cargar Render 3D
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 50, 60, 500, 500);
 
+        // Título / Etiqueta
         ctx.fillStyle = '#e9c46a'; ctx.font = 'Bold 36px "Segoe UI", sans-serif';
         ctx.textAlign = 'center'; ctx.fillText(labelName, 300, 610);
 
+        // Subtítulo
         ctx.fillStyle = '#ddb892'; ctx.font = '20px "Segoe UI", sans-serif';
         ctx.fillText('Recuerdo de Sesión - Constelaciones 3D Pro', 300, 650);
 
+        // Marca de agua
         ctx.fillStyle = 'rgba(212, 163, 115, 0.5)'; ctx.font = '15px sans-serif';
         ctx.fillText('Lainez 3D Suite', 300, 690);
 
@@ -921,16 +930,8 @@
         notesArea.scrollTop = notesArea.scrollHeight;
       };
 
-      recognition.onerror = (e) => { 
-        if (isTranscribing) { 
-          setTimeout(() => { try { recognition.start(); } catch(err) {} }, 300); 
-        } 
-      };
-      recognition.onend = () => { 
-        if (isTranscribing) { 
-          setTimeout(() => { try { recognition.start(); } catch(err) {} }, 300); 
-        } 
-      };
+      recognition.onerror = (e) => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
+      recognition.onend = () => { if (isTranscribing) { try { recognition.start(); } catch(err) {} } };
     }
 
     document.getElementById('btn-toggle-transcription').addEventListener('click', () => {
@@ -1024,28 +1025,32 @@
         document.querySelectorAll('.btn-load-notes').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const roomId = e.target.getAttribute('data-id');
-            const roomSnap = await getDoc(doc(db, "rooms", roomId));
-            if (roomSnap.exists() && roomSnap.data().transcript) {
-              document.getElementById('session-notes').value = roomSnap.data().transcript;
-              baseNotesText = roomSnap.data().transcript;
-              document.getElementById('notes-panel').style.display = 'block';
-              showNotif(`Notas de sala ${roomId} cargadas`);
-            }
+            const roomSnap = await getDocs(collection(db, "rooms"));
+            roomSnap.forEach(d => {
+              if (d.id === roomId && d.data().transcript) {
+                document.getElementById('session-notes').value = d.data().transcript;
+                baseNotesText = d.data().transcript;
+                document.getElementById('notes-panel').style.display = 'block';
+                showNotif(`Notas de sala ${roomId} cargadas`);
+              }
+            });
           });
         });
 
         document.querySelectorAll('.btn-download-history').forEach(btn => {
           btn.addEventListener('click', async (e) => {
             const roomId = e.target.getAttribute('data-id');
-            const roomSnap = await getDoc(doc(db, "rooms", roomId));
-            if (roomSnap.exists() && roomSnap.data().transcript) {
-              const blob = new Blob([roomSnap.data().transcript], { type: 'text/plain;charset=utf-8' });
-              const link = document.createElement('a');
-              link.href = URL.createObjectURL(blob);
-              link.download = `Transcripcion_Sala_${roomId}.txt`;
-              link.click();
-              URL.revokeObjectURL(link.href);
-            }
+            const roomSnap = await getDocs(collection(db, "rooms"));
+            roomSnap.forEach(d => {
+              if (d.id === roomId && d.data().transcript) {
+                const blob = new Blob([d.data().transcript], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `Transcripcion_Sala_${roomId}.txt`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+              }
+            });
           });
         });
 
@@ -1132,12 +1137,10 @@
       isMirrorCamActive = !isMirrorCamActive;
       const btn = document.getElementById('btn-toggle-mirror-cam');
       if (isMirrorCamActive) {
-        controls.enabled = false;
         btn.innerText = "👁️ Salir Vista Consultante";
         btn.style.background = "#e76f51";
         showNotif("Viendo la cámara del consultante");
       } else {
-        controls.enabled = true;
         btn.innerText = "👁️ Ver Tablero Consultante";
         btn.style.background = "#457b9d";
         showNotif("Salió de vista consultante");
@@ -1220,6 +1223,7 @@
       anger: 0xe76f51, fear: 0x7209b7, exclusion: 0x212529
     };
 
+    /* RENDERIZADO FACIAL EMOCIONAL DINÁMICO (BOCA Y OJOS) */
     function buildFacialFeatureMesh(mouthType, gazeType, isLego, isWood, posY, posZ, scaleXZ, scaleY) {
       const facialGroup = new THREE.Group();
       const featureMat = new THREE.MeshBasicMaterial({ color: 0x1a1412 });
@@ -1230,6 +1234,7 @@
       else if (gazeType === 'up') gazeY = 0.035 * scaleY;
       else if (gazeType === 'down') gazeY = -0.035 * scaleY;
 
+      // Ojos
       const eyeY = posY + 0.12 * scaleY;
       const eyeSpacing = 0.10 * scaleXZ;
       if (gazeType === 'closed') {
@@ -1246,6 +1251,7 @@
         eyeR.position.set(eyeSpacing + gazeX, eyeY + gazeY, posZ); facialGroup.add(eyeR);
       }
 
+      // Boca Emocional
       const mouthY = posY - 0.02 * scaleY;
       if (mouthType === 'happy' || mouthType === 'laughing') {
         const mouthGeo = new THREE.TorusGeometry(0.055 * scaleXZ, 0.012 * scaleY, 8, 16, Math.PI);
@@ -1260,6 +1266,7 @@
         const mouth = new THREE.Mesh(mouthGeo, featureMat);
         mouth.position.set(0, mouthY - 0.03 * scaleY, posZ); facialGroup.add(mouth);
 
+        // Cejas enojadas
         const browGeo = new THREE.BoxGeometry(0.08 * scaleXZ, 0.015 * scaleY, 0.02);
         const browL = new THREE.Mesh(browGeo, featureMat);
         browL.position.set(-eyeSpacing, eyeY + 0.05 * scaleY, posZ); browL.rotation.z = -0.3; facialGroup.add(browL);
@@ -1271,6 +1278,7 @@
         const mouth = new THREE.Mesh(mouthGeo, featureMat);
         mouth.position.set(0, mouthY - 0.01 * scaleY, posZ); facialGroup.add(mouth);
       } else {
+        // Neutral
         const mouthGeo = new THREE.BoxGeometry(0.09 * scaleXZ, 0.015 * scaleY, 0.02);
         const mouth = new THREE.Mesh(mouthGeo, featureMat);
         mouth.position.set(0, mouthY - 0.01 * scaleY, posZ); facialGroup.add(mouth);
@@ -1279,6 +1287,7 @@
       return facialGroup;
     }
 
+    /* ACCESORIOS DE CABEZA */
     function buildHatMesh(hatStyle, headY, scaleXZ, scaleY) {
       if (!hatStyle || hatStyle === 'none') return null;
       const hatGroup = new THREE.Group();
@@ -1447,7 +1456,7 @@
         const woodMat = new THREE.MeshStandardMaterial({ color: woodColor, roughness: 0.55 });
         const faceSkinMat = new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.4 });
 
-        const zPos = shapeType === 'wood-box' ? 0.195 : 0.375;
+        const zPos = shapeType === 'wood-box' ? 0.19 : 0.37;
         if (shapeType === 'wood-box') {
           const boxGeo = new THREE.BoxGeometry(0.75, 1.2, 0.35);
           const boxMesh = new THREE.Mesh(boxGeo, woodMat);
@@ -1469,9 +1478,11 @@
           faceMesh.position.y = 0.95; bodyGroup.add(faceMesh);
         }
 
+        // Rostro Expresivo
         const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, true, 0.92, zPos, 1, 1);
         bodyGroup.add(faceFeatures);
 
+        // Símbolo Grabado Frontal
         const symbolStr = customData ? customData.symbol : (systemicResource ? systemicResource.symbol : '?');
         const canvas = document.createElement('canvas');
         canvas.width = 128; canvas.height = 128;
@@ -1507,6 +1518,7 @@
         studMesh.position.y = 1.51 * scaleY; studMesh.castShadow = true;
         bodyGroup.add(studMesh);
 
+        // Rostro Expresivo
         const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, true, false, 1.28 * scaleY, 0.22 * scaleXZ, scaleXZ, scaleY);
         bodyGroup.add(faceFeatures);
 
@@ -1560,6 +1572,7 @@
         head.position.y = (1.65 * scaleY); head.castShadow = true;
         bodyGroup.add(head);
 
+        // Rostro Expresivo
         const faceFeatures = buildFacialFeatureMesh(mouthType, gaze, false, false, 1.62 * scaleY, 0.23 * scaleXZ, scaleXZ, scaleY);
         bodyGroup.add(faceFeatures);
 
@@ -1633,16 +1646,6 @@
       return group;
     }
 
-    function drawRoundedRect(ctx, x, y, width, height, radius) {
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.arcTo(x + width, y, x + width, y + height, radius);
-      ctx.arcTo(x + width, y + height, x, y + height, radius);
-      ctx.arcTo(x, y + height, x, y, radius);
-      ctx.arcTo(x, y, x + width, y, radius);
-      ctx.closePath();
-    }
-
     function updateLabel(avatarGroup, text) {
       if (!avatarGroup || !avatarGroup.userData.labelCanvas) return;
       const canvas = avatarGroup.userData.labelCanvas;
@@ -1658,8 +1661,7 @@
       ctx.fillStyle = "rgba(18, 14, 12, 0.90)";
       ctx.strokeStyle = "rgba(212, 163, 115, 0.85)";
       ctx.lineWidth = 6;
-
-      drawRoundedRect(ctx, 12, 12, canvasWidth - 24, canvasHeight - 24, 24);
+      ctx.beginPath(); ctx.roundRect(12, 12, canvasWidth - 24, canvasHeight - 24, 24);
       ctx.fill(); ctx.stroke();
 
       ctx.font = "Bold 52px 'Segoe UI', sans-serif";
@@ -1790,8 +1792,7 @@
 
     window.addEventListener('pointerup', () => {
       if (isDragging && dragTarget) saveStateToFirebase();
-      isDragging = false; dragTarget = null; 
-      if (!isMirrorCamActive) controls.enabled = true;
+      isDragging = false; dragTarget = null; controls.enabled = true;
     });
 
     function selectAvatar(avatarGroup) {
