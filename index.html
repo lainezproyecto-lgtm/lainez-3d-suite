@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.4</title>
+  <title>Constelaciones Familiares - Lainez 3D Pro Suite v3.4SinEditor</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -51,21 +51,6 @@
     }
     .tray-icon { font-size: 1.5rem; margin-bottom: 2px; }
     .tray-label { font-size: 0.62rem; text-align: center; color: #e6ccb2; line-height: 1.1; font-weight: 500; }
-
-    /* MODAL EDITOR VISUAL DE AVATARES */
-    #editor-modal {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      z-index: 250; width: 92%; max-width: 720px; display: none;
-      background: rgba(24, 20, 18, 0.96); border: 1px solid rgba(212, 163, 115, 0.5);
-      border-radius: 16px; padding: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.85);
-      backdrop-filter: blur(16px);
-    }
-    .editor-layout { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; }
-    #editor-preview-container {
-      flex: 1 1 280px; height: 300px; background: radial-gradient(circle, #342a25 0%, #1a1412 100%);
-      border-radius: 12px; border: 1px solid rgba(212, 163, 115, 0.2); position: relative; overflow: hidden;
-    }
-    .editor-controls-column { flex: 1 1 320px; display: flex; flex-direction: column; gap: 8px; }
 
     #history-modal {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -135,45 +120,6 @@
 
   <div id="notification">Notificación</div>
 
-  <!-- MODAL EDITOR VISUAL CON VISTA PREVIA 3D -->
-  <div id="editor-modal">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>🎨 Editor de Avatares y Recursos 3D</h2>
-      <button id="btn-close-editor" class="btn-danger" style="width: auto; padding: 3px 10px;">✕ Cerrar</button>
-    </div>
-    <div class="editor-layout">
-      <div id="editor-preview-container"></div>
-      <div class="editor-controls-column">
-        <div class="input-group">
-          <label>Nombre del Avatar / Recurso:</label>
-          <input type="text" id="ed-label" value="Nuevo Recurso">
-        </div>
-        <div class="input-group">
-          <label>Forma Geométrica Base:</label>
-          <select id="ed-shape">
-            <option value="wood-cyl">Bloque Cilíndrico de Madera</option>
-            <option value="wood-box">Bloque Rectangular de Madera</option>
-            <option value="lego-m">Minifigura Clásica Humanoides</option>
-            <option value="adult-m">Figura Anatómica Adulto</option>
-          </select>
-        </div>
-        <div class="input-group">
-          <label>Color del Bloque / Vestimenta:</label>
-          <input type="color" id="ed-color" value="#ddb892" style="height: 38px; cursor: pointer;">
-        </div>
-        <div class="input-group">
-          <label>Símbolo Frontal / Dibujo (Grabado):</label>
-          <input type="text" id="ed-symbol" value="★" placeholder="Ej. ★, 🐾, ?, P, ✝">
-        </div>
-        <div class="input-group">
-          <label>Icono para el Carrusel Inferior:</label>
-          <input type="text" id="ed-icon" value="🌟" placeholder="Ej. ❤️, 🧠, 🌿">
-        </div>
-        <button id="btn-save-custom-avatar" class="btn-secondary" style="margin-top: 10px; padding: 10px;">💾 Guardar Avatar en la Bandeja</button>
-      </div>
-    </div>
-  </div>
-
   <div id="sync-panel" class="panel">
     <h2>Sincronización en Vivo</h2>
     <div class="input-group">
@@ -209,7 +155,6 @@
 
   <div id="controls-panel" class="panel">
     <h2>Añadir Elemento al Campo</h2>
-    <button id="open-editor-btn" class="btn-warning" style="margin-bottom: 12px; padding: 9px; font-weight: bold;">🎨 Abrir Editor de Avatares</button>
 
     <div class="input-group">
       <label>Nombre / Etiqueta:</label>
@@ -498,110 +443,6 @@
       selectAvatar(avatarGroup);
       saveStateToFirebase();
     }
-
-    // MOTOR VISTA PREVIA EDITOR 3D (v3.4 - CORREGIDO RENDER HUMANO / MINIFIGURA)
-    let edScene, edCamera, edRenderer, edControls, edPreviewMeshGroup;
-    function initEditorPreview() {
-      const container = document.getElementById('editor-preview-container');
-      if (edRenderer) return;
-
-      edScene = new THREE.Scene();
-      edCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-      edCamera.position.set(0, 1.2, 3.2);
-
-      edRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      edRenderer.setSize(container.clientWidth, container.clientHeight);
-      container.appendChild(edRenderer.domElement);
-
-      edControls = new THREE.OrbitControls(edCamera, edRenderer.domElement);
-      edControls.enableDamping = true;
-      edControls.autoRotate = true;
-      edControls.autoRotateSpeed = 2.0;
-
-      const ambLight = new THREE.AmbientLight(0xffffff, 0.85);
-      edScene.add(ambLight);
-      const dLight = new THREE.DirectionalLight(0xffe8d6, 1.0);
-      dLight.position.set(5, 10, 7);
-      edScene.add(dLight);
-
-      edPreviewMeshGroup = new THREE.Group();
-      edScene.add(edPreviewMeshGroup);
-
-      function animEd() {
-        requestAnimationFrame(animEd);
-        edControls.update();
-        edRenderer.render(edScene, edCamera);
-      }
-      animEd();
-    }
-
-    function updateEditorPreview() {
-      if (!edPreviewMeshGroup) return;
-      while(edPreviewMeshGroup.children.length > 0) edPreviewMeshGroup.remove(edPreviewMeshGroup.children[0]);
-
-      const shape = document.getElementById('ed-shape').value;
-      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
-      const symbol = document.getElementById('ed-symbol').value || '★';
-
-      const tempRes = { type: 'temp_ed', label: 'Preview', symbol: symbol, color: colorHex, shape: shape };
-      const mesh = buildHumanMesh(shape);
-      
-      // Ajuste dinámico si es madera
-      if (shape.startsWith('wood-')) {
-        while(mesh.children.length > 0) mesh.remove(mesh.children[0]);
-        const woodMesh = buildWoodcraftOrHuman(tempRes, shape);
-        mesh.add(woodMesh);
-      } else {
-        // Para figuras humanas se aplica el color seleccionado al traje/cuerpo
-        mesh.traverse(child => {
-          if (child.isMesh && child.material) {
-            if (shape.startsWith('lego-') && child.material !== mesh.userData.bodyMaterial) {
-              child.material.color.setHex(colorHex);
-            }
-          }
-        });
-      }
-
-      edPreviewMeshGroup.add(mesh);
-    }
-
-    document.getElementById('open-editor-btn').addEventListener('click', () => {
-      document.getElementById('editor-modal').style.display = 'block';
-      initEditorPreview();
-      updateEditorPreview();
-    });
-
-    document.getElementById('btn-close-editor').addEventListener('click', () => {
-      document.getElementById('editor-modal').style.display = 'none';
-    });
-
-    ['ed-shape', 'ed-color', 'ed-symbol'].forEach(id => {
-      document.getElementById(id).addEventListener('input', updateEditorPreview);
-    });
-
-    document.getElementById('btn-save-custom-avatar').addEventListener('click', () => {
-      const label = document.getElementById('ed-label').value.trim() || 'Recurso Personalizado';
-      const shape = document.getElementById('ed-shape').value;
-      const colorHex = parseInt(document.getElementById('ed-color').value.replace('#', '0x'));
-      const symbol = document.getElementById('ed-symbol').value || '★';
-      const icon = document.getElementById('ed-icon').value || '🎨';
-      const customId = 'cust_' + Date.now();
-
-      WOODCRAFT_RESOURCES.push({
-        type: customId, label: label, icon: icon, symbol: symbol, color: colorHex, shape: shape
-      });
-
-      renderTrayItems();
-      document.getElementById('editor-modal').style.display = 'none';
-      showNotif(`¡Avatar "${label}" guardado en la bandeja!`);
-
-      const newAv = addAvatarToScene({
-        id: 'av_' + Date.now(), label: label, type: customId,
-        x: 0, z: 0, rotation: 0, emotion: 'neutral', posture: 'standing', userScale: 100
-      });
-      selectAvatar(newAv);
-      saveStateToFirebase();
-    });
 
     function setupJitsiMeeting(roomId, userName) {
       const cleanRoom = `Lainez3D_${roomId}`;
@@ -1292,7 +1133,7 @@
     let isDragging = false; let dragTarget = null;
 
     window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#resource-tray') || e.target.closest('#editor-modal')) return;
+      if (e.target.closest('.panel') || e.target.closest('#top-bar') || e.target.closest('#resource-tray')) return;
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
       raycaster.setFromCamera(mouse, camera);
